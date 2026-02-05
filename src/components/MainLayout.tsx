@@ -31,7 +31,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       <ServerStatusBanner />
       <VerificationBanner />
       <Navbar />
-      <CommandMenu open={isOpen} setOpen={setIsOpen} />
+      <CommandMenu />
       <main className={`flex-1 w-full ${isHomePage ? '' : ''}`}>
         {children}
       </main>

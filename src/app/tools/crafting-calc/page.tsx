@@ -2,14 +2,20 @@ import { Metadata } from 'next';
 import CraftingCalcClient from './CraftingCalcClient';
 
 export const metadata: Metadata = {
-  title: 'Albion Online Crafting Calculator - Profit Tool | AlbionKit',
-  description: 'Maximize your crafting profits in Albion Online. Calculate resource costs, focus efficiency, and return rates for any item.',
-  keywords: ['Albion Online Crafting', 'Crafting Calculator', 'Focus Efficiency', 'Albion Profit Calculator', 'Crafting Tool'],
+  title: 'Albion Online Crafting Calculator - Profit & Focus Tool | AlbionKit',
+  description: 'Calculate crafting profits, focus efficiency, and resource return rates (R.R.R) for any item in Albion Online. Optimize your economy.',
+  keywords: ['Albion Online Crafting', 'Crafting Calculator', 'Focus Efficiency', 'Albion Profit Calculator', 'Crafting Tool', 'Resource Return Rate'],
   openGraph: {
-    title: 'Albion Online Crafting Calculator',
-    description: 'Calculate crafting costs and profits instantly. Optimize your focus usage and maximize silver per focus.',
+    title: 'Albion Online Crafting Calculator - Profit & Focus Tool',
+    description: 'Maximize your crafting profits. Calculate costs, focus efficiency, and return rates for weapons, armor, and consumables.',
     type: 'website',
+    images: ['https://albionkit.com/og-image.jpg'],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Albion Online Crafting Calculator - Profit & Focus Tool',
+    description: 'Maximize your crafting profits. Calculate costs, focus efficiency, and return rates for weapons, armor, and consumables.',
+  }
 };
 
 export default function CraftingCalcPage() {

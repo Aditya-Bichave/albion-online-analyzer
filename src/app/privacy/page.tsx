@@ -1,5 +1,16 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { Shield, Lock, Eye, Server, Mail, Globe } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | AlbionKit',
+  description: 'AlbionKit Privacy Policy. Learn how we collect, use, and protect your personal data when you use our Albion Online tools and services.',
+  openGraph: {
+    title: 'Privacy Policy | AlbionKit',
+    description: 'AlbionKit Privacy Policy. Learn how we collect, use, and protect your personal data.',
+    type: 'website',
+  },
+};
 import Image from 'next/image';
 
 export default function PrivacyPage() {

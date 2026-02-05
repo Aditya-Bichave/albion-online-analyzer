@@ -17,6 +17,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    // Extract YouTube ID for thumbnail if available
+    let images = ['https://albionkit.com/og-image.jpg'];
+    if (build.youtubeLink) {
+        const videoIdMatch = build.youtubeLink.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+        if (videoIdMatch && videoIdMatch[1]) {
+            images = [`https://img.youtube.com/vi/${videoIdMatch[1]}/maxresdefault.jpg`, ...images];
+        }
+    }
+
     return {
         title: `${build.title} | AlbionKit`,
         description: build.description || `Check out this ${build.category} build by ${build.authorName} on AlbionKit.`,
@@ -24,7 +33,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: build.title,
             description: build.description || `Check out this ${build.category} build by ${build.authorName} on AlbionKit.`,
             type: 'article',
+            images: images.map(url => ({ url })),
+            authors: [build.authorName],
+            publishedTime: build.createdAt?.toDate?.().toISOString(),
+            modifiedTime: build.updatedAt?.toDate?.().toISOString(),
         },
+        twitter: {
+            card: 'summary_large_image',
+            title: build.title,
+            description: build.description || `Check out this ${build.category} build by ${build.authorName} on AlbionKit.`,
+            images: images,
+        }
     };
 }
 

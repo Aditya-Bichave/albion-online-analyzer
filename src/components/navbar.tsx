@@ -47,8 +47,6 @@ interface NavItem {
 }
 
 interface NavbarProps {
-  // onOpenCommandMenu prop is deprecated in favor of CommandMenuContext
-  onOpenCommandMenu?: () => void;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -96,8 +94,9 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-export function Navbar({ onOpenCommandMenu }: NavbarProps) {
+export function Navbar() {
   const { user, profile, logout } = useAuth();
+  const { setIsOpen } = useCommandMenu();
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -237,11 +236,11 @@ export function Navbar({ onOpenCommandMenu }: NavbarProps) {
 
             <div className="ml-auto flex items-center gap-2 sm:gap-4">
               {/* Search Trigger */}
-              <button 
-                onClick={onOpenCommandMenu}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors hidden sm:flex items-center gap-2"
-                title="Search (Ctrl+K)"
-              >
+            <button 
+              onClick={() => setIsOpen(true)}
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors hidden sm:flex items-center gap-2"
+              title="Search (Ctrl+K)"
+            >
                 <Search className="h-5 w-5" />
                 <span className="hidden lg:inline text-xs text-muted-foreground border border-border rounded px-1.5 py-0.5">⌘K</span>
               </button>
@@ -455,7 +454,7 @@ export function Navbar({ onOpenCommandMenu }: NavbarProps) {
               <button 
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  onOpenCommandMenu?.();
+                  setIsOpen(true);
                 }}
                 className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
               >

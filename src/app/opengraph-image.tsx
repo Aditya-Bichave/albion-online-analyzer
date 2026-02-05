@@ -47,13 +47,7 @@ export default async function Image() {
           alignItems: 'center',
           gap: 16,
         }}>
-           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#f59e0b' }}>
-            <path d="M12 2l-4 4 4 4 4-4-4-4z" />
-            <path d="M12 10v12" />
-            <path d="M8 14h8" />
-            <path d="M4 18h16" />
-           </svg>
-           AlbionKit
+          <img src="https://albionkit.com/logo-light.svg" alt="AlbionKit Logo" style={{ width: 64, height: 64 }} />
         </div>
 
         {/* Tagline */}
@@ -64,8 +58,12 @@ export default async function Image() {
           textAlign: 'center',
           lineHeight: 1.4,
           fontWeight: 500,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}>
-          Master the Open World
+          Dominate the Open World
+          <small style={{ marginTop: 8 }}>Advanced tools for Albion Online. Analyze market trends, track PvP statistics, and discover meta builds to improve your gameplay.</small>
         </div>
 
         <div style={{
@@ -86,6 +84,11 @@ export default async function Image() {
              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                 <div style={{ fontSize: 24, color: '#f59e0b', fontWeight: 'bold' }}>PvP</div>
                 <div style={{ fontSize: 16, color: '#a1a1aa' }}>Intel</div>
+             </div>
+             <div style={{ width: 1, height: 60, background: '#27272a' }}></div>
+             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <div style={{ fontSize: 24, color: '#f59e0b', fontWeight: 'bold' }}>And</div>
+                <div style={{ fontSize: 16, color: '#a1a1aa' }}>More</div>
              </div>
         </div>
 

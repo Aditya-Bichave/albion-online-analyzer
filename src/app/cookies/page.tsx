@@ -1,5 +1,16 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { Cookie, Settings, BarChart3, ShieldCheck, Info } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Cookie Policy | AlbionKit',
+  description: 'AlbionKit Cookie Policy. Understand what cookies are, how we use them, and how you can manage your cookie preferences.',
+  openGraph: {
+    title: 'Cookie Policy | AlbionKit',
+    description: 'AlbionKit Cookie Policy. Understand what cookies are, how we use them, and how you can manage your cookie preferences.',
+    type: 'website',
+  },
+};
 import Image from 'next/image';
 
 export default function CookiePolicyPage() {

@@ -38,7 +38,10 @@ interface CommandMenuProps {
   setOpen: (open: boolean) => void
 }
 
-export function CommandMenu({ open, setOpen }: CommandMenuProps) {
+import { useCommandMenu } from '@/context/CommandMenuContext';
+
+export function CommandMenu() {
+  const { isOpen, setIsOpen } = useCommandMenu();
   const router = useRouter()
   const [query, setQuery] = React.useState("")
   const [results, setResults] = React.useState<SearchResult[]>([])
@@ -48,21 +51,21 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
-        setOpen(true)
+        setIsOpen(true)
       }
     }
 
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
-  }, [setOpen])
+  }, [setIsOpen])
 
   React.useEffect(() => {
-    if (!open) {
+    if (!isOpen) {
       setQuery("")
       setResults([])
       return
     }
-  }, [open])
+  }, [isOpen])
 
   React.useEffect(() => {
     const search = async () => {
@@ -87,9 +90,9 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
   }, [query])
 
   const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false)
+    setIsOpen(false)
     command()
-  }, [setOpen])
+  }, [setIsOpen])
 
   const getIcon = (iconName?: string) => {
     switch (iconName) {
@@ -115,16 +118,16 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
     }
   }
 
-  if (!open) return null
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh] sm:pt-[20vh] px-4">
       <div 
         className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" 
-        onClick={() => setOpen(false)}
+        onClick={() => setIsOpen(false)}
       />
       <div className="relative w-full max-w-lg bg-popover border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-        <Command className="w-full bg-transparent" shouldFilter={false}>
+        <Command className="w-full bg-transparent" shouldFilter={false} label="Global Search">
           <div className="flex items-center border-b border-border px-3" cmdk-input-wrapper="">
             <Search className="mr-2 h-4 w-4 shrink-0 opacity-50 text-muted-foreground" />
             <Command.Input 
@@ -135,7 +138,7 @@ export function CommandMenu({ open, setOpen }: CommandMenuProps) {
             />
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-muted-foreground" />}
             <button 
-              onClick={() => setOpen(false)}
+              onClick={() => setIsOpen(false)}
               className="ml-2 p-1 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />

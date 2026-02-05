@@ -28,7 +28,7 @@ export async function getItems(): Promise<SimpleItem[]> {
   try {
     console.log('Fetching Albion items database...');
     const response = await fetch(ITEMS_JSON_URL, {
-        cache: 'no-store' // Bypass Next.js Data Cache (file > 2MB)
+        next: { revalidate: 3600 } // Cache for 1 hour
     });
     
     if (!response.ok) throw new Error('Failed to fetch items');

@@ -1,5 +1,16 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { Receipt, AlertCircle, HelpCircle, MessageCircle, CheckCircle2, XCircle } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Refund Policy | AlbionKit',
+  description: 'AlbionKit Refund Policy. Read about our policies regarding refunds for subscriptions and digital goods.',
+  openGraph: {
+    title: 'Refund Policy | AlbionKit',
+    description: 'AlbionKit Refund Policy. Read about our policies regarding refunds for subscriptions and digital goods.',
+    type: 'website',
+  },
+};
 import Image from 'next/image';
 
 export default function RefundPolicyPage() {
@@ -42,8 +53,8 @@ export default function RefundPolicyPage() {
               1. General Policy
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              AlbionKit provides digital goods and services (subscriptions and tools). 
-              Due to the nature of digital content, all sales are generally considered final and non-refundable once the service has been accessed or used.
+              AlbionKit provides immediate access to premium digital features and tools (such as Adept and Guild Master tiers). 
+              Due to the nature of digital content where access is granted instantly, all sales are generally considered final and non-refundable once the service has been accessed or used.
             </p>
           </div>
 
@@ -100,9 +111,19 @@ export default function RefundPolicyPage() {
                 <MessageCircle className="h-6 w-6 text-muted-foreground" />
                 Contact Us
               </h2>
-              <p className="text-muted-foreground mb-0">
-                If you have any questions about our Refund Policy or need to request a refund, please open a ticket in our Discord server or email billing@albionkit.com.
-              </p>
+              <div className="text-muted-foreground space-y-4">
+                <p>
+                  If you have any questions about our Refund Policy or need to request a refund, please reach out to us through any of the following channels:
+                </p>
+                <ul className="list-none space-y-2 pl-4 border-l-2 border-border">
+                  <li>
+                    <strong className="text-foreground">Email:</strong> <a href="mailto:contact@albionkit.com" className="hover:text-primary transition-colors">contact@albionkit.com</a>
+                  </li>
+                  <li>
+                    <strong className="text-foreground">Twitter (X):</strong> <a href="https://twitter.com/Albion_Kit" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">@Albion_Kit</a>
+                  </li>
+                </ul>
+              </div>
             </section>
           </div>
         </div>

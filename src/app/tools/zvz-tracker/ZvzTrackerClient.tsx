@@ -1,0 +1,970 @@
+'use client';
+
+import { useState, useEffect, Suspense, useMemo } from 'react';
+import { Swords, Users, Skull, Trophy, Clock, RefreshCw, ChevronDown, ChevronUp, Shield, Crown, ChevronLeft, ChevronRight, Search, X, BarChart3, Share2, Info } from 'lucide-react';
+import { getBattles, getBattleDetails, searchEntities, getEntityDetails, getBattleEvents } from './actions';
+import { getItems } from '@/lib/item-service';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Input } from '@/components/ui/Input';
+import { PageShell } from '@/components/PageShell';
+import { ItemIcon } from '@/components/ItemIcon';
+import { Tooltip } from '@/components/ui/Tooltip';
+import { ServerSelector } from '@/components/ServerSelector';
+import { useServer } from '@/hooks/useServer';
+import { InfoStrip } from '@/components/InfoStrip';
+
+import { useAuth } from '@/context/AuthContext';
+
+const formatNumber = (num: number | undefined | null) => {
+    if (!num && num !== 0) return '0';
+    if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'b';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'm';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    return num.toLocaleString();
+};
+
+const formatItemName = (type: string) => {
+    if (!type) return 'Unknown Item';
+    const parts = type.split('_');
+    let tier = '';
+    let name = type;
+    let enchant = '';
+
+    if (parts[0].match(/^T\d+$/)) {
+        tier = parts[0] + ' ';
+        name = parts.slice(1).join(' ');
+    }
+
+    if (name.includes('@')) {
+        const [baseName, enchantLevel] = name.split('@');
+        name = baseName;
+        enchant = `.${enchantLevel}`;
+    }
+
+    // Capitalize and clean up
+    name = name.replace(/_/g, ' ').split(/\s+/).map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join(' ');
+
+    return `${tier}${name}${enchant}`;
+};
+
+export default function ZvzTrackerClient() {
+    const { profile } = useAuth();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const [battles, setBattles] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { server: region, setServer: setRegion } = useServer();
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [entityResults, setEntityResults] = useState<any>(null);
+    const [selectedEntity, setSelectedEntity] = useState<any>(null);
+    const [isSearching, setIsSearching] = useState(false);
+
+    // Detailed View State
+    const [expandedBattleId, setExpandedBattleId] = useState<number | null>(null);
+    const [battleDetails, setBattleDetails] = useState<any | null>(null);
+    const [battleEvents, setBattleEvents] = useState<any[]>([]);
+    const [detailsLoading, setDetailsLoading] = useState(false);
+    const [detailTab, setDetailTab] = useState<'players' | 'guilds' | 'alliances' | 'feed'>('guilds');
+    const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+    const [feedLoading, setFeedLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemMap, setItemMap] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        getItems().then(items => {
+            const map: Record<string, string> = {};
+            items.forEach(i => map[i.id] = i.name);
+            setItemMap(map);
+        });
+    }, []);
+
+
+
+    const ITEMS_PER_PAGE = 10;
+
+    // Feed Pagination Effect
+    useEffect(() => {
+        if (expandedBattleId && detailTab === 'feed') {
+            const loadEvents = async () => {
+                setFeedLoading(true);
+                const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+                const { events } = await getBattleEvents(expandedBattleId.toString(), offset, ITEMS_PER_PAGE, region);
+                if (events) {
+                    setBattleEvents(events);
+                }
+                setFeedLoading(false);
+            };
+            loadEvents();
+        }
+    }, [expandedBattleId, detailTab, currentPage, region]);
+
+    // Main List Pagination
+    const [battlesPage, setBattlesPage] = useState(1);
+    const BATTLES_PER_PAGE = 10;
+
+    const loadBattles = async (isBackground = false) => {
+        if (!isBackground) setLoading(true);
+        // Fetch more battles to allow for local pagination
+        const { battles, error } = await getBattles(region, 50);
+        if (battles) {
+            // Sort by time descending (newest first)
+            const sortedBattles = battles.sort((a: any, b: any) =>
+                new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+            );
+            setBattles(sortedBattles);
+        }
+        if (!isBackground) setLoading(false);
+    };
+
+    useEffect(() => {
+        loadBattles();
+
+        // Auto-refresh every 30 seconds
+        const interval = setInterval(() => {
+            loadBattles(true);
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, [region]);
+
+    useEffect(() => {
+        const delaySearch = setTimeout(async () => {
+            if (searchQuery.length > 2) {
+                setIsSearching(true);
+                const { results } = await searchEntities(searchQuery, region);
+                setEntityResults(results);
+                setIsSearching(false);
+            } else {
+                setEntityResults(null);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(delaySearch);
+    }, [searchQuery, region]);
+
+    // Check for shared battle in URL
+    useEffect(() => {
+        const sharedBattleId = searchParams.get('battleId');
+        if (sharedBattleId && battles.length > 0 && !expandedBattleId) {
+            const id = parseInt(sharedBattleId);
+            if (!isNaN(id) && battles.find(b => b.id === id)) {
+                handleExpandBattle(id);
+            }
+        }
+    }, [battles, searchParams]);
+
+    // Leaderboard Logic
+    const leaderboard = useMemo(() => {
+        const stats: Record<string, { name: string, type: 'guild' | 'alliance', kills: number, deaths: number, fame: number, count: number }> = {};
+
+        battles.forEach(battle => {
+            // Process Guilds
+            Object.values(battle.guilds || {}).forEach((guild: any) => {
+                if (!stats[guild.name]) {
+                    stats[guild.name] = { name: guild.name, type: 'guild', kills: 0, deaths: 0, fame: 0, count: 0 };
+                }
+                stats[guild.name].kills += guild.kills;
+                stats[guild.name].deaths += guild.deaths;
+                stats[guild.name].fame += guild.killFame;
+                stats[guild.name].count++;
+            });
+
+            // Process Alliances
+            Object.values(battle.alliances || {}).forEach((alliance: any) => {
+                 if (!stats[alliance.name]) {
+                    stats[alliance.name] = { name: alliance.name, type: 'alliance', kills: 0, deaths: 0, fame: 0, count: 0 };
+                }
+                stats[alliance.name].kills += alliance.kills;
+                stats[alliance.name].deaths += alliance.deaths;
+                stats[alliance.name].fame += alliance.killFame;
+                stats[alliance.name].count++;
+            });
+        });
+
+        return Object.values(stats)
+            .sort((a, b) => b.fame - a.fame)
+            .slice(0, 5); // Top 5
+    }, [battles]);
+
+    const handleEntityClick = async (type: 'guilds' | 'players' | 'alliances', id: string) => {
+        setIsSearching(true);
+        const { data } = await getEntityDetails(type, id, region);
+        if (data) {
+            setSelectedEntity({ ...data, type });
+            // Keep search query to maintain context
+        }
+        setIsSearching(false);
+    };
+
+    const handleExpandBattle = async (battleId: number) => {
+        if (expandedBattleId === battleId) {
+            setExpandedBattleId(null);
+            setBattleDetails(null);
+            return;
+        }
+
+        setExpandedBattleId(battleId);
+        setCurrentPage(1);
+        setBattleEvents([]); // Reset events
+
+        // Scroll to battle
+        setTimeout(() => {
+            const element = document.getElementById(`battle-${battleId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+
+        setDetailsLoading(true);
+
+        // Fetch details and events in parallel
+        const [detailsRes, eventsRes] = await Promise.all([
+            getBattleDetails(battleId.toString(), region),
+            getBattleEvents(battleId.toString(), 0, 50, region)
+        ]);
+
+        if (detailsRes.battle) {
+            setBattleDetails(detailsRes.battle);
+        }
+        if (eventsRes.events) {
+            setBattleEvents(eventsRes.events);
+        }
+        setDetailsLoading(false);
+    };
+
+
+
+    const copyBattleLink = (e: React.MouseEvent, battleId: number) => {
+        e.stopPropagation();
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('battleId', battleId.toString());
+        const url = `${window.location.origin}${pathname}?${params.toString()}`;
+        navigator.clipboard.writeText(url);
+        // Simple feedback since we don't have a toast component
+        const btn = e.currentTarget as HTMLButtonElement;
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<span class="text-success">Copied!</span>';
+        setTimeout(() => {
+            btn.innerHTML = originalContent;
+        }, 2000);
+    };
+
+    const formatTimeAgo = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+        if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+        return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    };
+
+    const getBattleSides = (details: any) => {
+        const alliances = details.alliances || {};
+        const guilds = details.guilds || {};
+        const players = details.players || {};
+        const factions: any[] = [];
+
+        // Add alliances
+        Object.values(alliances).forEach((alliance: any) => {
+            factions.push({
+                id: alliance.id,
+                name: alliance.name,
+                tag: alliance.tag,
+                type: 'alliance',
+                kills: alliance.kills,
+                deaths: alliance.deaths,
+                killFame: alliance.killFame,
+                participants: [] as string[],
+                playerCount: 0
+            });
+        });
+
+        // Process Guilds
+        Object.values(guilds).forEach((guild: any) => {
+            if (guild.allianceId && alliances[guild.allianceId]) {
+                const faction = factions.find(f => f.id === guild.allianceId);
+                if (faction) faction.participants.push(guild.name);
+            } else {
+                factions.push({
+                    id: guild.id,
+                    name: guild.name,
+                    type: 'guild',
+                    kills: guild.kills,
+                    deaths: guild.deaths,
+                    killFame: guild.killFame,
+                    participants: [guild.name],
+                    playerCount: 0
+                });
+            }
+        });
+
+        // Count Players per Faction
+        Object.values(players).forEach((player: any) => {
+            const guild = guilds[player.guildId];
+            if (guild) {
+                // Check if guild belongs to an alliance faction
+                if (guild.allianceId && alliances[guild.allianceId]) {
+                    const faction = factions.find(f => f.id === guild.allianceId);
+                    if (faction) faction.playerCount++;
+                } else {
+                    // Guild faction
+                    const faction = factions.find(f => f.id === guild.id);
+                    if (faction) faction.playerCount++;
+                }
+            }
+        });
+
+        return factions.sort((a, b) => b.killFame - a.killFame);
+    };
+
+    const isLiveBattle = (startTime: string) => {
+        return new Date(startTime).getTime() > Date.now() - 20 * 60 * 1000;
+    };
+
+    const filteredBattles = battles.filter(battle => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+
+        // Search by ID
+        if (battle.id.toString().includes(query)) return true;
+
+        // Search by Guilds
+        if (Object.values(battle.guilds || {}).some((g: any) => g.name.toLowerCase().includes(query))) return true;
+
+        // Search by Alliances
+        if (Object.values(battle.alliances || {}).some((a: any) => a.name.toLowerCase().includes(query))) return true;
+
+        return false;
+    });
+
+    const liveBattles = filteredBattles.filter(b => isLiveBattle(b.startTime));
+    const pastBattles = filteredBattles.filter(b => !isLiveBattle(b.startTime));
+
+    return (
+        <PageShell
+            title="ZvZ Tracker"
+            backgroundImage='/background/ao-zvz.jpg'
+            description="Track massive open-world battles and guild warfare"
+            icon={<Swords className="h-6 w-6" />}
+            headerActions={
+                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                    <div className="relative group">
+                        <Input
+                            type="text"
+                            placeholder="Search guild, alliance, or ID..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full md:w-64"
+                            icon={<Search className="h-4 w-4 text-muted-foreground" />}
+                        />
+                    </div>
+
+                    <div className="flex gap-2">
+                        <ServerSelector
+                            selectedServer={region}
+                            onServerChange={setRegion}
+                        />
+                        <button
+                            onClick={() => loadBattles(false)}
+                            disabled={loading}
+                            className="p-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg transition-colors shadow-lg shadow-destructive/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+                        </button>
+                    </div>
+                </div>
+            }
+        >
+
+                {/* Leaderboard Section */}
+                {!searchQuery && leaderboard.length > 0 && (
+                    <div className="mb-8 animate-in fade-in slide-in-from-top-2">
+                        <h2 className="text-lg font-bold text-muted-foreground mb-4 uppercase tracking-wider flex items-center gap-2">
+                            <Trophy className="h-4 w-4 text-warning" /> Recent Top Performers
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                            {leaderboard.map((entry, idx) => (
+                                <div key={idx} className="bg-card/50 border border-border p-4 rounded-xl flex flex-col gap-2 relative overflow-hidden group hover:border-ring/50 transition-colors">
+                                    <div className="absolute top-0 right-0 p-2 opacity-10 font-black text-4xl group-hover:opacity-20 transition-opacity">
+                                        #{idx + 1}
+                                    </div>
+                                    <div className="flex items-center gap-2 z-10">
+                                        {entry.type === 'guild' ? <Shield className="h-4 w-4 text-success" /> : <Crown className="h-4 w-4 text-primary" />}
+                                        <span className="font-bold text-foreground truncate" title={entry.name}>{entry.name}</span>
+                                    </div>
+                                    <div className="z-10 space-y-1">
+                                         <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">Fame</span>
+                                    <Tooltip content={`${entry.fame.toLocaleString()} Fame`}>
+                                        <span className="text-warning font-mono cursor-help">{formatNumber(entry.fame)}</span>
+                                    </Tooltip>
+                                </div>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-muted-foreground">K/D</span>
+                                            <span className="text-foreground font-mono">{entry.deaths > 0 ? (entry.kills / entry.deaths).toFixed(1) : '∞'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Entity Profile Modal */}
+                {selectedEntity && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                        <div className="bg-card border border-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+                            <button
+                                onClick={() => setSelectedEntity(null)}
+                                className="absolute top-4 right-4 p-2 bg-muted hover:bg-muted/80 rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+
+                            <div className="p-8">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className={`p-4 rounded-xl border ${selectedEntity.type === 'guilds' ? 'bg-success/10 border-success/20 text-success' : selectedEntity.type === 'alliances' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-warning/10 border-warning/20 text-warning'}`}>
+                                        {selectedEntity.type === 'guilds' ? <Shield className="h-8 w-8" /> : selectedEntity.type === 'alliances' ? <Crown className="h-8 w-8" /> : <Users className="h-8 w-8" />}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                                            {selectedEntity.Name || selectedEntity.name}
+                                            {selectedEntity.Tag && <span className="text-muted-foreground text-xl">[{selectedEntity.Tag}]</span>}
+                                        </h2>
+                                        <div className="text-muted-foreground capitalize flex items-center gap-2">
+                                            {selectedEntity.type === 'guilds' ? 'Guild' : selectedEntity.type === 'alliances' ? 'Alliance' : 'Player'} Profile
+                                            {selectedEntity.AllianceId && <span className="text-muted-foreground/80">• Alliance: {selectedEntity.AllianceTag}</span>}
+                                            {selectedEntity.GuildName && <span className="text-muted-foreground/80">• Guild: {selectedEntity.GuildName}</span>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                    <div className="bg-muted/50 p-4 rounded-xl border border-border/50">
+                                        <div className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">Total Fame</div>
+                                        <Tooltip content={`${selectedEntity.KillFame?.toLocaleString() || 0} Fame`}>
+                                            <div className="text-lg font-mono font-bold text-warning">{formatNumber(selectedEntity.KillFame)}</div>
+                                        </Tooltip>
+                                    </div>
+                                     <div className="bg-muted/50 p-4 rounded-xl border border-border/50">
+                                        <div className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">K/D Ratio</div>
+                                        <div className="text-lg font-mono font-bold text-foreground">
+                                            {selectedEntity.DeathFame > 0 ? (selectedEntity.KillFame / selectedEntity.DeathFame).toFixed(2) : '∞'}
+                                        </div>
+                                    </div>
+                                     <div className="bg-muted/50 p-4 rounded-xl border border-border/50">
+                                        <div className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">Members</div>
+                                        <div className="text-lg font-mono font-bold text-foreground">
+                                            {selectedEntity.MemberCount || 'N/A'}
+                                        </div>
+                                    </div>
+                                     <div className="bg-muted/50 p-4 rounded-xl border border-border/50">
+                                        <div className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-1">Region</div>
+                                        <div className="text-lg font-mono font-bold text-foreground uppercase">
+                                            {region}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            
+            <div className="space-y-4">
+                {/* Live Battles */}
+                {liveBattles.length > 0 && (
+                    <div className="space-y-4 mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-destructive"></span>
+                            </span>
+                            <h2 className="text-lg font-bold text-destructive uppercase tracking-wider">Live Battles</h2>
+                        </div>
+                        {liveBattles.map(battle => (
+                             <div key={battle.id} id={`battle-${battle.id}`} className={`bg-card/80 border ${expandedBattleId === battle.id ? 'border-destructive ring-1 ring-destructive' : 'border-destructive/30'} rounded-xl overflow-hidden transition-all duration-300 hover:border-destructive/50`}>
+                                {/* Battle Header */}
+                                <div 
+                                    className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => handleExpandBattle(battle.id)}
+                                >
+                                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className="p-3 bg-destructive/10 rounded-lg text-destructive">
+                                                <Swords className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-bold text-foreground text-lg">Battle #{battle.id}</span>
+                                                    <span className="px-2 py-0.5 bg-destructive text-destructive-foreground text-xs font-bold rounded-full animate-pulse">LIVE</span>
+                                                </div>
+                                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTimeAgo(battle.startTime)}</span>
+                                                    <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {Object.keys(battle.players || {}).length} Players</span>
+                                                    <span className="flex items-center gap-1"><Skull className="h-3 w-3" /> {battle.totalKills} Kills</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-2 w-full md:w-auto">
+                                            <div className="flex-1 md:flex-initial text-right pr-4 border-r border-border">
+                                                 <div className="text-xs text-muted-foreground uppercase">Total Fame</div>
+                                                 <div className="font-mono font-bold text-warning">{formatNumber(battle.totalFame)}</div>
+                                            </div>
+                                            <button 
+                                                onClick={(e) => copyBattleLink(e, battle.id)}
+                                                className="p-2 hover:bg-background rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                                                title="Share Battle"
+                                            >
+                                                <Share2 className="h-4 w-4" />
+                                            </button>
+                                            {expandedBattleId === battle.id ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Expanded Details */}
+                                {expandedBattleId === battle.id && (
+                                    <div className="border-t border-border bg-background/50 animate-in slide-in-from-top-2">
+                                        {detailsLoading ? (
+                                            <div className="p-8 flex justify-center">
+                                                <RefreshCw className="h-8 w-8 text-muted-foreground animate-spin" />
+                                            </div>
+                                        ) : battleDetails ? (
+                                            <div className="p-4 md:p-6">
+                                                {/* Details Tabs */}
+                                                <div className="flex gap-2 mb-6 border-b border-border pb-2 overflow-x-auto">
+                                                    <button 
+                                                        onClick={() => setDetailTab('guilds')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'guilds' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Guilds ({Object.keys(battleDetails.guilds || {}).length})
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setDetailTab('alliances')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'alliances' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Alliances ({Object.keys(battleDetails.alliances || {}).length})
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setDetailTab('players')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'players' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Players ({Object.keys(battleDetails.players || {}).length})
+                                                    </button>
+                                                     <button 
+                                                        onClick={() => setDetailTab('feed')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'feed' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Kill Feed
+                                                    </button>
+                                                </div>
+
+                                                {/* Tab Content */}
+                                                <div className="space-y-4">
+                                                    {detailTab === 'guilds' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Guild</th>
+                                                                        <th className="pb-2">Alliance</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">K/D</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.guilds || {}).sort((a: any, b: any) => b.killFame - a.killFame).map((guild: any) => (
+                                                                        <tr key={guild.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('guilds', guild.id)}>{guild.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">{guild.alliance}</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{guild.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{guild.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{guild.deaths > 0 ? (guild.kills / guild.deaths).toFixed(1) : '∞'}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(guild.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+
+                                                     {detailTab === 'alliances' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Alliance</th>
+                                                                        <th className="pb-2">Tag</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">K/D</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.alliances || {}).sort((a: any, b: any) => b.killFame - a.killFame).map((alliance: any) => (
+                                                                        <tr key={alliance.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('alliances', alliance.id)}>{alliance.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">[{alliance.tag}]</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{alliance.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{alliance.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{alliance.deaths > 0 ? (alliance.kills / alliance.deaths).toFixed(1) : '∞'}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(alliance.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+
+                                                     {detailTab === 'players' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Player</th>
+                                                                        <th className="pb-2">Guild</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">IP</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.players || {}).sort((a: any, b: any) => b.killFame - a.killFame).slice(0, 50).map((player: any) => (
+                                                                        <tr key={player.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('players', player.id)}>{player.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">{player.guildName}</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{player.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{player.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{Math.round(player.averageItemPower)}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(player.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                            {Object.keys(battleDetails.players || {}).length > 50 && (
+                                                                <div className="text-center text-xs text-muted-foreground mt-4 italic">
+                                                                    Showing top 50 players by Fame
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {detailTab === 'feed' && (
+                                                        <div className="space-y-2">
+                                                            {battleEvents.map((event: any) => (
+                                                                <div key={event.EventId} className="flex items-center gap-3 p-2 rounded bg-muted/20 hover:bg-muted/40 transition-colors text-sm">
+                                                                    <div className="text-muted-foreground text-xs w-16 tabular-nums">{new Date(event.TimeStamp).toLocaleTimeString()}</div>
+                                                                    <div className="flex-1 flex items-center justify-between gap-4">
+                                                                        <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                                                                            <span className={`font-bold truncate ${event.Killer.AllianceName ? 'text-primary' : 'text-foreground'}`}>{event.Killer.Name}</span>
+                                                                            <span className="text-xs text-muted-foreground hidden sm:inline">({Math.round(event.Killer.AverageItemPower)} IP)</span>
+                                                                        </div>
+                                                                        
+                                                                        <div className="flex flex-col items-center px-2">
+                                                                             <Swords className="h-4 w-4 text-destructive" />
+                                                                             <span className="text-[10px] font-mono text-warning">{formatNumber(event.TotalVictimKillFame)}</span>
+                                                                        </div>
+
+                                                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                                            <span className={`font-bold truncate ${event.Victim.AllianceName ? 'text-destructive' : 'text-foreground'}`}>{event.Victim.Name}</span>
+                                                                            <span className="text-xs text-muted-foreground hidden sm:inline">({Math.round(event.Victim.AverageItemPower)} IP)</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="w-8 h-8 relative shrink-0">
+                                                                        {/* Weapon Icon would go here */}
+                                                                         <div className="bg-muted w-full h-full rounded flex items-center justify-center text-[10px]">
+                                                                             W
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            
+                                                            {/* Pagination Controls */}
+                                                            <div className="flex justify-center gap-4 mt-4">
+                                                                <button 
+                                                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                                                    disabled={currentPage === 1 || feedLoading}
+                                                                    className="p-1 rounded hover:bg-muted disabled:opacity-50"
+                                                                >
+                                                                    <ChevronLeft className="h-4 w-4" />
+                                                                </button>
+                                                                <span className="text-sm text-muted-foreground flex items-center">Page {currentPage}</span>
+                                                                <button 
+                                                                    onClick={() => setCurrentPage(p => p + 1)}
+                                                                    disabled={feedLoading}
+                                                                    className="p-1 rounded hover:bg-muted disabled:opacity-50"
+                                                                >
+                                                                    <ChevronRight className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-8 text-center text-muted-foreground">
+                                                Failed to load details.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                             </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Past Battles */}
+                <div className="space-y-4">
+                     <h2 className="text-lg font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                         <Clock className="h-4 w-4" /> Recent History
+                     </h2>
+                    {pastBattles.map(battle => (
+                         <div key={battle.id} id={`battle-${battle.id}`} className={`bg-card/50 border ${expandedBattleId === battle.id ? 'border-primary ring-1 ring-primary' : 'border-border'} rounded-xl overflow-hidden transition-all duration-300 hover:border-border/80`}>
+                                {/* Battle Header */}
+                                <div 
+                                    className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                                    onClick={() => handleExpandBattle(battle.id)}
+                                >
+                                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className="p-3 bg-muted rounded-lg text-muted-foreground">
+                                                <Swords className="h-6 w-6" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-bold text-foreground text-lg">Battle #{battle.id}</span>
+                                                    <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-bold rounded-full">ENDED</span>
+                                                </div>
+                                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {formatTimeAgo(battle.startTime)}</span>
+                                                    <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {Object.keys(battle.players || {}).length} Players</span>
+                                                    <span className="flex items-center gap-1"><Skull className="h-3 w-3" /> {battle.totalKills} Kills</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-2 w-full md:w-auto">
+                                            <div className="flex-1 md:flex-initial text-right pr-4 border-r border-border">
+                                                 <div className="text-xs text-muted-foreground uppercase">Total Fame</div>
+                                                 <div className="font-mono font-bold text-warning">{formatNumber(battle.totalFame)}</div>
+                                            </div>
+                                             <button 
+                                                onClick={(e) => copyBattleLink(e, battle.id)}
+                                                className="p-2 hover:bg-background rounded-full text-muted-foreground hover:text-foreground transition-colors"
+                                                title="Share Battle"
+                                            >
+                                                <Share2 className="h-4 w-4" />
+                                            </button>
+                                            {expandedBattleId === battle.id ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Expanded Details - Reusing the same structure as above, ideally this should be a component */}
+                                {expandedBattleId === battle.id && (
+                                    <div className="border-t border-border bg-background/50 animate-in slide-in-from-top-2">
+                                        {detailsLoading ? (
+                                            <div className="p-8 flex justify-center">
+                                                <RefreshCw className="h-8 w-8 text-muted-foreground animate-spin" />
+                                            </div>
+                                        ) : battleDetails ? (
+                                            <div className="p-4 md:p-6">
+                                                {/* Details Tabs */}
+                                                <div className="flex gap-2 mb-6 border-b border-border pb-2 overflow-x-auto">
+                                                    <button 
+                                                        onClick={() => setDetailTab('guilds')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'guilds' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Guilds ({Object.keys(battleDetails.guilds || {}).length})
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setDetailTab('alliances')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'alliances' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Alliances ({Object.keys(battleDetails.alliances || {}).length})
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setDetailTab('players')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'players' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Players ({Object.keys(battleDetails.players || {}).length})
+                                                    </button>
+                                                     <button 
+                                                        onClick={() => setDetailTab('feed')}
+                                                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors whitespace-nowrap ${detailTab === 'feed' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                                    >
+                                                        Kill Feed
+                                                    </button>
+                                                </div>
+
+                                                {/* Tab Content - Reused */}
+                                                <div className="space-y-4">
+                                                    {detailTab === 'guilds' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Guild</th>
+                                                                        <th className="pb-2">Alliance</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">K/D</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.guilds || {}).sort((a: any, b: any) => b.killFame - a.killFame).map((guild: any) => (
+                                                                        <tr key={guild.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('guilds', guild.id)}>{guild.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">{guild.alliance}</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{guild.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{guild.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{guild.deaths > 0 ? (guild.kills / guild.deaths).toFixed(1) : '∞'}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(guild.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+                                                     {/* ... other tabs ... */}
+                                                     {detailTab === 'alliances' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Alliance</th>
+                                                                        <th className="pb-2">Tag</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">K/D</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.alliances || {}).sort((a: any, b: any) => b.killFame - a.killFame).map((alliance: any) => (
+                                                                        <tr key={alliance.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('alliances', alliance.id)}>{alliance.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">[{alliance.tag}]</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{alliance.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{alliance.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{alliance.deaths > 0 ? (alliance.kills / alliance.deaths).toFixed(1) : '∞'}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(alliance.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    )}
+                                                    {detailTab === 'players' && (
+                                                        <div className="overflow-x-auto">
+                                                            <table className="w-full text-sm">
+                                                                <thead>
+                                                                    <tr className="text-left text-muted-foreground border-b border-border">
+                                                                        <th className="pb-2 pl-2">Player</th>
+                                                                        <th className="pb-2">Guild</th>
+                                                                        <th className="pb-2 text-right">Kills</th>
+                                                                        <th className="pb-2 text-right">Deaths</th>
+                                                                        <th className="pb-2 text-right">IP</th>
+                                                                        <th className="pb-2 text-right pr-2">Fame</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {Object.values(battleDetails.players || {}).sort((a: any, b: any) => b.killFame - a.killFame).slice(0, 50).map((player: any) => (
+                                                                        <tr key={player.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                                                                            <td className="py-2 pl-2 font-medium text-foreground cursor-pointer hover:text-primary hover:underline" onClick={() => handleEntityClick('players', player.id)}>{player.name}</td>
+                                                                            <td className="py-2 text-muted-foreground">{player.guildName}</td>
+                                                                            <td className="py-2 text-right font-mono text-success">{player.kills}</td>
+                                                                            <td className="py-2 text-right font-mono text-destructive">{player.deaths}</td>
+                                                                            <td className="py-2 text-right font-mono">{Math.round(player.averageItemPower)}</td>
+                                                                            <td className="py-2 text-right font-mono text-warning pr-2">{formatNumber(player.killFame)}</td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                            {Object.keys(battleDetails.players || {}).length > 50 && (
+                                                                <div className="text-center text-xs text-muted-foreground mt-4 italic">
+                                                                    Showing top 50 players by Fame
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                     {detailTab === 'feed' && (
+                                                        <div className="space-y-2">
+                                                            {battleEvents.map((event: any) => (
+                                                                <div key={event.EventId} className="flex items-center gap-3 p-2 rounded bg-muted/20 hover:bg-muted/40 transition-colors text-sm">
+                                                                    <div className="text-muted-foreground text-xs w-16 tabular-nums">{new Date(event.TimeStamp).toLocaleTimeString()}</div>
+                                                                    <div className="flex-1 flex items-center justify-between gap-4">
+                                                                        <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+                                                                            <span className={`font-bold truncate ${event.Killer.AllianceName ? 'text-primary' : 'text-foreground'}`}>{event.Killer.Name}</span>
+                                                                            <span className="text-xs text-muted-foreground hidden sm:inline">({Math.round(event.Killer.AverageItemPower)} IP)</span>
+                                                                        </div>
+                                                                        
+                                                                        <div className="flex flex-col items-center px-2">
+                                                                             <Swords className="h-4 w-4 text-destructive" />
+                                                                             <span className="text-[10px] font-mono text-warning">{formatNumber(event.TotalVictimKillFame)}</span>
+                                                                        </div>
+
+                                                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                                            <span className={`font-bold truncate ${event.Victim.AllianceName ? 'text-destructive' : 'text-foreground'}`}>{event.Victim.Name}</span>
+                                                                            <span className="text-xs text-muted-foreground hidden sm:inline">({Math.round(event.Victim.AverageItemPower)} IP)</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="w-8 h-8 relative shrink-0">
+                                                                         <div className="bg-muted w-full h-full rounded flex items-center justify-center text-[10px]">
+                                                                             W
+                                                                         </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            
+                                                            {/* Pagination Controls */}
+                                                            <div className="flex justify-center gap-4 mt-4">
+                                                                <button 
+                                                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                                                    disabled={currentPage === 1 || feedLoading}
+                                                                    className="p-1 rounded hover:bg-muted disabled:opacity-50"
+                                                                >
+                                                                    <ChevronLeft className="h-4 w-4" />
+                                                                </button>
+                                                                <span className="text-sm text-muted-foreground flex items-center">Page {currentPage}</span>
+                                                                <button 
+                                                                    onClick={() => setCurrentPage(p => p + 1)}
+                                                                    disabled={feedLoading}
+                                                                    className="p-1 rounded hover:bg-muted disabled:opacity-50"
+                                                                >
+                                                                    <ChevronRight className="h-4 w-4" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-8 text-center text-muted-foreground">
+                                                Failed to load details.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                             </div>
+                        ))}
+                </div>
+            
+                <InfoStrip currentPage="zvz-tracker" />
+            </div>
+        </PageShell>
+    );
+}

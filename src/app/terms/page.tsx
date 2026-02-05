@@ -1,5 +1,16 @@
 import React from 'react';
+import { Metadata } from 'next';
 import { Scale, FileText, ShieldAlert, UserCheck, AlertTriangle, Copyright } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | AlbionKit',
+  description: 'Read the Terms of Service for AlbionKit. Understand your rights, responsibilities, and our legal obligations when using our Albion Online tools.',
+  openGraph: {
+    title: 'Terms of Service | AlbionKit',
+    description: 'Read the Terms of Service for AlbionKit. Understand your rights, responsibilities, and our legal obligations.',
+    type: 'website',
+  },
+};
 import Image from 'next/image';
 
 export default function TermsPage() {
