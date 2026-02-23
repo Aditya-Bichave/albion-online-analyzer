@@ -20,6 +20,7 @@ import {
   runTransaction,
   startAfter
 } from 'firebase/firestore';
+import { submitToIndexNow } from './indexnow';
 import { checkAndNotifyRankUp } from './notification-service';
 
 export type BuildCategory = 'solo' | 'small-scale' | 'pvp' | 'zvz' | 'large-scale' | 'group';
@@ -245,6 +246,16 @@ export const createBuild = async (build: Omit<Build, 'id' | 'createdAt' | 'updat
     getUserBuilds(build.authorId).then(({ builds }) => {
       checkAndNotifyRankUp(build.authorId, builds);
     }).catch(err => console.error('Error checking rank up:', err));
+
+    try {
+      const host = 'https://albionkit.com';
+      const category = encodeURIComponent(build.category);
+      const buildUrl = `${host}/builds/${category}/${docRef.id}`;
+      const listingUrl = `${host}/builds`;
+      submitToIndexNow([buildUrl, listingUrl]);
+    } catch (e) {
+      console.error('Error submitting build to IndexNow', e);
+    }
 
     return docRef.id;
   } catch (error) {
