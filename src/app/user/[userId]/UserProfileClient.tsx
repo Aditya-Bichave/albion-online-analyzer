@@ -143,12 +143,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   const saveBannerPosition = async () => {
       if (!profile) return;
-      await updateUserProfile(profile.uid, { bannerPositionY: bannerY });
-      // Refresh Auth Context to update Navbar
+      const targetUid = profile.uid || userId;
+      await updateUserProfile(targetUid, { bannerPositionY: bannerY });
       await refreshProfile();
       setIsRepositioning(false);
-      // Update local profile to reflect saved state
-      setProfile(prev => prev ? ({ ...prev, bannerPositionY: bannerY }) : null);
+      setProfile(prev => prev ? ({ ...prev, uid: targetUid, bannerPositionY: bannerY }) : null);
   };
 
   const cancelReposition = () => {

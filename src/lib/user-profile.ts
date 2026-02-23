@@ -232,7 +232,8 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return docSnap.data() as UserProfile;
+      const data = docSnap.data() as UserProfile;
+      return { ...data, uid };
     }
     return null;
   } catch (error) {
@@ -241,8 +242,12 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   }
 }
 
-export async function updateUserProfile(uid: string, data: Partial<UserProfile>) {
+export async function updateUserProfile(uid: string | undefined, data: Partial<UserProfile>) {
   try {
+    if (!uid) {
+      console.error('updateUserProfile called without uid. Data payload:', data);
+      return false;
+    }
     const docRef = doc(db, 'users', uid);
     // Use setDoc with merge: true to create if not exists
     await setDoc(docRef, { ...data, updatedAt: new Date().toISOString() }, { merge: true });

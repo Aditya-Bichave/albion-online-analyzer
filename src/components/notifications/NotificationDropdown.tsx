@@ -195,7 +195,7 @@ export function NotificationDropdown() {
           
           <div className="p-2 border-t border-border bg-muted/30 text-center">
             <Link 
-              href="/settings" 
+              href="/settings?tab=preferences"
               onClick={() => setIsOpen(false)}
               className="text-xs text-muted-foreground hover:text-primary transition-colors"
             >
