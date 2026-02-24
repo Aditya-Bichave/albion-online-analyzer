@@ -183,15 +183,59 @@ export function getReminderEmailHtml(message: string) {
   const content = `
     <h1>Reminder</h1>
     <p>${message}</p>
+    <p>Open AlbionKit to see the full list of opportunities.</p>
     
     <div class="btn-container">
-      <a href="https://albionkit.com" class="btn">Open AlbionKit</a>
+      <a href="https://albionkit.com/tools/market-flipper" class="btn">View Market Flipper</a>
     </div>
   `;
   
   return getBaseHtml({
-    title: 'Reminder - AlbionKit',
+    title: 'Market Opportunity - AlbionKit',
     previewText: message,
+    content
+  });
+}
+
+export function getWatchlistAlertEmailHtml(name: string, items: any[]) {
+  const itemsHtml = items.map(item => `
+    <li style="margin-bottom: 16px; list-style: none; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="https://render.albiononline.com/v1/item/${item.itemId}?quality=1" width="48" height="48" style="border-radius: 4px; background: #1e293b;" alt="${item.name}">
+        <div>
+          <div style="font-weight: bold; color: #f8fafc;">${item.name}</div>
+          <div style="font-size: 13px; color: #f59e0b;">
+            Profit: <strong>${Math.round(item.profit).toLocaleString()} Silver</strong> (${item.margin}% ROI)
+          </div>
+          <div style="font-size: 12px; color: #94a3b8;">
+            Buy: ${item.buyPrice.toLocaleString()} (${item.buyCity}) → Sell: ${item.sellPrice.toLocaleString()} (BM)
+          </div>
+        </div>
+      </div>
+    </li>
+  `).join('');
+
+  const content = `
+    <h1>Watchlist Price Alert 🔔</h1>
+    <p>Hi ${name},</p>
+    <p>One or more items on your <strong>Market Watchlist</strong> are currently showing profitable flip opportunities on the Black Market!</p>
+    
+    <ul style="padding: 0;">
+      ${itemsHtml}
+    </ul>
+    
+    <div class="btn-container">
+      <a href="https://albionkit.com/tools/market-flipper?watchlist=true" class="btn">View My Watchlist</a>
+    </div>
+    
+    <p class="small-text" style="text-align: center;">
+      You're receiving this because you enabled Market Alerts in your settings.
+    </p>
+  `;
+  
+  return getBaseHtml({
+    title: 'Market Watchlist Alert - AlbionKit',
+    previewText: `Watchlist Alert: ${items[0].name} and more are profitable!`,
     content
   });
 }

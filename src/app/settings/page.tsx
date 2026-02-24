@@ -1550,15 +1550,15 @@ function SettingsContent() {
                                             <TrendingUp className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <div className="font-bold text-foreground text-sm">Market Flip Alerts</div>
-                                            <div className="text-xs text-muted-foreground">Notify on high-profit flips</div>
+                                            <div className="font-bold text-foreground text-sm">Market Watchlist Alerts</div>
+                                            <div className="text-xs text-muted-foreground">Notify when watched items are profitable</div>
                                         </div>
                                      </div>
                                      <button 
                                         disabled={!access.hasAccess}
                                         onClick={() => handleSavePreferences({ ...preferences, marketAlerts: !preferences.marketAlerts })}
                                         className={`w-10 h-5 rounded-full relative transition-colors ${preferences.marketAlerts ? 'bg-primary' : 'bg-secondary'} ${!access.hasAccess ? 'cursor-not-allowed opacity-50' : ''}`}
-                                    >
+                                     >
                                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm transition-all ${preferences.marketAlerts ? 'right-1' : 'left-1'}`} />
                                      </button>
                                 </div>

@@ -4,6 +4,8 @@ import { POPULAR_ITEMS } from './constants';
 import { searchItemsService, getItems } from '@/lib/item-service';
 import { getMarketHistory as getHistoryService, getMarketPrices, getMarketVolume, MarketHistory as ServiceMarketHistory, MarketStat as ServiceMarketStat, MarketHistoryPoint as ServiceHistoryPoint } from '@/lib/market-service';
 
+import { notifyUser } from '@/lib/notification-service';
+
 export type MarketStat = ServiceMarketStat;
 export type MarketHistoryPoint = ServiceHistoryPoint;
 export type MarketHistory = ServiceMarketHistory;
@@ -143,6 +145,37 @@ function processMarketData(
 
   // Sort by profit descending
   return { flips: flips.sort((a, b) => b.profit - a.profit), error: undefined };
+}
+
+export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'east' | 'europe', watchlist: string[]) {
+  if (!userId || !watchlist.length) return;
+
+  try {
+    // 1. Get watchlist items (IDs only)
+    const itemIds = Array.from(new Set(watchlist.map(w => w.split('-')[0])));
+    
+    // 2. Fetch current market data for these items
+    const { flips } = await getMarketData(region, itemIds, []);
+    
+    // 3. Filter for profitable flips (> 5000 profit and > 10% margin for alert)
+    const profitableWatchlistItems = flips.filter(f => 
+      itemIds.includes(f.itemId) && f.profit > 5000 && f.margin > 10
+    );
+
+    if (profitableWatchlistItems.length > 0) {
+      // 4. Trigger notification
+      await notifyUser(userId, 'market_opportunity', {
+        isWatchlist: true,
+        items: profitableWatchlistItems.slice(0, 5) // Limit to top 5 for email
+      });
+      return { success: true, count: profitableWatchlistItems.length };
+    }
+    
+    return { success: false, count: 0 };
+  } catch (error) {
+    console.error('Trigger Watchlist Alerts Error:', error);
+    return { error: 'Failed to process alerts' };
+  }
 }
 
 export async function searchAlbionItems(query: string) {

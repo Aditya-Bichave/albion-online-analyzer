@@ -43,8 +43,10 @@ export async function notifyUser(userId: string, type: NotificationType, data?: 
         message = data?.message || 'Here is your reminder.';
         break;
       case 'market_opportunity':
-        title = 'Market Opportunity';
-        message = data?.message || 'A high-profit market flip opportunity has been detected!';
+        title = 'Market Alert 🔔';
+        message = data?.isWatchlist 
+          ? `Profitable flips detected for ${data.items[0].name}${data.items.length > 1 ? ` and ${data.items.length - 1} more` : ''} on your watchlist!`
+          : (data?.message || 'A high-profit market flip opportunity has been detected!');
         break;
       case 'gold_alert':
         title = 'Gold Price Alert';

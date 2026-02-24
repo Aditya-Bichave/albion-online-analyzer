@@ -1,7 +1,7 @@
 import { adminDb } from './firebase-admin';
 import { sendEmail } from './email-service';
 import { NotificationType } from './notification-service';
-import { getWelcomeEmailHtml, getPurchaseSuccessEmailHtml, getRankUpEmailHtml, getReminderEmailHtml } from './email-templates';
+import { getWelcomeEmailHtml, getPurchaseSuccessEmailHtml, getRankUpEmailHtml, getReminderEmailHtml, getWatchlistAlertEmailHtml } from './email-templates';
 
 export async function notifyUserAdmin(userId: string, type: NotificationType, data?: any, explicitEmail?: string) {
   try {
@@ -81,10 +81,19 @@ async function sendEmailNotificationAdmin(profile: any, email: string, type: Not
       html = getRankUpEmailHtml(data.newRank);
       break;
     case 'reminder':
-      subject = 'Reminder from AlbionKit';
-      html = getReminderEmailHtml(data.message);
-      break;
-    default:
+        subject = 'Reminder from AlbionKit';
+        html = getReminderEmailHtml(data.message);
+        break;
+      case 'market_opportunity':
+        if (data.isWatchlist) {
+          subject = `Watchlist Alert: ${data.items[0].name} is profitable!`;
+          html = getWatchlistAlertEmailHtml(name, data.items);
+        } else {
+          subject = 'Market Opportunity Detected!';
+          html = getReminderEmailHtml(data.message);
+        }
+        break;
+      default:
       return;
   }
 

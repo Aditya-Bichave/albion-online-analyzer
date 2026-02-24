@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { FeatureLock } from '@/components/subscription/FeatureLock';
 import { getUserPreferences, saveUserPreferences } from '@/lib/user-preferences';
-import { getMarketData } from './actions';
+import { getMarketData, triggerWatchlistAlerts, searchAlbionItems } from './actions';
 import MarketHistoryChart from './MarketHistoryChart';
 import { usePremiumAccess } from '@/hooks/usePremiumAccess';
 import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
@@ -23,7 +23,6 @@ import { NumberInput } from '@/components/ui/NumberInput';
 import { PageShell } from '@/components/PageShell';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { ItemIcon } from '@/components/ItemIcon';
-import { searchAlbionItems } from './actions';
 
 function MarketFlipperContent() {
   const router = useRouter();
@@ -54,21 +53,47 @@ function MarketFlipperContent() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { server: region, setServer: setRegion } = useServer();
 
-  // Custom Items & Watchlist
   const [customItems, setCustomItems] = useState<string[]>([]);
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
+  const [travelCost, setTravelCost] = useState(0);
+  const [isPremiumTax, setIsPremiumTax] = useState(true);
+  const [watchlistSummary, setWatchlistSummary] = useState({ count: 0, profitable: 0, topPick: null as any | null });
+
+  // Compute profit and ROI for all flips
+  const computedFlips = flips.map(flip => {
+    const taxRate = isPremiumTax ? 0.04 : 0.08;
+    const setupFee = 0.025;
+    const totalTax = flip.sellPrice * (taxRate + setupFee);
+    const netProfit = (flip.sellPrice - flip.buyPrice) - totalTax - travelCost;
+    const roi = flip.buyPrice > 0 ? (netProfit / flip.buyPrice) * 100 : 0;
+
+    return {
+      ...flip,
+      netProfit,
+      roi
+    };
+  });
+
+  useEffect(() => {
+    if (watchlist.length > 0 && computedFlips.length > 0) {
+      const watchedFlips = computedFlips.filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`));
+      const profitable = watchedFlips.filter(f => f.netProfit > 5000 && f.roi > 10).length;
+      const topPick = watchedFlips.sort((a, b) => b.roi - a.roi)[0] || null;
+      setWatchlistSummary({ count: watchlist.length, profitable, topPick });
+    } else {
+      setWatchlistSummary({ count: watchlist.length, profitable: 0, topPick: null });
+    }
+  }, [watchlist, flips, isPremiumTax, travelCost]); // Recalculate if tax or travel cost changes
 
   // Filters
-  const [minProfit, setMinProfit] = useState(1000);
-  const [minMargin, setMinMargin] = useState(10);
+  const [minProfit, setMinProfit] = useState(2500);
+  const [minMargin, setMinMargin] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTier, setSelectedTier] = useState('All');
   const [selectedEnchantment, setSelectedEnchantment] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('Popular');
   const [uniqueItemMode, setUniqueItemMode] = useState(false);
-  const [travelCost, setTravelCost] = useState(0);
-  const [isPremiumTax, setIsPremiumTax] = useState(true);
   const [searchSelectValue, setSearchSelectValue] = useState<string | ''>('');
   const [searchOptions, setSearchOptions] = useState<{ value: string; label: string; icon?: React.ReactNode }[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -201,6 +226,22 @@ function MarketFlipperContent() {
     if (flips) {
       setFlips(flips);
       setLastUpdated(new Date());
+
+      // Watchlist Alerts Check: If user has watchlist items, check if any are currently profitable
+      // and trigger a notification if they haven't been notified recently.
+      if (user && watchlist.length > 0) {
+        const lastAlertTime = localStorage.getItem('last_watchlist_alert');
+        const now = Date.now();
+        
+        // Only trigger alert check once every 4 hours to avoid spamming
+        if (!lastAlertTime || now - Number(lastAlertTime) > 4 * 60 * 60 * 1000) {
+          triggerWatchlistAlerts(user.uid, region, watchlist).then(result => {
+            if (result && 'success' in result && result.success) {
+              localStorage.setItem('last_watchlist_alert', String(now));
+            }
+          });
+        }
+      }
     }
     setLoading(false);
   };
@@ -234,33 +275,15 @@ function MarketFlipperContent() {
     setCurrentPage(1);
   }, [searchTerm, minProfit, minMargin, region, selectedTier, sortConfig, showWatchlistOnly, selectedCategory, uniqueItemMode]);
 
-  const filteredFlips = flips.filter(flip => {
+  const filteredFlips = computedFlips.filter(flip => {
     const isCustom = customItems.includes(flip.itemId);
     const matchesSearch = flip.itemId.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Calculate precise profit for filtering
-    const taxRate = isPremiumTax ? 0.04 : 0.08; // 4% Premium, 8% Non-Premium
-    const setupFee = 0.025; // 2.5% Setup Fee
-    const totalTax = flip.sellPrice * (taxRate + setupFee);
-    const netProfitCalc = (flip.sellPrice - flip.buyPrice) - totalTax - travelCost;
-    const marginCalc = (netProfitCalc / flip.buyPrice) * 100;
-
-    const matchesProfit = isCustom || netProfitCalc >= minProfit;
-    const matchesMargin = isCustom || marginCalc >= minMargin;
+    const matchesProfit = isCustom || flip.netProfit >= minProfit;
+    const matchesMargin = isCustom || flip.roi >= minMargin;
     const matchesTier = selectedTier === 'All' || flip.itemId.startsWith(selectedTier);
     const matchesWatchlist = !showWatchlistOnly || watchlist.includes(`${flip.itemId}-${flip.buyCity}`);
     return matchesSearch && matchesProfit && matchesMargin && matchesTier && matchesWatchlist;
-  }).map(flip => {
-    const taxRate = isPremiumTax ? 0.04 : 0.08;
-    const setupFee = 0.025;
-    const totalTax = flip.sellPrice * (taxRate + setupFee);
-    const netProfit = (flip.sellPrice - flip.buyPrice) - totalTax - travelCost;
-
-    return {
-      ...flip,
-      netProfit: netProfit,
-      roi: (netProfit / flip.buyPrice) * 100
-    };
   }).sort((a, b) => {
     if (sortConfig.key === 'profit') {
       return sortConfig.direction === 'asc' ? a.netProfit - b.netProfit : b.netProfit - a.netProfit;
@@ -331,6 +354,77 @@ function MarketFlipperContent() {
         </div>
       }
     >
+
+      {/* Watchlist Quick Access */}
+      {watchlist.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div 
+            onClick={() => setShowWatchlistOnly(!showWatchlistOnly)}
+            className={`cursor-pointer group relative overflow-hidden bg-card border rounded-2xl p-4 transition-all hover:shadow-lg ${showWatchlistOnly ? 'border-primary ring-1 ring-primary/50 shadow-primary/10' : 'border-border'}`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-2 rounded-xl ${showWatchlistOnly ? 'bg-primary text-primary-foreground' : 'bg-secondary text-amber-500'}`}>
+                <Star className={`h-5 w-5 ${showWatchlistOnly ? 'fill-current' : ''}`} />
+              </div>
+              {watchlistSummary.profitable > 0 && (
+                <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success px-2 py-0.5 rounded-full border border-success/20 animate-pulse">
+                  {watchlistSummary.profitable} Hot
+                </span>
+              )}
+            </div>
+            <h3 className="text-sm font-bold text-foreground">My Watchlist</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              {watchlist.length} items tracked • {showWatchlistOnly ? 'Filter active' : 'Click to filter'}
+            </p>
+            {showWatchlistOnly && (
+              <div className="absolute top-2 right-2">
+                <div className="h-2 w-2 bg-primary rounded-full animate-ping" />
+              </div>
+            )}
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-4 flex flex-col justify-center">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">
+              <TrendingUp className="h-3 w-3 text-success" /> Best Watchlist ROI
+            </div>
+            {watchlistSummary.topPick ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <ItemIcon itemId={watchlistSummary.topPick.itemId} className="w-8 h-8 rounded-lg bg-secondary shrink-0" />
+                  <div className="truncate">
+                    <div className="text-sm font-bold text-foreground truncate">{watchlistSummary.topPick.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{watchlistSummary.topPick.buyCity} → BM</div>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="text-sm font-bold text-success">+{watchlistSummary.topPick.roi.toFixed(1)}%</div>
+                  <div className="text-[10px] text-muted-foreground">ROI</div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm font-medium text-muted-foreground italic">No data yet</div>
+            )}
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-4 flex flex-col justify-center">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">
+              <DollarSign className="h-3 w-3 text-primary" /> Total Potential Profit
+            </div>
+            {(() => {
+              const totalProfit = flips
+                .filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`) && f.netProfit > 0)
+                .reduce((sum, f) => sum + f.netProfit, 0);
+              
+              return (
+                <div className="flex items-baseline gap-2">
+                  <div className="text-2xl font-black text-foreground">{Math.round(totalProfit).toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground font-bold italic">Silver</div>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Filters */}
@@ -891,7 +985,7 @@ function MarketFlipperContent() {
   );
 }
 
-export default function MarketFlipperPage() {
+export default function MarketFlipperClient() {
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]">
       <div className="flex flex-col items-center gap-4">
