@@ -203,7 +203,7 @@ function WeaponMasteryTable({
                                   </div>
                                   <h3 className="text-sm font-bold mb-1">Analytics Locked</h3>
                                   <p className="text-xs text-muted-foreground">
-                                    Unlock Premium to view detailed performance metrics.
+                                    Try it out for Free to view detailed performance metrics.
                                   </p>
                                 </div>
                               }

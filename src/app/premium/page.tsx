@@ -14,6 +14,7 @@ export default function PremiumPage() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [hasUsedTrial, setHasUsedTrial] = useState(false);
   const [access, setAccess] = useState<any>({ hasAccess: false, reason: 'none' });
   const [guildInfo, setGuildInfo] = useState<any>(null);
   const [processing, setProcessing] = useState<'personal' | 'guild' | null>(null);
@@ -41,6 +42,7 @@ export default function PremiumPage() {
 
     const userProfile = await getUserProfile(user.uid);
     setProfile(userProfile);
+    setHasUsedTrial(userProfile?.preferences?.hasUsedTrial || false);
     
     const accessStatus = await checkAccess(user.uid);
     setAccess(accessStatus);
@@ -193,7 +195,9 @@ export default function PremiumPage() {
                 disabled={!!processing || !user}
                 className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-foreground rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {processing === 'personal' ? 'Processing...' : 'Become an Adept'}
+                {processing === 'personal' 
+                  ? 'Processing...' 
+                  : (!hasUsedTrial && billingInterval === 'month' ? 'Try it out for Free' : 'Unlock Adept Features')}
               </button>
             )}
             {!user && <p className="text-center text-sm text-slate-500 mt-2">Login required</p>}
@@ -274,7 +278,9 @@ export default function PremiumPage() {
                   disabled={!!processing || !user}
                   className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-foreground rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {processing === 'guild' ? 'Processing...' : 'Unlock Guild Master'}
+                  {processing === 'guild' 
+                    ? 'Processing...' 
+                    : (!hasUsedTrial && billingInterval === 'month' ? 'Try it out for Free' : 'Get Guild Master')}
                 </button>
             )}
           </div>

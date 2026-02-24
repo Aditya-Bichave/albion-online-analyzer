@@ -24,6 +24,7 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
   const [prices, setPrices] = useState<{ personal: string, guild: string }>({ personal: '$4.99', guild: '$19.99' });
   const [planType, setPlanType] = useState<'personal' | 'guild'>(initialPlan);
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('month');
+  const [hasUsedTrial, setHasUsedTrial] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -47,6 +48,7 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
     try {
       const userProfile = await getUserProfile(user.uid);
       setProfile(userProfile);
+      setHasUsedTrial(userProfile?.preferences?.hasUsedTrial || false);
       
       const accessStatus = await checkAccess(user.uid);
       setAccess(accessStatus);
@@ -144,6 +146,12 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
                   </button>
                 </div>
               </div>
+              
+              {!hasUsedTrial && billingInterval === 'year' && (
+                <p className="text-[10px] text-center text-amber-600/80 mb-4 animate-in fade-in slide-in-from-top-1">
+                  * Free trial available on monthly plans only
+                </p>
+              )}
 
               {/* Toggle */}
               <div className="flex bg-muted/50 p-1 rounded-xl mb-6">
@@ -178,13 +186,23 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
                     <FeatureItem text="Directly Support Development" icon={<Heart className="h-4 w-4 text-pink-500" />} />
                   </div>
                   
-                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 text-center">
+                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 text-center relative overflow-hidden">
+                    {!hasUsedTrial && billingInterval === 'month' && (
+                      <div className="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg animate-pulse shadow-sm">
+                        FREE TRIAL
+                      </div>
+                    )}
                     <div className="text-3xl font-bold text-foreground mb-1">
                       {billingInterval === 'year' 
                         ? `$${(parseFloat(prices.personal.replace(/[^0-9.]/g, '')) * 10).toFixed(2)}` 
                         : prices.personal}
                     </div>
                     <div className="text-xs text-muted-foreground">per {billingInterval}</div>
+                    {!hasUsedTrial && billingInterval === 'month' && (
+                      <div className="mt-2 text-[11px] font-bold text-amber-600 bg-amber-500/10 py-1 rounded-lg">
+                        Includes 7-Day Free Trial
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -196,13 +214,23 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
                     <FeatureItem text="Guild Leaderboard Badge" icon={<Trophy className="h-4 w-4 text-yellow-500" />} />
                   </div>
 
-                  <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 text-center">
+                  <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 text-center relative overflow-hidden">
+                    {!hasUsedTrial && billingInterval === 'month' && (
+                      <div className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-lg animate-pulse shadow-sm">
+                        FREE TRIAL
+                      </div>
+                    )}
                     <div className="text-3xl font-bold text-foreground mb-1">
                       {billingInterval === 'year' 
                         ? `$${(parseFloat(prices.guild.replace(/[^0-9.]/g, '')) * 10).toFixed(2)}` 
                         : prices.guild}
                     </div>
                     <div className="text-xs text-muted-foreground">per {billingInterval}</div>
+                    {!hasUsedTrial && billingInterval === 'month' && (
+                      <div className="mt-2 text-[11px] font-bold text-blue-600 bg-blue-500/10 py-1 rounded-lg">
+                        Includes 7-Day Free Trial
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -225,14 +253,18 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
                       </>
                     ) : (
                       <>
-                        {profile?.subscription?.status === 'cancelled' && access.hasAccess ? 'Renew Membership' : (planType === 'personal' ? 'Become an Adept' : 'Unlock Guild Master')}
+                        {profile?.subscription?.status === 'cancelled' && access.hasAccess 
+                          ? 'Renew Membership' 
+                          : (!hasUsedTrial && billingInterval === 'month'
+                              ? `Try it out for Free` 
+                              : (planType === 'personal' ? 'Unlock Adept Features' : 'Get Guild Master'))}
                         <ChevronRight className="h-4 w-4 opacity-50" />
                       </>
                     )}
                   </button>
                  )}
-                 <p className="text-[10px] text-center text-muted-foreground mt-4">
-                   Secure payment via Lemon Squeezy. Cancel anytime.
+                 <p className="text-[10px] text-center text-muted-foreground mt-4 italic">
+                   {!hasUsedTrial && billingInterval === 'month' ? '7-day free trial included. ' : ''}Secure payment via Lemon Squeezy. Cancel anytime.
                  </p>
               </div>
             </>

@@ -5,6 +5,7 @@ import { searchItemsService, getItems } from '@/lib/item-service';
 import { getMarketHistory as getHistoryService, getMarketPrices, getMarketVolume, MarketHistory as ServiceMarketHistory, MarketStat as ServiceMarketStat, MarketHistoryPoint as ServiceHistoryPoint } from '@/lib/market-service';
 
 import { notifyUser } from '@/lib/notification-service';
+import { adminDb } from '@/lib/firebase-admin';
 
 export type MarketStat = ServiceMarketStat;
 export type MarketHistoryPoint = ServiceHistoryPoint;
@@ -151,6 +152,19 @@ export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'e
   if (!userId || !watchlist.length) return;
 
   try {
+    // 0. CHECK SUPPORTER STATUS
+    // Market alerts are a premium feature (Adept or Guild Master)
+    const userDoc = await adminDb.collection('users').doc(userId).get();
+    const userData = userDoc.data();
+    const isSupporter = userData?.role === 'adept' || userData?.role === 'guild_master' || userData?.role === 'admin';
+    
+    // Check if alerts are enabled in preferences
+    const alertsEnabled = userData?.preferences?.marketAlerts !== false;
+
+    if (!isSupporter || !alertsEnabled) {
+      return { success: false, reason: 'unauthorized_or_disabled' };
+    }
+
     // 1. Get watchlist items (IDs only)
     const itemIds = Array.from(new Set(watchlist.map(w => w.split('-')[0])));
     

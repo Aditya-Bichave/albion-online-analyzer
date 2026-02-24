@@ -13,12 +13,13 @@ export interface GuildLicense {
 }
 
 export interface UserSubscription {
-  status: 'active' | 'past_due' | 'unpaid' | 'cancelled' | 'expired';
+  status: 'active' | 'past_due' | 'unpaid' | 'cancelled' | 'expired' | 'trialing';
   planType: 'personal' | 'guild';
   renewsAt?: string;
   endsAt?: string;
   lemonSqueezySubscriptionId?: string;
   customerId?: string;
+  trialEndsAt?: string;
 }
 
 export interface UserPreferences {
@@ -26,6 +27,7 @@ export interface UserPreferences {
   publicProfile?: boolean;
   showBadges?: boolean;
   compactMode?: boolean;
+  hasUsedTrial?: boolean; // Track if user already used the 7-day trial
   
   // New Preferences
   defaultServer?: 'Americas' | 'Asia' | 'Europe';

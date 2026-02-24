@@ -1798,7 +1798,7 @@ function SettingsContent() {
                         onClick={() => openSubscriptionModal('personal')}
                         className="block w-full py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-center rounded-lg transition-colors text-sm"
                     >
-                        Become an Adept
+                        {authProfile?.preferences?.hasUsedTrial ? 'Unlock Adept' : 'Try it out for Free'}
                     </button>
                 ) : profile?.subscription?.status === 'cancelled' ? (
                      <button 

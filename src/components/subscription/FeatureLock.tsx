@@ -21,7 +21,7 @@ export function FeatureLock({
   lockedContent,
   featureId, 
   title = "Adept Feature", 
-  description = "Become an Adept to unlock this feature and help keep the project alive!", 
+  description = "Try it out for free and unlock this feature to help keep the project alive!", 
   blur = true,
   className
 }: FeatureLockProps) {
@@ -65,7 +65,7 @@ export function FeatureLock({
           onClick={() => setShowModal(true)}
           className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0"
         >
-          Become an Adept
+          Try it out for Free
         </button>
       </div>
 

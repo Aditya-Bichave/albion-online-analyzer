@@ -22,7 +22,8 @@ import {
   Crown,
   Skull,
   Activity,
-  Twitter
+  Twitter,
+  Mail
 } from "lucide-react";
 
 import { ItemIcon } from "@/components/ItemIcon";
@@ -279,7 +280,7 @@ export default async function Home() {
             <div className="space-y-2">
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">Stay Updated</h2>
               <p className="text-muted-foreground text-lg">
-                Follow us on Twitter for the latest updates, feature announcements, and market insights.
+                Follow us on Twitter or subscribe to our newsletter for the latest meta updates and market insights.
               </p>
             </div>
           </div>
@@ -289,10 +290,17 @@ export default async function Home() {
               href="https://twitter.com/Albion_Kit" 
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 text-center whitespace-nowrap flex items-center gap-3"
+              className="px-8 py-4 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 text-center whitespace-nowrap flex items-center gap-3 justify-center"
             >
               <Twitter className="h-5 w-5 fill-current" />
               Follow on Twitter
+            </Link>
+            <Link 
+              href="/settings" 
+              className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold transition-all shadow-lg shadow-primary/20 text-center whitespace-nowrap flex items-center gap-3 justify-center"
+            >
+              <Mail className="h-5 w-5" />
+              Manage Alerts
             </Link>
           </div>
           

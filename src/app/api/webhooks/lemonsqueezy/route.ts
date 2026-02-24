@@ -40,9 +40,11 @@ async function updateSubscriptionStatus(uid: string, data: any, eventType: strin
             let score = 0;
             const isGuild = sub.planType === 'guild';
             const isActive = sub.status === 'active';
+            const isTrialing = sub.status === 'trialing';
             const isValidCancelled = sub.status === 'cancelled' && sub.endsAt && new Date(sub.endsAt) > now;
             
             if (isActive) score += 100;
+            else if (isTrialing) score += 80; // Trialing is good, but Active is better
             else if (isValidCancelled) score += 50;
             else score -= 100; // Expired/invalid
             
@@ -69,7 +71,7 @@ async function updateSubscriptionStatus(uid: string, data: any, eventType: strin
         // Calculate hasPremiumAccess based on EFFECTIVE subscription
         let hasPremiumAccess = false;
         if (effectiveSubscription) {
-             if (effectiveSubscription.status === 'active') hasPremiumAccess = true;
+             if (effectiveSubscription.status === 'active' || effectiveSubscription.status === 'trialing') hasPremiumAccess = true;
              else if (effectiveSubscription.status === 'cancelled' && effectiveSubscription.endsAt) {
                  if (new Date(effectiveSubscription.endsAt) > now) hasPremiumAccess = true;
              }
@@ -80,6 +82,14 @@ async function updateSubscriptionStatus(uid: string, data: any, eventType: strin
             subscription: effectiveSubscription, // Update legacy field with the best one
             updatedAt: new Date().toISOString()
         };
+
+        // If this is an active or trialing subscription, mark trial as used
+        if (effectiveSubscription?.status === 'active' || effectiveSubscription?.status === 'trialing') {
+            updateData.preferences = {
+                ...(currentData.preferences || {}),
+                hasUsedTrial: true
+            };
+        }
 
         // If user has no email in profile, use the one from billing
         if (!currentData?.email && data.email) {
@@ -95,10 +105,10 @@ async function updateSubscriptionStatus(uid: string, data: any, eventType: strin
         await docRef.set(updateData, { merge: true });
         console.log(`Successfully updated subscription for user ${uid}. Effective plan: ${effectiveSubscription?.planType} (${effectiveSubscription?.status})`);
 
-        // Notify user only if status CHANGED to active (prevents duplicates)
+        // Notify user only if status CHANGED to active or trialing (prevents duplicates)
         // We compare against the previous effective status
-        const isNowActive = effectiveSubscription?.status === 'active';
-        const wasActive = previousStatus === 'active';
+        const isNowActive = effectiveSubscription?.status === 'active' || effectiveSubscription?.status === 'trialing';
+        const wasActive = previousStatus === 'active' || previousStatus === 'trialing';
 
         if (isNowActive && !wasActive) {
             if (eventType === 'subscription_created' || eventType === 'subscription_updated') {

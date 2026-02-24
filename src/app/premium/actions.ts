@@ -136,6 +136,7 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
     const customData: any = {
         user_id: userId,
         plan_type: type,
+        is_trial: !profile.preferences?.hasUsedTrial,
     };
     if (type === 'guild' && profile.guildId) {
         customData.guild_id = profile.guildId;
