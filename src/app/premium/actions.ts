@@ -70,19 +70,35 @@ export async function getProductPrices() {
       return null;
     }
 
+    console.log(`[getProductPrices] Fetching prices for variants: Personal=${personalVariantId}, Guild=${guildVariantId}`);
+
     const [personal, guild] = await Promise.all([
-      getVariant(parseInt(personalVariantId)),
-      getVariant(parseInt(guildVariantId))
+      getVariant(personalVariantId).catch(err => {
+        console.error('[getProductPrices] Error fetching personal variant:', err);
+        return { data: null, error: err };
+      }),
+      getVariant(guildVariantId).catch(err => {
+        console.error('[getProductPrices] Error fetching guild variant:', err);
+        return { data: null, error: err };
+      })
     ]);
 
     // Helper to format price
     const formatPrice = (variant: any) => {
-        if (!variant.data) return '$0.00';
-        const price = variant.data.data.attributes.price / 100;
-        return price.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-        });
+        if (!variant || !variant.data || !variant.data.data) {
+          console.warn('[getProductPrices] Variant data missing for formatting');
+          return '$0.00';
+        }
+        try {
+          const price = variant.data.data.attributes.price / 100;
+          return price.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+          });
+        } catch (e) {
+          console.error('[getProductPrices] Error formatting price:', e);
+          return '$0.00';
+        }
     };
 
     return {
@@ -136,7 +152,7 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
     const customData: any = {
         user_id: userId,
         plan_type: type,
-        is_trial: !profile.preferences?.hasUsedTrial,
+        is_trial: (!profile.preferences?.hasUsedTrial).toString(),
     };
     if (type === 'guild' && profile.guildId) {
         customData.guild_id = profile.guildId;
@@ -153,7 +169,6 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
             custom: customData,
         },
         productOptions: {
-            enabledVariants: [parseInt(variantId)],
             redirectUrl,
             receiptButtonText: 'Return to Dashboard',
             receiptThankYouNote: 'Thank you for supporting AlbionKit!',
@@ -162,13 +177,23 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
 
     console.log('Creating checkout with payload:', JSON.stringify(checkoutPayload, null, 2));
 
-    const checkout = await createCheckout(
-        parseInt(storeId), 
-        parseInt(variantId), 
-        checkoutPayload
-    );
-    
-    return { url: checkout.data?.data.attributes.url };
+    try {
+        const checkout = await createCheckout(
+            parseInt(storeId), 
+            parseInt(variantId), 
+            checkoutPayload
+        );
+        
+        if (checkout.error) {
+            console.error('[getCheckoutURL] Lemon Squeezy Error:', checkout.error);
+            return { error: `Payment provider error: ${checkout.error.message || 'Unknown error'}` };
+        }
+
+        return { url: checkout.data?.data.attributes.url };
+    } catch (lsError: any) {
+        console.error('[getCheckoutURL] Exception during createCheckout:', lsError);
+        return { error: 'Failed to connect to payment provider' };
+    }
 
   } catch (error) {
     console.error('Error creating checkout:', error);

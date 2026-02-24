@@ -11,7 +11,8 @@ import {
   LogOut, ExternalLink, Edit2, X, Loader2, Bell, Eye, Layout, Monitor, Lock,
   Gamepad2, MessageCircle, Twitter, Twitch, Youtube,
   MapPin, Coins, Zap, Globe, TrendingUp, ShieldCheck, Key, Mail, Smartphone, FileText,
-  Trophy
+  Trophy,
+  Flame
 } from 'lucide-react';
 import Link from 'next/link';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
@@ -1793,6 +1794,22 @@ function SettingsContent() {
                         </div>
                     </div>
                 </div>
+
+                {authProfile?.currentStreak && authProfile.currentStreak > 0 && (
+                    <div className="mb-6 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Flame className="h-5 w-5 text-orange-500 fill-orange-500" />
+                            <div>
+                                <div className="text-xs font-bold text-orange-500 uppercase">Login Streak</div>
+                                <div className="text-lg font-black text-foreground">{authProfile.currentStreak} Days</div>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-[10px] text-muted-foreground uppercase">Best</div>
+                            <div className="text-sm font-bold text-foreground">{authProfile.longestStreak || authProfile.currentStreak}</div>
+                        </div>
+                    </div>
+                )}
                 {!access.hasAccess ? (
                     <button 
                         onClick={() => openSubscriptionModal('personal')}

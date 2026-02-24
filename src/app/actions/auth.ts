@@ -1,8 +1,65 @@
 'use server';
 
-import { adminAuth } from '@/lib/firebase-admin';
+import { adminAuth, adminDb } from '@/lib/firebase-admin';
 import { sendEmail } from '@/lib/email-service';
 import { getVerificationEmailHtml } from '@/lib/email-templates';
+
+export async function updateLoginStreakAction(userId: string) {
+  if (!userId) return { success: false };
+
+  try {
+    const userRef = adminDb.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) return { success: false };
+
+    const data = userDoc.data();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    
+    let lastLoginAt = data?.lastLoginAt ? new Date(data.lastLoginAt) : null;
+    let currentStreak = data?.currentStreak || 0;
+    let longestStreak = data?.longestStreak || 0;
+
+    if (!lastLoginAt) {
+      // First time login tracking
+      currentStreak = 1;
+      longestStreak = 1;
+    } else {
+      const lastLoginDate = new Date(lastLoginAt.getFullYear(), lastLoginAt.getMonth(), lastLoginAt.getDate()).getTime();
+      const diffDays = (today - lastLoginDate) / (1000 * 60 * 60 * 24);
+
+      if (diffDays === 1) {
+        // Logged in yesterday, increment streak
+        currentStreak += 1;
+        if (currentStreak > longestStreak) {
+          longestStreak = currentStreak;
+        }
+      } else if (diffDays > 1) {
+        // Missed a day or more, reset streak
+        currentStreak = 1;
+      }
+      // If diffDays === 0, already logged in today, do nothing to streak
+    }
+
+    await userRef.update({
+      lastLoginAt: now.toISOString(),
+      currentStreak,
+      longestStreak,
+      updatedAt: now.toISOString()
+    });
+
+    return { 
+      success: true, 
+      currentStreak, 
+      longestStreak,
+      isNewDay: !lastLoginAt || (today > new Date(lastLoginAt.getFullYear(), lastLoginAt.getMonth(), lastLoginAt.getDate()).getTime())
+    };
+  } catch (error) {
+    console.error('[AuthAction] Error updating streak:', error);
+    return { success: false };
+  }
+}
 
 export async function verifyCaptcha(token: string) {
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;

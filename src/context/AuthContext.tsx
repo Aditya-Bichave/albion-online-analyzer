@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { 
   User, 
   onAuthStateChanged, 
@@ -17,7 +17,9 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { getUserProfile, UserProfile } from '../lib/user-profile';
 import { notifyUser } from '../lib/notification-service';
-import { sendVerificationEmail } from '@/app/actions/auth';
+import { sendVerificationEmail, updateLoginStreakAction } from '@/app/actions/auth';
+import { toast } from 'sonner';
+import { Flame } from 'lucide-react';
 
 interface AuthContextType {
   user: User | null;
@@ -46,11 +48,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
 
   const refreshProfile = async () => {
     if (user) {
       const userProfile = await getUserProfile(user.uid);
-      setProfile(userProfile);
+      if (isMounted.current) {
+        setProfile(userProfile);
+      }
     }
   };
 
@@ -138,16 +148,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error getting redirect result", error);
     });
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        await ensureProfileExists(user);
-        const userProfile = await getUserProfile(user.uid);
-        setProfile(userProfile);
-      } else {
-        setProfile(null);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (isMounted.current) {
+        setUser(firebaseUser);
       }
-      setLoading(false);
+
+      if (firebaseUser) {
+        await ensureProfileExists(firebaseUser);
+        const userProfile = await getUserProfile(firebaseUser.uid);
+        
+        if (isMounted.current) {
+          setProfile(userProfile);
+        }
+
+        // Update Login Streak - Only if it's a fresh login or a new day
+        updateLoginStreakAction(firebaseUser.uid).then(result => {
+          if (isMounted.current && result.success && result.isNewDay) {
+            toast(`Daily Login Streak: ${result.currentStreak} Days!`, {
+              icon: <Flame className="h-4 w-4 text-orange-500 fill-orange-500" />,
+              description: result.currentStreak > 1 ? "Keep it up, Traveler!" : "Welcome back to AlbionKit!",
+            });
+            // Re-fetch profile to get updated streak fields
+            getUserProfile(firebaseUser.uid).then(updated => {
+              if (isMounted.current) setProfile(updated);
+            });
+          }
+        });
+      } else {
+        if (isMounted.current) setProfile(null);
+      }
+
+      if (isMounted.current) {
+        setLoading(false);
+      }
     });
     return () => unsubscribe();
   }, []);

@@ -72,6 +72,9 @@ export interface UserProfile {
   signature?: string;
   bio?: string;
   createdAt?: string;
+  lastLoginAt?: string;
+  currentStreak?: number;
+  longestStreak?: number;
   characterName?: string;
   characterId?: string;
   guildName?: string;

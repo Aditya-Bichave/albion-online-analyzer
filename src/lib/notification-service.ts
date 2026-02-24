@@ -49,8 +49,8 @@ export async function notifyUser(userId: string, type: NotificationType, data?: 
           : (data?.message || 'A high-profit market flip opportunity has been detected!');
         break;
       case 'gold_alert':
-        title = 'Gold Price Alert';
-        message = data?.message || 'Gold price has reached your target.';
+        title = 'Gold Price Alert 💰';
+        message = `The Gold price is ${data.change > 0 ? 'rising' : 'dropping'}! Current: ${data.currentPrice.toLocaleString()} Silver.`;
         break;
     }
 

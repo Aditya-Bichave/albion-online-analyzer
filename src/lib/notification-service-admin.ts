@@ -1,7 +1,7 @@
 import { adminDb } from './firebase-admin';
 import { sendEmail } from './email-service';
 import { NotificationType } from './notification-service';
-import { getWelcomeEmailHtml, getPurchaseSuccessEmailHtml, getRankUpEmailHtml, getReminderEmailHtml, getWatchlistAlertEmailHtml } from './email-templates';
+import { getWelcomeEmailHtml, getPurchaseSuccessEmailHtml, getRankUpEmailHtml, getReminderEmailHtml, getWatchlistAlertEmailHtml, getGoldAlertEmailHtml } from './email-templates';
 
 export async function notifyUserAdmin(userId: string, type: NotificationType, data?: any, explicitEmail?: string) {
   try {
@@ -92,6 +92,10 @@ async function sendEmailNotificationAdmin(profile: any, email: string, type: Not
           subject = 'Market Opportunity Detected!';
           html = getReminderEmailHtml(data.message);
         }
+        break;
+      case 'gold_alert':
+        subject = `Gold Alert: Price is ${data.change > 0 ? 'Rising' : 'Dropping'}!`;
+        html = getGoldAlertEmailHtml(name, data.region, data.currentPrice, data.change);
         break;
       default:
       return;

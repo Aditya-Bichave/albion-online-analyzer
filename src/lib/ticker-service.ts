@@ -1,6 +1,9 @@
 import { getGoldHistory } from './gold-service';
 import { getItems, getItemNameService } from './item-service';
-import { getMarketVolume, GAMEINFO_API } from './market-service';
+import { getMarketVolume, GAMEINFO_API, getMarketPrices } from './market-service';
+import { POPULAR_ITEMS } from '@/app/tools/market-flipper/constants';
+import { notifyUser } from './notification-service';
+import { adminDb } from './firebase-admin';
 
 export interface TickerData {
   goldPrice: number;
@@ -13,6 +16,11 @@ export interface TickerData {
   activeBattles: number;
   metaItem: string;
   mostTradedItem: string;
+  hotFlips?: {
+    name: string;
+    profit: number;
+    margin: number;
+  }[];
 }
 
 export interface GlobalStats {
@@ -237,6 +245,60 @@ export async function getTickerData(): Promise<TickerData> {
     if (num <= 0) return '---';
     return num.toFixed(0);
   };
+
+  // 4. Gold Alert Logic
+  if (Math.abs(goldTrend) > 2) { // 2% threshold for alert
+    try {
+      const supporters = await adminDb.collection('users')
+        .where('preferences.goldAlerts', '==', true)
+        .get();
+      
+      supporters.docs.forEach(doc => {
+        const data = doc.data();
+        const isSupporter = data.role === 'adept' || data.role === 'guild_master' || data.role === 'admin';
+        if (isSupporter) {
+          notifyUser(doc.id, 'gold_alert', {
+            region: 'west',
+            currentPrice: goldPrice,
+            change: goldTrend
+          });
+        }
+      });
+    } catch (e) {
+      console.error('Failed to trigger gold alerts', e);
+    }
+  }
+
+  // 5. Fetch Hot Flips (Top 5 Profitable Items)
+  let hotFlips: TickerData['hotFlips'] = [];
+  try {
+    const marketData = await getMarketPrices(POPULAR_ITEMS.slice(0, 20), 'west');
+    if (Array.isArray(marketData)) {
+      const flipsMap = new Map<string, { buy: number, sell: number }>();
+      marketData.forEach(d => {
+        if (!flipsMap.has(d.item_id)) flipsMap.set(d.item_id, { buy: 0, sell: 0 });
+        const entry = flipsMap.get(d.item_id)!;
+        if (d.city === 'Black Market') entry.sell = d.buy_price_max;
+        else if (entry.buy === 0 || (d.sell_price_min > 0 && d.sell_price_min < entry.buy)) entry.buy = d.sell_price_min;
+      });
+
+      hotFlips = await Promise.all(
+        [...flipsMap.entries()]
+          .filter(([_, v]) => v.buy > 0 && v.sell > v.buy)
+          .map(async ([id, v]) => {
+            const profit = v.sell - v.buy - (v.sell * 0.105); // Approx tax + fee
+            return {
+              name: await resolveItemName(id),
+              profit: Math.round(profit),
+              margin: Math.round((profit / v.buy) * 100)
+            };
+          })
+      );
+      hotFlips = hotFlips.filter(f => f.profit > 1000).sort((a, b) => b.profit - a.profit).slice(0, 5);
+    }
+  } catch (e) {
+    console.error('Failed to fetch hot flips for ticker', e);
+  }
   
   return {
     goldPrice,
@@ -248,6 +310,7 @@ export async function getTickerData(): Promise<TickerData> {
     topGuild,
     activeBattles,
     metaItem,
-    mostTradedItem
+    mostTradedItem,
+    hotFlips
   };
 }

@@ -5,7 +5,9 @@ import {
   Swords, 
   Users, 
   Sword, 
-  TrendingUp 
+  TrendingUp,
+  Flame,
+  ArrowUpRight
 } from "lucide-react";
 import { TickerData } from "@/lib/ticker-service";
 
@@ -30,8 +32,6 @@ export function MarketTicker({ data }: MarketTickerProps) {
 
   const renderTrend = (trend: number) => {
     const isPositive = trend >= 0;
-    // For prices, usually up is "inflation" but for gold holders it's good.
-    // Let's stick to Green = Up, Red = Down for now.
     const colorClass = isPositive ? "text-success" : "text-destructive";
     const rotationClass = isPositive ? "" : "rotate-180";
     
@@ -102,6 +102,18 @@ export function MarketTicker({ data }: MarketTickerProps) {
               <TrendingUp className="h-4 w-4 text-success" />
               <span>Most Traded: <span className="text-foreground font-bold">{data.mostTradedItem}</span></span>
             </div>
+
+            {/* Hot Flips Section */}
+            {data.hotFlips && data.hotFlips.length > 0 && data.hotFlips.map((flip, idx) => (
+              <div key={`flip-${idx}`} className="flex items-center gap-3 bg-primary/5 px-3 py-1 rounded-xl border border-primary/10">
+                <Flame className="h-3.5 w-3.5 text-orange-500 animate-pulse" />
+                <span className="text-xs font-bold text-foreground">{flip.name}</span>
+                <span className="flex items-center gap-1 text-[10px] font-black text-success">
+                  <ArrowUpRight className="h-3 w-3" />
+                  {formatLargeNumber(flip.profit)} ({flip.margin}%)
+                </span>
+              </div>
+            ))}
           </div>
         ))}
       </div>

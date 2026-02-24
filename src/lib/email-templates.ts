@@ -205,10 +205,10 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[]) {
         <div>
           <div style="font-weight: bold; color: #f8fafc;">${item.name}</div>
           <div style="font-size: 13px; color: #f59e0b;">
-            Profit: <strong>${Math.round(item.profit).toLocaleString()} Silver</strong> (${item.margin}% ROI)
+            Profit: <strong>${Math.round(item.profit || 0).toLocaleString()} Silver</strong> (${item.margin || 0}% ROI)
           </div>
           <div style="font-size: 12px; color: #94a3b8;">
-            Buy: ${item.buyPrice.toLocaleString()} (${item.buyCity}) → Sell: ${item.sellPrice.toLocaleString()} (BM)
+            Buy: ${(item.buyPrice || 0).toLocaleString()} (${item.buyCity || 'Anywhere'}) → Sell: ${(item.sellPrice || 0).toLocaleString()} (BM)
           </div>
         </div>
       </div>
@@ -232,10 +232,46 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[]) {
       You're receiving this because you enabled Market Alerts in your settings.
     </p>
   `;
-  
+
   return getBaseHtml({
     title: 'Market Watchlist Alert - AlbionKit',
     previewText: `Watchlist Alert: ${items[0].name} and more are profitable!`,
+    content
+  });
+}
+
+export function getGoldAlertEmailHtml(name: string, region: string, currentPrice: number, change: number) {
+  const isUp = change > 0;
+  const color = isUp ? '#ef4444' : '#22c55e'; // Price up is "bad" for buyers, down is "good"
+  const trendText = isUp ? 'Rising' : 'Dropping';
+  
+  const content = `
+    <h1>Gold Market Alert 💰</h1>
+    <p>Hi ${name},</p>
+    <p>We've detected a significant movement in the **Gold Market (${region.toUpperCase()})**.</p>
+    
+    <div style="background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #334155; margin: 24px 0; text-align: center;">
+      <div style="font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Current Gold Price</div>
+      <div style="font-size: 36px; font-weight: 900; color: #f8fafc; font-family: monospace;">${currentPrice.toLocaleString()} <span style="font-size: 16px; color: #94a3b8;">Silver</span></div>
+      <div style="font-size: 18px; font-weight: bold; color: ${color}; margin-top: 8px;">
+        ${isUp ? '📈' : '📉'} ${trendText} by ${Math.abs(change).toFixed(1)}%
+      </div>
+    </div>
+    
+    <p>This volatility might be a good time to adjust your silver holdings or trade for Gold.</p>
+    
+    <div class="btn-container">
+      <a href="https://albionkit.com" class="btn">View Live Market Ticker</a>
+    </div>
+    
+    <p class="small-text" style="text-align: center;">
+      You're receiving this because you enabled Gold Alerts in your settings.
+    </p>
+  `;
+  
+  return getBaseHtml({
+    title: `Gold Alert: Price is ${trendText}!`,
+    previewText: `Gold market volatility detected: ${currentPrice.toLocaleString()} Silver (${change.toFixed(1)}%)`,
     content
   });
 }

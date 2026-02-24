@@ -409,6 +409,12 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                                         <Eye className="h-3.5 w-3.5 text-blue-400" />
                                         <span><strong className="text-foreground">{totalViews.toLocaleString()}</strong> Hits</span>
                                     </div>
+                                    {profile.currentStreak && profile.currentStreak > 0 && (
+                                        <div className="flex items-center gap-1.5" title={`Longest streak: ${profile.longestStreak || profile.currentStreak} days`}>
+                                            <Flame className="h-3.5 w-3.5 text-orange-500 fill-orange-500" />
+                                            <span><strong className="text-foreground">{profile.currentStreak}</strong> Day Streak</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Social Links */}
