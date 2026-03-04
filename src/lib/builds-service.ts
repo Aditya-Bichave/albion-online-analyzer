@@ -221,15 +221,6 @@ export const getBuild = async (id: string): Promise<Build | null> => {
   }
 };
 
-export const incrementBuildView = async (id: string) => {
-  try {
-    const docRef = doc(db, COLLECTION, id);
-    await updateDoc(docRef, { views: increment(1) });
-  } catch (error) {
-    console.error('Error incrementing view:', error);
-  }
-};
-
 export const createBuild = async (build: Omit<Build, 'id' | 'createdAt' | 'updatedAt' | 'rating' | 'ratingCount' | 'views' | 'likes'>) => {
   try {
     const docRef = await addDoc(collection(db, COLLECTION), {

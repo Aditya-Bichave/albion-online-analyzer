@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { PageShell } from '@/components/PageShell';
 import { InfoStrip } from '@/components/InfoStrip';
 import { ItemIcon } from '@/components/ItemIcon';
-import { getBuild, Build, toggleBuildLike, getBuildLikeStatus, rateBuild, getBuildUserRating, incrementBuildView, getBuilds } from '@/lib/builds-service';
+import { getBuild, Build, toggleBuildLike, getBuildLikeStatus, rateBuild, getBuildUserRating, getBuilds } from '@/lib/builds-service';
 import { getUserProfile, UserProfile } from '@/lib/user-profile';
 import { getMarketPrices, LOCATIONS } from '@/lib/market-service';
 import { Loader2, User, Clock, Eye, Star, Share2, ThumbsUp, Calendar, Shield, Zap, Wind, BookOpen, Check, X as XIcon, ArrowLeft, ArrowRight, Heart, Link as LinkIcon, Copy, Sparkles, Coins, MessageSquare, Plus, Send } from 'lucide-react';
@@ -18,6 +18,7 @@ import { Tooltip } from '@/components/ui/Tooltip';
 import { formatDistanceToNow } from 'date-fns';
 import { Comment } from '@/lib/community-service';
 import { addCommentAction, createThreadAction, getCommentsAction, getThreadByBuildIdAction } from '@/app/actions/community';
+import { incrementBuildViewAction } from '@/app/actions/builds';
 import { useLoginModal } from '@/context/LoginModalContext';
 
 const Markdown = dynamic(
@@ -200,7 +201,7 @@ export function BuildView({ id, category }: BuildViewProps) {
                     const viewedBuilds = JSON.parse(localStorage.getItem(viewedBuildsKey) || '[]');
 
                     if (!viewedBuilds.includes(data.id)) {
-                        incrementBuildView(data.id);
+                        incrementBuildViewAction(data.id);
                         localStorage.setItem(viewedBuildsKey, JSON.stringify([...viewedBuilds, data.id]));
                         // Optimistically update local view count
                         setBuild(prev => prev ? ({ ...prev, views: prev.views + 1 }) : null);
