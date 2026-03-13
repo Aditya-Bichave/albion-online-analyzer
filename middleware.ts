@@ -3,24 +3,13 @@ import { NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
-
-  // Redirect www to non-www and HTTP to HTTPS
-  const isWww = host.startsWith('www.albionkit.com');
-  const isHttp = request.nextUrl.protocol === 'http:' && !host.includes('localhost');
-
-  if (isWww || isHttp) {
-    const url = request.nextUrl.clone();
-    url.protocol = 'https:';
-    url.hostname = 'albionkit.com';
-    return NextResponse.redirect(url, 308);
-  }
-
-  // Skip locale detection for static files and API routes
   const pathname = request.nextUrl.pathname;
+
+  // Skip middleware for static files, API routes, and SEO files
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.includes('.') || // Static files
+    pathname.includes('.') ||
     pathname === '/favicon.ico' ||
     pathname === '/manifest.webmanifest' ||
     pathname === '/sw.js' ||
@@ -30,11 +19,25 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // ONLY redirect www to non-www (no locale detection for now)
+  if (host.startsWith('www.')) {
+    const url = request.nextUrl.clone();
+    url.hostname = 'albionkit.com';
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, 308);
+  }
+
+  // Force HTTPS (but only if not already redirecting for www)
+  if (request.nextUrl.protocol === 'http:' && !host.includes('localhost')) {
+    const url = request.nextUrl.clone();
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, 308);
+  }
+
   // Locale Detection via Cookie (only set on first visit)
   const hasLocaleCookie = request.cookies.has('NEXT_LOCALE');
   
   if (!hasLocaleCookie) {
-    // Detect locale from country
     const country = (request as any).geo?.country || request.headers.get('x-vercel-ip-country');
     let locale = 'en';
 
@@ -52,30 +55,20 @@ export function middleware(request: NextRequest) {
       }
     }
 
-    // Set cookie and continue (no redirect)
     const response = NextResponse.next();
     response.cookies.set('NEXT_LOCALE', locale, {
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 60 * 60 * 24 * 365,
       path: '/',
       sameSite: 'lax'
     });
     return response;
   }
 
-  // Cookie exists - just continue
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - manifest.webmanifest (PWA manifest)
-     * - sw.js (service worker)
-     */
     '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js).*)',
   ],
 };
