@@ -12,6 +12,11 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   workboxOptions: {
     disableDevLogs: true,
+    // Skip caching for www/non-www redirect issues
+    skipWaiting: true,
+    clientsClaim: true,
+    // Don't cache redirect responses
+    runtimeCaching: [],
   },
 });
 
