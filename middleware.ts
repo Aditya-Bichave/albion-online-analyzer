@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   try {
+    const host = request.headers.get('host') || '';
     const pathname = request.nextUrl.pathname;
 
     // Skip middleware for static files, API routes, and SEO files
@@ -17,6 +18,21 @@ export function middleware(request: NextRequest) {
       pathname === '/robots.txt'
     ) {
       return NextResponse.next();
+    }
+
+    // Redirect www to non-www FIRST (before any other logic)
+    if (host.startsWith('www.')) {
+      const url = request.nextUrl.clone();
+      url.hostname = 'albionkit.com';
+      url.protocol = 'https:';
+      return NextResponse.redirect(url, 308);
+    }
+
+    // Force HTTPS
+    if (request.nextUrl.protocol === 'http:' && !host.includes('localhost')) {
+      const url = request.nextUrl.clone();
+      url.protocol = 'https:';
+      return NextResponse.redirect(url, 308);
     }
 
     // Locale Detection via Cookie (only set on first visit)
