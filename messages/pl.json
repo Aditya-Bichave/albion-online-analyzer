@@ -52,7 +52,8 @@
         "privacy": "Polityka Prywatności",
         "terms": "Regulamin",
         "unsubscribe": "Anuluj subskrypcję",
-        "companion": "Twój towarzysz w Albion Online - Buildy, Dane Rynkowe i Wywiad PvP."
+        "companion": "Twój towarzysz w Albion Online - Buildy, Dane Rynkowe i Wywiad PvP.",
+        "travelerName": "Podróżnik"
       },
       "verification": {
         "subject": "Zweryfikuj swój email dla AlbionKit",

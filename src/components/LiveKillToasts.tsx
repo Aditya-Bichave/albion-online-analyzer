@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, use } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Skull, Swords, X } from 'lucide-react';
 import type { Event } from '@/lib/kill-feed-service';
 import { useTranslations } from 'next-intl';
@@ -23,26 +24,55 @@ function formatTimeAgo(timestamp: string, t: any) {
 }
 
 export function LiveKillToasts() {
-  const t = useTranslations('LiveKillToasts');
-  const [queue, setQueue] = useState<Event[]>([]);
-  // ... rest of component
-  const [current, setCurrent] = useState<Event | null>(null);
-  const [muted, setMuted] = useState(false);
-  const seenIdsRef = useRef<Set<number>>(new Set());
-  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? window.localStorage.getItem('ak_home_kill_toasts_muted_v2') : null;
+    setIsMounted(true);
+  }, []);
+
+  // Don't render until mounted to avoid SSR issues with translations
+  if (!isMounted) return null;
+
+  return <LiveKillToastsContent />;
+}
+
+function LiveKillToastsContent() {
+  const t = useTranslations('LiveKillToasts');
+  const pathname = usePathname();
+  const [queue, setQueue] = useState<Event[]>([]);
+  const [current, setCurrent] = useState<Event | null>(null);
+  const [muted, setMuted] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [isComponentReady, setIsComponentReady] = useState(false);
+  const seenIdsRef = useRef<Set<number>>(new Set());
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(false);
+
+  // Hide on kill-feed page since we're already viewing the feed
+  const shouldHide = pathname === '/tools/kill-feed';
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    setIsComponentReady(true);
+
+    const stored = typeof window !== 'undefined' ? window.localStorage.getItem('ak_kill_toasts_muted_v3') : null;
     if (stored === 'true') {
       setMuted(true);
     }
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
+    if (!isMountedRef.current) return;
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem('ak_home_kill_toasts_muted_v2', muted ? 'true' : 'false');
+    window.localStorage.setItem('ak_kill_toasts_muted_v3', muted ? 'true' : 'false');
     if (muted && current) {
       setCurrent(null);
+      setIsFadingOut(false);
     }
   }, [muted, current]);
 
@@ -55,56 +85,95 @@ export function LiveKillToasts() {
           '/api/proxy/gameinfo/events?limit=10&offset=0',
           { cache: 'no-store' }
         );
+        console.log('Fetch response status:', response.status);
         if (!response.ok) return;
         const events: Event[] = await response.json();
+        console.log('Fetched events:', events?.length);
         if (!events || events.length === 0) return;
         const fresh = events.filter(e => !seenIdsRef.current.has(e.EventId));
+        console.log('Fresh events:', fresh.length);
         if (fresh.length === 0) return;
         fresh.forEach(e => seenIdsRef.current.add(e.EventId));
-        setQueue(prev => [...prev, ...fresh.slice(0, 3)]);
-      } catch {
+        if (isMountedRef.current) {
+          setQueue(prev => {
+            const newQueue = [...prev, ...fresh.slice(0, 5)];
+            console.log('New queue length:', newQueue.length);
+            return newQueue;
+          });
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
       }
     };
 
     fetchEvents();
-    interval = setInterval(fetchEvents, 30000);
+    interval = setInterval(fetchEvents, 5000); // Fetch every 5 seconds
 
     return () => {
       if (interval) clearInterval(interval);
     };
   }, []);
 
+  // Show kills in a loop: 4 seconds display, then fade out, then next
   useEffect(() => {
+    console.log('Display effect - queue:', queue.length, 'current:', current, 'muted:', muted);
+    if (!isMountedRef.current || !isComponentReady) return;
     if (muted) return;
-    if (current || queue.length === 0) return;
+    if (queue.length === 0) return;
+    if (current) return; // Already showing a kill
 
+    // Show the first kill in queue
     const next = queue[0];
+    console.log('Showing kill:', next.Killer.Name, '->', next.Victim.Name);
     setCurrent(next);
     setQueue(prev => prev.slice(1));
+  }, [queue, current, muted, isComponentReady]);
 
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
-    hideTimeoutRef.current = setTimeout(() => {
-      setCurrent(null);
-    }, 8000);
+  // Handle fade out timing
+  useEffect(() => {
+    if (!current || muted || !isComponentReady) return;
+
+    // After 4 seconds, start fade out
+    fadeTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        setIsFadingOut(true);
+      }
+    }, 4000);
 
     return () => {
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
+      if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
     };
-  }, [queue, current, muted]);
+  }, [current, muted, isComponentReady]);
 
-  if (!current || muted) return null;
+  // Handle clearing after fade out
+  useEffect(() => {
+    if (!isFadingOut) return;
 
+    hideTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        setCurrent(null);
+        setIsFadingOut(false);
+      }
+    }, 300);
+
+    return () => {
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    };
+  }, [isFadingOut]);
+
+  if (!current || muted || !isComponentReady || shouldHide) {
+    console.log('Not rendering - current:', !!current, 'muted:', muted, 'isComponentReady:', isComponentReady, 'shouldHide:', shouldHide);
+    return null;
+  }
+
+  console.log('Rendering kill toast:', current.Killer.Name, '->', current.Victim.Name);
   const killer = current.Killer;
   const victim = current.Victim;
 
   return (
-    <div className="fixed bottom-20 left-3 right-3 md:bottom-28 md:left-4 md:right-auto z-40">
+    <div className="hidden md:block fixed bottom-5 left-5 right-auto md:left-4 md:right-auto z-40 transition-all duration-300 ${isFadingOut ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}">
       <Link href="/tools/kill-feed" className="block">
-        <div className="relative max-w-sm md:max-w-sm mx-auto md:mx-0 bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:border-red-500/60 transition-all">
+        <div className="relative max-w-md md:w-70 md:max-w-110 mx-auto md:mx-0 bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:border-red-500/60 transition-all shadow-lg">
           <button
             type="button"
             onClick={e => {

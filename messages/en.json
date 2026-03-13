@@ -54,7 +54,8 @@
         "privacy": "Privacy Policy",
         "terms": "Terms of Service",
         "unsubscribe": "Unsubscribe",
-        "companion": "Your companion for Albion Online - Builds, Market Data, and PvP Intel."
+        "companion": "Your companion for Albion Online - Builds, Market Data, and PvP Intel.",
+        "travelerName": "Traveler"
       },
       "verification": {
         "subject": "Verify your email for AlbionKit",

@@ -108,7 +108,35 @@ export async function sendVerificationEmail(email: string) {
 
     // Send the email using Resend
     console.log('[AuthAction] Sending email via Resend...');
-    const t = await getTranslations('Emails');
+    
+    // Load messages directly for email templates
+    let messages: any;
+    try {
+      messages = (await import(`@/../messages/en.json`)).default;
+      console.log('[AuthAction] Loaded messages for verification email');
+    } catch (error) {
+      console.error('Failed to load messages', error);
+      messages = {};
+    }
+    
+    // Create translation function for Common.Emails namespace
+    const t = (key: string) => {
+      const fullKey = `Common.Emails.${key}`;
+      const keys = fullKey.split('.');
+      let result: any = messages;
+      
+      for (const k of keys) {
+        if (result && typeof result === 'object' && k in result) {
+          result = result[k];
+        } else {
+          console.warn(`[AuthAction] Translation key not found: ${fullKey}`);
+          return fullKey;
+        }
+      }
+      
+      return typeof result === 'string' ? result : fullKey;
+    };
+    
     const result = await sendEmail({
       to: email,
       subject: t('verification.subject'),

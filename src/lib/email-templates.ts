@@ -3,17 +3,15 @@ const BASE_STYLES = `
   .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
   .card { background-color: #1e293b; border-radius: 16px; padding: 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #334155; }
   .header { text-align: center; margin-bottom: 32px; }
-  .logo { font-size: 28px; font-weight: 800; color: #f59e0b; text-decoration: none; letter-spacing: -1px; display: inline-block; }
-  .logo span { color: #fff; }
+  .banner-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
   h1 { color: #f8fafc; font-size: 24px; font-weight: 700; margin: 0 0 24px; text-align: center; letter-spacing: -0.5px; }
   p { margin: 0 0 24px; line-height: 1.6; color: #cbd5e1; font-size: 16px; }
   .btn-container { text-align: center; margin: 32px 0; }
   .btn { display: inline-block; background-color: #f59e0b; color: #0f172a; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px; transition: all 0.2s; font-size: 16px; }
-  .btn:hover { background-color: #d97706; transform: translateY(-1px); }
+  .btn:hover { background-color: #d97706; }
   .footer { margin-top: 32px; text-align: center; color: #64748b; font-size: 12px; }
   .footer p { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-  .footer a { color: #94a3b8; text-decoration: none; transition: color 0.2s; }
-  .footer a:hover { color: #cbd5e1; text-decoration: underline; }
+  .footer a { color: #94a3b8; text-decoration: none; }
   .divider { height: 1px; background-color: #334155; margin: 32px 0; }
   ul { padding-left: 20px; margin-bottom: 24px; color: #cbd5e1; }
   li { margin-bottom: 12px; line-height: 1.5; }
@@ -21,7 +19,7 @@ const BASE_STYLES = `
   .small-text { font-size: 13px; color: #94a3b8; }
 `;
 
-// Replace this with your actual banner image URL
+// Use Albion Online logo or item image - emails need reliable image hosting
 const GLOBAL_BANNER_URL = 'https://albionkit.com/albionkit-banner.png';
 
 interface BaseTemplateProps {
@@ -35,44 +33,51 @@ interface BaseTemplateProps {
 function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_URL, t }: BaseTemplateProps) {
   return `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
+  <meta name="x-apple-disable-message-reformatting">
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <title>${title}</title>
   <style>
     ${BASE_STYLES}
     .banner-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
+    @media (max-width: 600px) {
+      .container { padding: 20px 15px !important; }
+      .card { padding: 25px !important; }
+      h1 { font-size: 20px !important; }
+      .btn { padding: 12px 24px !important; font-size: 14px !important; }
+    }
   </style>
 </head>
-<body>
+<body style="margin: 0; padding: 0; background-color: #0f172a;">
   <div style="display:none;font-size:1px;color:#333333;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
     ${previewText || title}
   </div>
-  <div class="container">
-    <div class="header">
-      ${bannerUrl 
-        ? `<a href="https://albionkit.com"><img src="${bannerUrl}" alt="AlbionKit" class="banner-img"></a>`
-        : `<a href="https://albionkit.com" class="logo">Albion<span>Kit</span></a>`
-      }
+  <div class="container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div class="header" style="text-align: center; margin-bottom: 32px;">
+      <a href="https://albionkit.com" style="text-decoration: none;">
+        <img src="${bannerUrl}" alt="AlbionKit" class="banner-img" style="height: auto; border-radius: 8px; display: block; margin: 0 auto;" >
+      </a>
     </div>
-    <div class="card">
+    <div class="card" style="background-color: #1e293b; border-radius: 16px; padding: 40px; border: 1px solid #334155;">
       ${content}
-      
-      <div class="divider"></div>
-      
+
+      <div class="divider" style="height: 1px; background-color: #334155; margin: 32px 0;"></div>
+
       <p style="font-size: 14px; color: #94a3b8; margin-bottom: 0; text-align: center;">
         ${t ? t('common.companion') : 'Your companion for Albion Online - Builds, Market Data, and PvP Intel.'}
       </p>
     </div>
-    <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} AlbionKit. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
-      <p>
-        <a href="https://albionkit.com/privacy">${t ? t('common.privacy') : 'Privacy Policy'}</a> • 
-        <a href="https://albionkit.com/terms">${t ? t('common.terms') : 'Terms of Service'}</a> • 
-        <a href="https://albionkit.com/settings">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
+    <div class="footer" style="margin-top: 32px; text-align: center; color: #64748b; font-size: 12px;">
+      <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">&copy; ${new Date().getFullYear()} AlbionKit. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
+      <p style="font-size: 12px; color: #64748b; margin: 0;">
+        <a href="https://albionkit.com/privacy" style="color: #94a3b8; text-decoration: none;">${t ? t('common.privacy') : 'Privacy Policy'}</a> &bull;
+        <a href="https://albionkit.com/terms" style="color: #94a3b8; text-decoration: none;">${t ? t('common.terms') : 'Terms of Service'}</a> &bull;
+        <a href="https://albionkit.com/settings" style="color: #94a3b8; text-decoration: none;">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
       </p>
     </div>
   </div>
@@ -110,22 +115,24 @@ export function getVerificationEmailHtml(link: string, t?: any) {
 }
 
 export function getWelcomeEmailHtml(name: string, t?: any) {
+  // Use translated "Traveler" if name is not provided or is the default
+  const displayName = name && name !== 'Traveler' ? name : (t ? t('common.travelerName') : 'Traveler');
   const content = `
-    <h1>${t ? t('welcome.title', { name }) : `Welcome, ${name}!`}</h1>
+    <h1>${t ? t('welcome.title', { name: displayName }) : `Welcome, ${displayName}!`}</h1>
     <p>${t ? t('welcome.body1') : `Thanks for joining <strong>AlbionKit</strong>. You've just taken the first step towards mastering Albion Online.`}</p>
     <p>${t ? t('welcome.body2') : `Here are a few powerful tools you can start using right now:`}</p>
-    
+
     <ul>
       <li>${t ? t('welcome.builds') : `<strong>Builds Database:</strong> Discover and share the meta.`}</li>
       <li>${t ? t('welcome.market') : `<strong>Market Flipper:</strong> Find profitable trades across cities.`}</li>
       <li>${t ? t('welcome.pvp') : `<strong>PvP Intel:</strong> Analyze battles and kill feeds in real-time.`}</li>
     </ul>
-    
+
     <div class="btn-container">
       <a href="https://albionkit.com" class="btn">${t ? t('welcome.button') : 'Explore AlbionKit'}</a>
     </div>
   `;
-  
+
   return getBaseHtml({
     title: t ? t('welcome.subject') : 'Welcome to AlbionKit',
     previewText: t ? t('welcome.preview') : 'Welcome to AlbionKit! Start exploring our tools today.',
@@ -187,13 +194,12 @@ export function getReminderEmailHtml(message: string, t?: any) {
   const content = `
     <h1>${t ? t('reminder.title') : 'Reminder'}</h1>
     <p>${message}</p>
-    <p>${t ? t('reminder.body') : `Open AlbionKit to see the full list of opportunities.`}</p>
-    
+
     <div class="btn-container">
       <a href="https://albionkit.com/tools/market-flipper" class="btn">${t ? t('reminder.button') : 'View Market Flipper'}</a>
     </div>
   `;
-  
+
   return getBaseHtml({
     title: t ? t('reminder.subject') : 'Market Opportunity - AlbionKit',
     previewText: message,
@@ -203,10 +209,17 @@ export function getReminderEmailHtml(message: string, t?: any) {
 }
 
 export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) {
+  // Use translated "Traveler" if name is the default
+  const displayName = name && name !== 'Traveler' ? name : (t ? t('common.travelerName') : 'Traveler');
   const itemsHtml = items.map(item => `
     <li style="margin-bottom: 16px; list-style: none; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
       <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="https://render.albiononline.com/v1/item/${item.itemId}?quality=1" width="48" height="48" style="border-radius: 4px; background: #1e293b;" alt="${item.name}">
+        <img src="https://render.albiononline.com/v1/item/${item.itemId}?quality=1" 
+             width="48" 
+             height="48" 
+             style="border-radius: 4px; background: #1e293b;" 
+             alt="${item.name}"
+             onerror="this.src='https://render.albiononline.com/v1/item/T8_BAG_ENIGMA_FULL?quality=1';this.onerror=null;">
         <div>
           <div style="font-weight: bold; color: #f8fafc;">${item.name}</div>
           <div style="font-size: 13px; color: #f59e0b;">
@@ -222,17 +235,17 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) 
 
   const content = `
     <h1>${t ? t('watchlist.subject') : 'Watchlist Price Alert 🔔'}</h1>
-    <p>${t ? t('watchlist.greeting', { name }) : `Hi ${name},`}</p>
+    <p>${t ? t('watchlist.greeting', { name: displayName }) : `Hi ${displayName},`}</p>
     <p>${t ? t('watchlist.body') : `One or more items on your <strong>Market Watchlist</strong> are currently showing profitable flip opportunities on the Black Market!`}</p>
-    
+
     <ul style="padding: 0;">
       ${itemsHtml}
     </ul>
-    
+
     <div class="btn-container">
       <a href="https://albionkit.com/tools/market-flipper?watchlist=true" class="btn">${t ? t('watchlist.button') : 'View My Watchlist'}</a>
     </div>
-    
+
     <p class="small-text" style="text-align: center;">
       ${t ? t('watchlist.footer') : `You're receiving this because you enabled Market Alerts in your settings.`}
     </p>
@@ -247,14 +260,16 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) 
 }
 
 export function getGoldAlertEmailHtml(name: string, region: string, currentPrice: number, change: number, t?: any) {
+  // Use translated "Traveler" if name is the default
+  const displayName = name && name !== 'Traveler' ? name : (t ? t('common.travelerName') : 'Traveler');
   const isUp = change > 0;
   const color = isUp ? '#ef4444' : '#22c55e'; // Price up is "bad" for buyers, down is "good"
   const trendText = isUp ? (t ? t('gold.rising') : 'Rising') : (t ? t('gold.dropping') : 'Dropping');
   const icon = isUp ? '📈' : '📉';
-  
+
   const content = `
     <h1>${t ? t('gold.subject') : 'Gold Market Alert 💰'}</h1>
-    <p>${t ? t('gold.greeting', { name }) : `Hi ${name},`}</p>
+    <p>${t ? t('gold.greeting', { name: displayName }) : `Hi ${displayName},`}</p>
     <p>${t ? t('gold.body', { region: region.toUpperCase() }) : `We've detected a significant movement in the **Gold Market (${region.toUpperCase()})**.`}</p>
     
     <div style="background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #334155; margin: 24px 0; text-align: center;">

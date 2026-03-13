@@ -52,7 +52,8 @@
         "privacy": "Gizlilik Politikası",
         "terms": "Hizmet Şartları",
         "unsubscribe": "Aboneliği İptal Et",
-        "companion": "Albion Online için yol arkadaşınız - Buildler, Piyasa Verileri ve PvP Bilgisi."
+        "companion": "Albion Online için yol arkadaşınız - Buildler, Piyasa Verileri ve PvP Bilgisi.",
+        "travelerName": "Gezgin"
       },
       "verification": {
         "subject": "AlbionKit için e-postanızı doğrulayın",

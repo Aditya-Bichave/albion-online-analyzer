@@ -52,7 +52,8 @@
         "privacy": "Datenschutzerklärung",
         "terms": "Nutzungsbedingungen",
         "unsubscribe": "Abbestellen",
-        "companion": "Dein Begleiter für Albion Online - Builds, Marktdaten und PvP-Informationen."
+        "companion": "Dein Begleiter für Albion Online - Builds, Marktdaten und PvP-Informationen.",
+        "travelerName": "Reisender"
       },
       "verification": {
         "subject": "Verifiziere deine E-Mail für AlbionKit",

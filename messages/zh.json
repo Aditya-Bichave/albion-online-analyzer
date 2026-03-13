@@ -51,6 +51,91 @@
         "keepGoing": "继续保持，旅行者！",
         "welcome": "欢迎回到 AlbionKit！"
       }
+    },
+    "Emails": {
+      "common": {
+        "rightsReserved": "保留所有权利。",
+        "privacy": "隐私政策",
+        "terms": "服务条款",
+        "unsubscribe": "取消订阅",
+        "companion": "你的 Albion Online 伴侣 - 配置、市场数据和 PvP 情报。",
+        "travelerName": "旅行者"
+      },
+      "verification": {
+        "subject": "验证你的 AlbionKit 邮箱",
+        "title": "验证你的邮箱地址",
+        "preview": "请验证你的邮箱地址以完成注册。",
+        "welcome": "欢迎来到 <strong>AlbionKit</strong>！我们很高兴你能加入。",
+        "body": "请确认你的邮箱地址以解锁全部功能，包括创建配置、追踪市场数据等。",
+        "button": "验证邮箱地址",
+        "altLink": "或复制此链接并在浏览器中打开：",
+        "ignore": "如果你没有在 AlbionKit 创建账户，可以安全地忽略此邮件。"
+      },
+      "welcome": {
+        "subject": "欢迎来到 AlbionKit",
+        "title": "欢迎，{name}！",
+        "preview": "欢迎来到 AlbionKit！立即开始探索我们的工具。",
+        "body1": "感谢加入 <strong>AlbionKit</strong>。你刚刚迈出了掌握 Albion Online 的第一步。",
+        "body2": "以下是你可以立即使用的一些强大工具：",
+        "builds": "<strong>配置数据库：</strong>发现并分享主流配置。",
+        "market": "<strong>市场搬砖：</strong>在城市间寻找有利可图的交易。",
+        "pvp": "<strong>PvP 情报：</strong>实时分析战斗和击杀信息。",
+        "button": "探索 AlbionKit"
+      },
+      "purchase": {
+        "subject": "订阅已激活 🚀",
+        "title": "订阅已激活 🚀",
+        "preview": "你的 AlbionKit 高级订阅现已激活！",
+        "greeting": "你好 {name}，",
+        "body1": "感谢你的支持！你的 <strong>AlbionKit 高级版</strong> 订阅现已激活。",
+        "body2": "你现在拥有无限访问权限：",
+        "feature1": "✨ 整个平台<strong>无广告体验</strong>",
+        "feature2": "📈 PvP 和市场数据的<strong>高级分析</strong>",
+        "feature3": "📜 击杀信息和市场趋势的<strong>无限历史记录</strong>",
+        "feature4": "🏆 个人资料上的<strong>支持者徽章</strong>",
+        "button": "管理订阅",
+        "footer": "我们感谢你的支持，让这个项目得以生存和发展！"
+      },
+      "rankUp": {
+        "subject": "你已达到 {rank} 等级！",
+        "title": "升级了！🎉",
+        "preview": "恭喜你达到 {rank} 等级！",
+        "congrats": "恭喜！",
+        "body": "你已在 AlbionKit 上达到 <strong>{rank}</strong> 等级。",
+        "footer": "继续创建配置并为社区做贡献，以达到下一个等级！",
+        "button": "查看个人资料"
+      },
+      "reminder": {
+        "subject": "市场机会 - AlbionKit",
+        "title": "提醒",
+        "body": "打开 AlbionKit 查看完整的机会列表。",
+        "button": "查看市场搬砖"
+      },
+      "watchlist": {
+        "subject": "观察列表价格警报 🔔",
+        "greeting": "你好 {name}，",
+        "body": "你的 <strong>市场观察列表</strong> 中有一个或多个物品目前在黑市上显示出有利可图的搬砖机会！",
+        "profit": "利润：<strong>{profit} 银币</strong> ({roi}% 回报率)",
+        "buySell": "买入：{buyPrice} ({buyCity}) → 卖出：{sellPrice} (黑市)",
+        "button": "查看我的观察列表",
+        "footer": "你收到此邮件是因为你在设置中启用了市场警报。",
+        "baseTitle": "市场观察列表警报 - AlbionKit",
+        "preview": "观察列表警报：{itemName} 等物品有利可图！"
+      },
+      "gold": {
+        "subject": "金币市场警报 💰",
+        "greeting": "你好 {name}，",
+        "body": "我们检测到 <strong>金币市场 ({region})</strong> 出现了显著波动。",
+        "currentPriceLabel": "当前金币价格",
+        "rising": "上涨",
+        "dropping": "下跌",
+        "trend": "{icon} {trendText} {change}%",
+        "advice": "这种波动性可能是调整你的银币持有量或交易金币的好时机。",
+        "button": "查看实时市场 ticker",
+        "footer": "你收到此邮件是因为你在设置中启用了金币警报。",
+        "baseTitle": "金币警报：价格正在{trendText}！",
+        "preview": "金币市场波动检测：{price} 银币 ({change}%)"
+      }
     }
   },
   "CommandMenu": {

@@ -52,7 +52,8 @@
         "privacy": "개인정보 처리방침",
         "terms": "이용 약관",
         "unsubscribe": "구독 취소",
-        "companion": "알비온 온라인의 동반자 - 빌드, 시장 데이터 및 PvP 정보."
+        "companion": "알비온 온라인의 동반자 - 빌드, 시장 데이터 및 PvP 정보.",
+        "travelerName": "여행자"
       },
       "verification": {
         "subject": "AlbionKit 이메일 인증",

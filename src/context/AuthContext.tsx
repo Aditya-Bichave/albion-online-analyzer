@@ -71,6 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const docRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(docRef);
 
+    console.log('[AuthContext] ensureProfileExists for user:', user.uid);
+    console.log('[AuthContext] Document exists:', docSnap.exists());
+    if (docSnap.exists()) {
+      console.log('[AuthContext] Existing data:', docSnap.data());
+    }
+
     // Resolve Email (check providerData if user.email is null)
     let email = user.email;
     if (!email && user.providerData && user.providerData.length > 0) {
@@ -93,8 +99,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       defaultPhotoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(defaultDisplayName)}&background=random`;
     }
 
+    console.log('[AuthContext] User data from Firebase Auth:', { email, displayName: defaultDisplayName, photoURL: defaultPhotoURL });
+
     if (!docSnap.exists()) {
-      // Create new profile
+      // Create new profile ONLY if it truly doesn't exist
       await setDoc(docRef, {
         uid: user.uid,
         email: email,
@@ -110,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           showPrices: true,
           reducedMotion: false
         }
-      });
+      }, { merge: true }); // Use merge to avoid overwriting if doc was created concurrently
 
       // Send Welcome Notification
       // Pass email explicitly to ensure it sends even if DB read is delayed
@@ -126,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updates.photoURL = defaultPhotoURL;
         needsUpdate = true;
       }
-      
+
       if ((!data.displayName || data.displayName === 'Anonymous') && defaultDisplayName) {
         if (!data.displayName) {
              updates.displayName = defaultDisplayName;
@@ -141,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (needsUpdate) {
-        await setDoc(docRef, { ...data, ...updates, updatedAt: new Date().toISOString() });
+        await setDoc(docRef, updates, { merge: true });
       }
     }
   };
@@ -191,6 +199,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
     try {
       await signInWithPopup(auth, provider);
     } catch (error: any) {

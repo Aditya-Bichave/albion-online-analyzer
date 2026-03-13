@@ -31,7 +31,6 @@ import { getTickerData, getGlobalStats } from "@/lib/ticker-service";
 import { MarketTicker } from "@/components/MarketTicker";
 import { InfoStrip, InfoBanner } from "@/components/InfoStrip";
 import { FeatureSection } from "@/components/FeatureSection";
-import { LiveKillToasts } from "@/components/LiveKillToasts";
 import { useTranslations } from 'next-intl';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Metadata } from 'next';
@@ -76,7 +75,6 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <LiveKillToasts />
 
       {/* Hero Section */}
       <section className="relative pt-0 overflow-hidden min-h-screen flex flex-col items-center justify-center">

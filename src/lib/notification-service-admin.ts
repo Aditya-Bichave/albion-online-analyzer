@@ -77,13 +77,52 @@ export async function createInAppNotificationAdmin(userId: string, type: Notific
 
 async function sendEmailNotificationAdmin(profile: any, email: string, type: NotificationType, data?: any) {
   const locale = profile.locale || 'en';
-  // Use Emails namespace for subject lines and templates
-  // Note: getTranslations works on server side
-  const t = await getTranslations({ locale, namespace: 'Emails' });
+  
+  // Load messages directly for email templates
+  let messages: any;
+  try {
+    messages = (await import(`@/../messages/${locale}.json`)).default;
+    console.log(`[EmailService] Loaded messages for locale: ${locale}`);
+  } catch (error) {
+    console.error(`Failed to load messages for locale: ${locale}`, error);
+    messages = (await import(`@/../messages/en.json`)).default;
+    console.log('[EmailService] Using fallback English messages');
+  }
+  
+  // Create translation function for Common.Emails namespace
+  const t = (key: string, values?: Record<string, any>) => {
+    const fullKey = `Common.Emails.${key}`;
+    const keys = fullKey.split('.');
+    let result: any = messages;
+    
+    for (const k of keys) {
+      if (result && typeof result === 'object' && k in result) {
+        result = result[k];
+      } else {
+        console.warn(`[EmailService] Translation key not found: ${fullKey}`);
+        return fullKey;
+      }
+    }
+    
+    if (typeof result !== 'string') {
+      console.warn(`[EmailService] Translation value is not a string: ${fullKey}`);
+      return fullKey;
+    }
+    
+    // Interpolate values
+    if (values) {
+      return result.replace(/\{(\w+)\}/g, (match, key) => {
+        return values[key] !== undefined ? String(values[key]) : match;
+      });
+    }
+    
+    return result;
+  };
 
   let subject = '';
   let html = '';
-  const name = profile.displayName || 'Traveler';
+  // Use translated "Traveler" if no display name
+  const name = profile.displayName || t('common.travelerName') || 'Traveler';
 
   switch (type) {
     case 'welcome':
