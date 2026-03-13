@@ -2,7 +2,6 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const host = request.headers.get('host') || '';
   const pathname = request.nextUrl.pathname;
 
   // Skip middleware for static files, API routes, and SEO files
@@ -17,21 +16,6 @@ export function middleware(request: NextRequest) {
     pathname === '/robots.txt'
   ) {
     return NextResponse.next();
-  }
-
-  // ONLY redirect www to non-www (no locale detection for now)
-  if (host.startsWith('www.')) {
-    const url = request.nextUrl.clone();
-    url.hostname = 'albionkit.com';
-    url.protocol = 'https:';
-    return NextResponse.redirect(url, 308);
-  }
-
-  // Force HTTPS (but only if not already redirecting for www)
-  if (request.nextUrl.protocol === 'http:' && !host.includes('localhost')) {
-    const url = request.nextUrl.clone();
-    url.protocol = 'https:';
-    return NextResponse.redirect(url, 308);
   }
 
   // Locale Detection via Cookie (only set on first visit)
