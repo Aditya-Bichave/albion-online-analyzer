@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
 
+  // Redirect www to non-www and HTTP to HTTPS
   const isWww = host.startsWith('www.albionkit.com');
   const isHttp = request.nextUrl.protocol === 'http:' && !host.includes('localhost');
 
@@ -14,11 +15,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // Locale Detection via Cookie (SEO-friendly for current structure)
+  // Skip locale detection for static files and API routes
+  const pathname = request.nextUrl.pathname;
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') || // Static files
+    pathname === '/favicon.ico' ||
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/sw.js' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt'
+  ) {
+    return NextResponse.next();
+  }
+
+  // Locale Detection via Cookie (only set on first visit)
   const hasLocaleCookie = request.cookies.has('NEXT_LOCALE');
+  
   if (!hasLocaleCookie) {
-    const req = request as NextRequest & { geo?: { country?: string } };
-    const country = req.geo?.country || request.headers.get('x-vercel-ip-country');
+    // Detect locale from country
+    const country = (request as any).geo?.country || request.headers.get('x-vercel-ip-country');
     let locale = 'en';
 
     if (country) {
@@ -35,17 +52,30 @@ export function middleware(request: NextRequest) {
       }
     }
 
-    // Set cookie for client-side usage
+    // Set cookie and continue (no redirect)
     const response = NextResponse.next();
-    response.cookies.set('NEXT_LOCALE', locale);
+    response.cookies.set('NEXT_LOCALE', locale, {
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      path: '/',
+      sameSite: 'lax'
+    });
     return response;
   }
 
+  // Cookie exists - just continue
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - manifest.webmanifest (PWA manifest)
+     * - sw.js (service worker)
+     */
     '/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js).*)',
   ],
 };
