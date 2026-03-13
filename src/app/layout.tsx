@@ -38,10 +38,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Alternate URLs for all locales (hreflang tags)
   const locales = ['en', 'de', 'es', 'fr', 'ko', 'pl', 'pt', 'ru', 'tr', 'zh'];
-  const alternateLanguages = locales.map(loc => ({
-    locale: loc === 'en' ? 'x-default' : loc,
-    url: `https://albionkit.com/${loc}`,
-  }));
 
   return {
     metadataBase: new URL('https://albionkit.com'),
@@ -54,7 +50,6 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: "AlbionKit Team" }],
     creator: "AlbionKit",
     publisher: "AlbionKit",
-    language: locale,
     alternates: {
       languages: Object.fromEntries(locales.map(loc => [loc, `https://albionkit.com/${loc}`])),
     },
