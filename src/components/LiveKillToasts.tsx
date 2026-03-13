@@ -163,7 +163,7 @@ function LiveKillToastsContent() {
   return (
     <div className="hidden md:block fixed bottom-5 left-5 right-auto md:left-4 md:right-auto z-40 transition-all duration-300 ${isFadingOut ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}">
       <Link href="/tools/kill-feed" className="block">
-        <div className="relative max-w-md md:w-70 md:max-w-110 mx-auto md:mx-0 bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:border-red-500/60 transition-all shadow-lg">
+        <div className="relative w-full max-w-lg md:max-w-xl mx-auto md:mx-0 bg-card border border-border rounded-xl p-4 md:p-5 flex flex-col gap-3 hover:border-red-500/60 transition-all shadow-lg">
           <button
             type="button"
             onClick={e => {
@@ -184,44 +184,44 @@ function LiveKillToastsContent() {
               <span className="uppercase tracking-wide font-semibold">{t('liveKill')}</span>
             </div>
             <span>•</span>
-            <span>{formatTimeAgo(current.TimeStamp, t)}</span>
+            <span className="whitespace-nowrap">{formatTimeAgo(current.TimeStamp, t)}</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3 md:gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex flex-col min-w-0">
-                  <div className="text-xs text-muted-foreground">{t('killer')}</div>
-                  <div className="font-bold text-sm text-emerald-400 truncate">{killer.Name}</div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('killer')}</div>
+                  <div className="font-bold text-sm md:text-base text-emerald-400 truncate w-full" title={killer.Name}>{killer.Name}</div>
                   {killer.GuildName && (
-                    <div className="text-[10px] text-muted-foreground truncate">{killer.GuildName}</div>
+                    <div className="text-[10px] md:text-xs text-muted-foreground truncate w-full" title={killer.GuildName}>{killer.GuildName}</div>
                   )}
                 </div>
-                <div className="flex flex-col items-center justify-center mx-1">
-                  <div className="h-8 w-8 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/40">
-                    <Swords className="h-4 w-4 text-red-400" />
+                <div className="flex flex-col items-center justify-center shrink-0">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/40">
+                    <Swords className="h-4 w-4 md:h-5 md:w-5 text-red-400" />
                   </div>
                 </div>
-                <div className="flex flex-col items-end min-w-0">
-                  <div className="text-xs text-muted-foreground text-right">{t('victim')}</div>
-                  <div className="font-bold text-sm text-red-400 truncate">{victim.Name}</div>
+                <div className="flex flex-col items-end min-w-0 flex-1">
+                  <div className="text-xs text-muted-foreground text-right mb-0.5">{t('victim')}</div>
+                  <div className="font-bold text-sm md:text-base text-red-400 truncate w-full text-right" title={victim.Name}>{victim.Name}</div>
                   {victim.GuildName && (
-                    <div className="text-[10px] text-muted-foreground truncate">{victim.GuildName}</div>
+                    <div className="text-[10px] md:text-xs text-muted-foreground truncate w-full text-right" title={victim.GuildName}>{victim.GuildName}</div>
                   )}
                 </div>
               </div>
-              <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Skull className="h-3 w-3 text-amber-500" />
-                  <span className="font-mono text-amber-400 font-semibold">{formatFame(current.TotalVictimKillFame)} {t('fame')}</span>
+              <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-1 md:gap-2 shrink-0">
+                  <Skull className="h-3 w-3 md:h-4 md:w-4 text-amber-500" />
+                  <span className="font-mono text-amber-400 font-semibold text-xs md:text-sm">{formatFame(current.TotalVictimKillFame)} {t('fame')}</span>
                 </div>
                 {current.Location && (
-                  <div className="truncate max-w-[60%] text-right">
+                  <div className="truncate max-w-full sm:max-w-[60%] text-right text-xs md:text-sm" title={current.Location}>
                     {current.Location}
                   </div>
                 )}
               </div>
-              <div className="mt-2 text-[11px] text-primary flex items-center justify-between">
-                <span className="underline">{t('openFeed')}</span>
+              <div className="mt-3 text-[11px] md:text-xs text-primary flex items-center justify-between">
+                <span className="underline font-medium">{t('openFeed')}</span>
               </div>
             </div>
           </div>
