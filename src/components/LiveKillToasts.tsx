@@ -52,7 +52,7 @@ export function LiveKillToasts() {
     const fetchEvents = async () => {
       try {
         const response = await fetch(
-          'https://gameinfo.albiononline.com/api/gameinfo/events?limit=10&offset=0',
+          '/api/proxy/gameinfo/events?limit=10&offset=0',
           { cache: 'no-store' }
         );
         if (!response.ok) return;

@@ -52,7 +52,7 @@ export default async function Home() {
   const locale = await getLocale();
   const [tickerData, stats] = await Promise.all([
     getTickerData(locale),
-    getGlobalStats()
+    getGlobalStats(locale)
   ]);
 
   const jsonLd = {

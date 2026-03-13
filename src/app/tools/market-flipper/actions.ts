@@ -3,7 +3,6 @@
 import { POPULAR_ITEMS } from './constants';
 import { searchItemsService, getItems } from '@/lib/item-service';
 import { getMarketHistory as getHistoryService, getMarketPrices, getMarketVolume, MarketHistory as ServiceMarketHistory, MarketStat as ServiceMarketStat, MarketHistoryPoint as ServiceHistoryPoint } from '@/lib/market-service';
-import { getLocale } from 'next-intl/server';
 
 import { notifyUser } from '@/lib/notification-service';
 import { adminDb } from '@/lib/firebase-admin';
@@ -17,24 +16,28 @@ export async function getMarketHistory(itemId: string, region: 'west' | 'east' |
 }
 
 export async function getMarketData(
-  region: 'west' | 'east' | 'europe' = 'west', 
+  region: 'west' | 'east' | 'europe' = 'west',
   additionalItems: string[] = [],
-  categoryItems: string[] = []
+  categoryItems: string[] = [],
+  locale: string = 'en' // Pass locale from client
 ) {
   try {
     let baseItems = categoryItems.length > 0 ? categoryItems : POPULAR_ITEMS;
     const allItems = Array.from(new Set([...baseItems, ...additionalItems]));
-    
-    // Fetch Prices and Volume in parallel, and get Item Names
-    // We add a timeout for items to prevent blocking the whole request if the large JSON fetch is slow
-    const itemsPromise = getItems().catch(() => []);
-    const timeoutPromise = new Promise<any[]>((resolve) => setTimeout(() => resolve([]), 2500));
 
+    console.log('[MarketData] Fetching market data for locale:', locale);
+
+    // Fetch Prices, Volume, and Item Names in parallel
     const [data, historyData, itemsList] = await Promise.all([
       getMarketPrices(allItems, region),
       getMarketVolume(allItems, region),
-      Promise.race([itemsPromise, timeoutPromise])
+      getItems(locale).catch((err) => {
+        console.error('[MarketData] getItems error:', err);
+        return [];
+      })
     ]);
+
+    console.log('[MarketData] Loaded items:', itemsList.length);
 
     // Build Name Map
     const nameMap = new Map<string, string>();
@@ -45,6 +48,7 @@ export async function getMarketData(
         }
       });
     }
+    console.log('[MarketData] nameMap size:', nameMap.size, 'Sample entries:', Array.from(nameMap.entries()).slice(0, 5));
 
     // Process volume data into a map: ItemId -> Avg Daily Volume (last 3 days)
     const volumeMap = new Map<string, number>();
@@ -108,6 +112,9 @@ function processMarketData(
       // Filter out bad deals (e.g. profit < 1000 or margin < 10%)
       // BUT always include custom items regardless of profit
       if (customItemSet.has(itemId) || (profit > 1000 && profitMargin > 10)) {
+        const lookupId = itemId.split('@')[0];
+        const itemName = nameMap.get(lookupId);
+        console.log('[MarketData] Looking up name for:', lookupId, '->', itemName || 'NOT FOUND');
         flips.push({
           itemId: itemId,
           buyCity: cityStat.city,
@@ -118,7 +125,7 @@ function processMarketData(
           margin: Math.round(profitMargin),
           dailyVolume: volumeMap.get(itemId) || 0, // Add volume
           updatedAt: cityStat.sell_price_min_date,
-          name: nameMap.get(itemId.split('@')[0]) || itemId // Add name
+          name: itemName || itemId // Add name
         });
       }
     });
@@ -149,7 +156,7 @@ function processMarketData(
   return { flips: flips.sort((a, b) => b.profit - a.profit), error: undefined };
 }
 
-export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'east' | 'europe', watchlist: string[]) {
+export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'east' | 'europe', watchlist: string[], locale: string = 'en') {
   if (!userId || !watchlist.length) return;
 
   try {
@@ -158,7 +165,7 @@ export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'e
     const userDoc = await adminDb.collection('users').doc(userId).get();
     const userData = userDoc.data();
     const isSupporter = userData?.role === 'adept' || userData?.role === 'guild_master' || userData?.role === 'admin';
-    
+
     // Check if alerts are enabled in preferences
     const alertsEnabled = userData?.preferences?.marketAlerts !== false;
 
@@ -168,9 +175,9 @@ export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'e
 
     // 1. Get watchlist items (IDs only)
     const itemIds = Array.from(new Set(watchlist.map(w => w.split('-')[0])));
-    
+
     // 2. Fetch current market data for these items
-    const { flips } = await getMarketData(region, itemIds, []);
+    const { flips } = await getMarketData(region, itemIds, [], locale);
     
     // 3. Filter for profitable flips (> 5000 profit and > 10% margin for alert)
     const profitableWatchlistItems = flips.filter(f => 
@@ -193,7 +200,6 @@ export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'e
   }
 }
 
-export async function searchAlbionItems(query: string) {
-  const locale = await getLocale();
+export async function searchAlbionItems(query: string, locale: string = 'en') {
   return await searchItemsService(query, locale);
 }

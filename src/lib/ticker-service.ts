@@ -31,9 +31,9 @@ export interface GlobalStats {
   uptime: string;
 }
 
-export const getGlobalStats = cache(async (): Promise<GlobalStats> => {
-  const items = await getItems();
-  
+export const getGlobalStats = cache(async (locale: string = 'en'): Promise<GlobalStats> => {
+  const items = await getItems(locale);
+
   // Fetch recent battles from Albion API to get a "real" number for activity
   let battlesCount = 0;
   try {
@@ -50,7 +50,7 @@ export const getGlobalStats = cache(async (): Promise<GlobalStats> => {
 
   return {
     itemsTracked: items.length,
-    battlesAnalyzed: battlesCount, 
+    battlesAnalyzed: battlesCount,
     marketUpdates: "24/7",
     uptime: "99.9%"
   };

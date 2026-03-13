@@ -71,11 +71,11 @@ async function getRawItems(): Promise<AlbionItem[]> {
 
 function processItemsForLocale(rawItems: AlbionItem[], locale: string): SimpleItem[] {
   const albionLocale = LOCALE_MAP[locale] || 'EN-US';
-  
+
   return rawItems
     .filter(item => {
       if (!item.UniqueName) return false;
-      
+
       // Try to get name in requested locale, fall back to EN-US
       const localizedNames = item.LocalizedNames || {};
       const name = localizedNames[albionLocale] || localizedNames['EN-US'];
@@ -117,17 +117,19 @@ function processItemsForLocale(rawItems: AlbionItem[], locale: string): SimpleIt
 export async function getItems(locale: string = 'en'): Promise<SimpleItem[]> {
   // Check cache first
   if (cachedItemsByLocale.has(locale)) {
-    return cachedItemsByLocale.get(locale)!;
+    const cached = cachedItemsByLocale.get(locale)!;
+    console.log(`[getItems] Cache HIT for ${locale}: ${cached.length} items. Sample:`, cached.slice(0, 3));
+    return cached;
   }
 
   try {
     const rawItems = await getRawItems();
     const items = processItemsForLocale(rawItems, locale);
-    
+
     // Cache the processed items for this locale
     cachedItemsByLocale.set(locale, items);
-    console.log(`Loaded ${items.length} items for locale ${locale}.`);
-    
+    console.log(`[getItems] Loaded ${items.length} items for locale ${locale}. Sample:`, items.slice(0, 3));
+
     return items;
   } catch (error) {
     console.error('Error processing items:', error);

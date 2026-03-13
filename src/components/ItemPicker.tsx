@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { getItems, SimpleItem } from '@/lib/item-service';
 import { ItemIcon } from './ItemIcon';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface ItemPickerProps {
   label: string;
@@ -16,6 +16,7 @@ interface ItemPickerProps {
 
 export function ItemPicker({ label, value, onChange, placeholder, filter }: ItemPickerProps) {
   const t = useTranslations('Common');
+  const locale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<SimpleItem[]>([]);
@@ -24,9 +25,9 @@ export function ItemPicker({ label, value, onChange, placeholder, filter }: Item
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load items once
-    getItems().then(setItems).catch(console.error);
-  }, []);
+    // Load items once with user's locale
+    getItems(locale).then(setItems).catch(console.error);
+  }, [locale]);
 
   useEffect(() => {
     if (!query) {

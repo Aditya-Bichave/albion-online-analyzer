@@ -47,13 +47,13 @@ export default async function Image() {
           alignItems: 'center',
           gap: 16,
         }}>
-          <img 
-            src="https://albionkit.com/logo-light.svg" 
-            alt="AlbionKit Logo" 
-            width={320}
-            height={80}
-            style={{ width: 320, height: 80, objectFit: 'contain' }} 
-          />
+          <div style={{
+            fontSize: 48,
+            fontWeight: 900,
+            color: '#f59e0b',
+          }}>
+            ALBIONKIT
+          </div>
         </div>
 
         {/* Tagline */}

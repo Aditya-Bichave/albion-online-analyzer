@@ -3,7 +3,7 @@
 import { useState, useEffect, Fragment, Suspense } from 'react';
 import { RefreshCw, TrendingUp, ArrowRight, Info, ChevronDown, ChevronUp, Star, Plus, Trash2, Filter, Tag, Search as SearchIcon, Layers, DollarSign, Percent, Sparkles, CircleHelp, Lock, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { FeatureLock } from '@/components/subscription/FeatureLock';
@@ -27,6 +27,7 @@ import { ItemIcon } from '@/components/ItemIcon';
 
 function MarketFlipperContent() {
   const t = useTranslations('MarketFlipper');
+  const locale = useLocale(); // Get the current locale
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -224,7 +225,7 @@ function MarketFlipperContent() {
       ? baseCategoryItems
       : baseCategoryItems.map((id: string) => `${id}@${selectedEnchantment}`);
 
-    const { flips, error } = await getMarketData(region, customItems, categoryItems);
+    const { flips, error } = await getMarketData(region, customItems, categoryItems, locale);
     if (flips) {
       setFlips(flips);
       setLastUpdated(new Date());
@@ -234,10 +235,10 @@ function MarketFlipperContent() {
       if (user && watchlist.length > 0) {
         const lastAlertTime = localStorage.getItem('last_watchlist_alert');
         const now = Date.now();
-        
+
         // Only trigger alert check once every 4 hours to avoid spamming
         if (!lastAlertTime || now - Number(lastAlertTime) > 4 * 60 * 60 * 1000) {
-          triggerWatchlistAlerts(user.uid, region, watchlist).then(result => {
+          triggerWatchlistAlerts(user.uid, region, watchlist, locale).then(result => {
             if (result && 'success' in result && result.success) {
               localStorage.setItem('last_watchlist_alert', String(now));
             }
@@ -250,7 +251,7 @@ function MarketFlipperContent() {
 
   useEffect(() => {
     loadData();
-  }, [region, customItems, selectedCategory, selectedEnchantment]); // Reload when category changes
+  }, [region, customItems, selectedCategory, selectedEnchantment, locale]); // Reload when category or locale changes
 
   const toggleWatchlist = (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -456,7 +457,7 @@ function MarketFlipperContent() {
                     }
                     setSearchLoading(true);
                     try {
-                      const items: any[] = await searchAlbionItems(term);
+                      const items: any[] = await searchAlbionItems(term, locale);
                       setSearchOptions(items.map((it: any) => ({
                         value: it.id,
                         label: it.name,

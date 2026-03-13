@@ -12,7 +12,7 @@ import { Tooltip } from '@/components/ui/Tooltip';
 import { ServerSelector } from '@/components/ServerSelector';
 import { useServer } from '@/hooks/useServer';
 import { InfoStrip } from '@/components/InfoStrip';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { useAuth } from '@/context/AuthContext';
 
@@ -159,13 +159,15 @@ export default function ZvzTrackerClient() {
         setIsMounted(true);
     }, []);
 
+    const locale = useLocale();
+
     useEffect(() => {
-        getItems().then(items => {
+        getItems(locale).then(items => {
             const map: Record<string, string> = {};
             items.forEach(i => map[i.id] = i.name);
             setItemMap(map);
         });
-    }, []);
+    }, [locale]);
 
 
 
