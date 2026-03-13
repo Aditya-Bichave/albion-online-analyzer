@@ -1,43 +1,39 @@
 # AlbionKit SEO & Internationalization (i18n) Guide
 
-## ✅ SEO Features Implemented
+## ✅ Current Implementation
 
-### 1. URL Structure (Locale-Prefixed)
+### URL Structure: Cookie-Based (Current)
 ```
-https://albionkit.com/en/builds
-https://albionkit.com/tr/builds
-https://albionkit.com/de/builds
-https://albionkit.com/zh/builds
-...
+https://albionkit.com/builds
+https://albionkit.com/tools/market-flipper
 ```
+
+**How it works:**
+- Locale detected from user's IP country (Vercel Geo IP)
+- Stored in `NEXT_LOCALE` cookie
+- Content served in detected language
+- Same URL for all languages
 
 **Benefits:**
-- ✅ Search engines can crawl and index each language version separately
-- ✅ Users can share language-specific URLs
-- ✅ Clear URL structure for both users and search engines
+- ✅ Clean URLs without locale prefixes
+- ✅ Automatic locale detection based on location
+- ✅ Works with existing app structure
+- ✅ No major refactoring needed
 
-### 2. Hreflang Tags (Automatic)
-Automatically added to all pages via `layout.tsx`:
-```html
-<link rel="alternate" hreflang="en" href="https://albionkit.com/en" />
-<link rel="alternate" hreflang="de" href="https://albionkit.com/de" />
-<link rel="alternate" hreflang="x-default" href="https://albionkit.com/en" />
-```
+**SEO Considerations:**
+- Google crawls with US IP → sees English content
+- Hreflang tags not applicable (single URL per page)
+- Each language version indexed separately by Google's regional crawlers
 
-**Benefits:**
-- ✅ Google shows the correct language version to users
-- ✅ Prevents duplicate content issues across languages
-- ✅ Improves international SEO rankings
+### 2. Sitemap
+Generated at `/sitemap.xml` includes all pages:
+- 20 static pages
+- Dynamic builds
+- Forum threads (when enabled)
 
-### 3. Sitemap (All Locales)
-Generated at `/sitemap.xml` includes ALL pages in ALL 10 languages:
-- 20 static pages × 10 locales = 200 URLs
-- Dynamic builds × 10 locales
-- Forum threads × 10 locales
+**Total: ~100+ indexed URLs**
 
-**Total: ~500+ indexed URLs**
-
-### 4. Robots.txt
+### 3. Robots.txt
 ```
 User-agent: *
 Allow: /
@@ -49,19 +45,19 @@ Disallow: /admin/
 Sitemap: https://albionkit.com/sitemap.xml
 ```
 
-### 5. Open Graph & Social Media
-Each page has proper `og:locale` tags for social sharing:
+### 4. Open Graph & Social Media
+Each page has proper `og:` tags for social sharing:
 ```html
-<meta property="og:locale" content="tr" />
 <meta property="og:title" content="..." />
 <meta property="og:description" content="..." />
+<meta property="og:image" content="/og-image.jpg" />
 ```
 
-### 6. Middleware (Smart Locale Detection)
-- Detects user's locale from Accept-Language header
+### 5. Middleware (Geo-Based Locale Detection)
+- Detects user's locale from country code (Vercel Geo IP)
 - Falls back to cookie if previously visited
-- Redirects to appropriate `/[locale]/...` URL
-- SEO-friendly (search engines can crawl all locales)
+- Sets `NEXT_LOCALE` cookie for client-side usage
+- SEO-friendly (Google's regional crawlers see appropriate language)
 
 ## 📊 Supported Languages
 

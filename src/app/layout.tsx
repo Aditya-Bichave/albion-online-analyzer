@@ -34,10 +34,6 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
-  const locale = await getLocale();
-
-  // Alternate URLs for all locales (hreflang tags)
-  const locales = ['en', 'de', 'es', 'fr', 'ko', 'pl', 'pt', 'ru', 'tr', 'zh'];
 
   return {
     metadataBase: new URL('https://albionkit.com'),
@@ -50,9 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: "AlbionKit Team" }],
     creator: "AlbionKit",
     publisher: "AlbionKit",
-    alternates: {
-      languages: Object.fromEntries(locales.map(loc => [loc, `https://albionkit.com/${loc}`])),
-    },
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
@@ -75,7 +68,6 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'AlbionKit',
       title: t('title'),
       description: t('description'),
-      locale: locale,
       images: [
         {
           url: '/og-image.jpg',

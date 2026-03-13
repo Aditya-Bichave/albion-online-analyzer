@@ -3,12 +3,9 @@ import { getAllBuildsForSitemap, getAllThreadsForSitemap } from '@/lib/sitemap-s
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://albionkit.com';
-  
-  // All supported locales
-  const locales = ['en', 'de', 'es', 'fr', 'ko', 'pl', 'pt', 'ru', 'tr', 'zh'];
 
-  // 1. Static Routes for all locales
-  const staticRoutes = [
+  // 1. Static Routes
+  const routes = [
     '',
     '/builds',
     // '/forum',  // Temporarily hidden
@@ -28,47 +25,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/about',
     '/privacy',
     '/terms',
-  ];
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: route === '' ? 1 : 0.8,
+  }));
 
-  const routes: MetadataRoute.Sitemap = [];
-  
-  // Generate sitemap entries for all locales
-  locales.forEach(locale => {
-    staticRoutes.forEach((route) => {
-      routes.push({
-        url: `${baseUrl}/${locale}${route}`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: route === '' ? 1 : 0.8,
-      });
-    });
-  });
-
-  // 2. Dynamic Routes (Builds) for all locales
+  // 2. Dynamic Routes (Builds)
   const builds = await getAllBuildsForSitemap();
-  locales.forEach(locale => {
-    builds.forEach((build) => {
-      routes.push({
-        url: `${baseUrl}/${locale}/builds/${build.category}/${build.id}`,
-        lastModified: build.updatedAt,
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      });
-    });
-  });
+  const buildRoutes = builds.map((build) => ({
+    url: `${baseUrl}/builds/${build.category}/${build.id}`,
+    lastModified: build.updatedAt,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }));
 
-  // 3. Dynamic Routes (Threads) for all locales
+  // 3. Dynamic Routes (Threads)
   const threads = await getAllThreadsForSitemap();
-  locales.forEach(locale => {
-    threads.forEach((thread) => {
-      routes.push({
-        url: `${baseUrl}/${locale}/forum/thread/${thread.id}`,
-        lastModified: thread.updatedAt,
-        changeFrequency: 'daily',
-        priority: 0.8,
-      });
-    });
-  });
+  const threadRoutes = threads.map((thread) => ({
+    url: `${baseUrl}/forum/thread/${thread.id}`,
+    lastModified: thread.updatedAt,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
 
-  return routes;
+  return [...routes, ...buildRoutes, ...threadRoutes];
 }
