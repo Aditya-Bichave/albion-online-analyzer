@@ -85,19 +85,15 @@ function LiveKillToastsContent() {
           '/api/proxy/gameinfo/events?limit=10&offset=0',
           { cache: 'no-store' }
         );
-        console.log('Fetch response status:', response.status);
         if (!response.ok) return;
         const events: Event[] = await response.json();
-        console.log('Fetched events:', events?.length);
         if (!events || events.length === 0) return;
         const fresh = events.filter(e => !seenIdsRef.current.has(e.EventId));
-        console.log('Fresh events:', fresh.length);
         if (fresh.length === 0) return;
         fresh.forEach(e => seenIdsRef.current.add(e.EventId));
         if (isMountedRef.current) {
           setQueue(prev => {
-            const newQueue = [...prev, ...fresh.slice(0, 5)];
-            console.log('New queue length:', newQueue.length);
+            const newQueue = [...prev, ...fresh.slice(0, 3)]; // Limit to 3 kills per fetch
             return newQueue;
           });
         }
@@ -107,16 +103,15 @@ function LiveKillToastsContent() {
     };
 
     fetchEvents();
-    interval = setInterval(fetchEvents, 5000); // Fetch every 5 seconds
+    interval = setInterval(fetchEvents, 15000); // Fetch every 15 seconds (reduced from 5s)
 
     return () => {
       if (interval) clearInterval(interval);
     };
   }, []);
 
-  // Show kills in a loop: 4 seconds display, then fade out, then next
+  // Show kills in a loop: display for 6 seconds, then fade out, then next
   useEffect(() => {
-    console.log('Display effect - queue:', queue.length, 'current:', current, 'muted:', muted);
     if (!isMountedRef.current || !isComponentReady) return;
     if (muted) return;
     if (queue.length === 0) return;
@@ -124,21 +119,20 @@ function LiveKillToastsContent() {
 
     // Show the first kill in queue
     const next = queue[0];
-    console.log('Showing kill:', next.Killer.Name, '->', next.Victim.Name);
     setCurrent(next);
     setQueue(prev => prev.slice(1));
-  }, [queue, current, muted, isComponentReady]);
+  }, [queue.length, current, muted, isComponentReady]);
 
   // Handle fade out timing
   useEffect(() => {
     if (!current || muted || !isComponentReady) return;
 
-    // After 4 seconds, start fade out
+    // After 6 seconds, start fade out
     fadeTimeoutRef.current = setTimeout(() => {
       if (isMountedRef.current) {
         setIsFadingOut(true);
       }
-    }, 4000);
+    }, 6000);
 
     return () => {
       if (fadeTimeoutRef.current) clearTimeout(fadeTimeoutRef.current);
@@ -161,12 +155,8 @@ function LiveKillToastsContent() {
     };
   }, [isFadingOut]);
 
-  if (!current || muted || !isComponentReady || shouldHide) {
-    console.log('Not rendering - current:', !!current, 'muted:', muted, 'isComponentReady:', isComponentReady, 'shouldHide:', shouldHide);
-    return null;
-  }
+  if (!current || muted || !isComponentReady || shouldHide) return null;
 
-  console.log('Rendering kill toast:', current.Killer.Name, '->', current.Victim.Name);
   const killer = current.Killer;
   const victim = current.Victim;
 
