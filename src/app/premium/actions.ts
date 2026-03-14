@@ -67,16 +67,13 @@ export async function getProductPrices() {
 
     if (!personalVariantId || !guildVariantId) {
       console.warn('Missing variant IDs for price fetching');
-      return { personal: '$4.99', guild: '$19.99' }; // Fallback prices
+      return { personal: '$4.99', guild: '$19.99' };
     }
 
-    // Validate variant IDs are numbers
     if (isNaN(Number(personalVariantId)) || isNaN(Number(guildVariantId))) {
       console.error('Invalid variant IDs - must be numeric');
-      return { personal: '$4.99', guild: '$19.99' }; // Fallback prices
+      return { personal: '$4.99', guild: '$19.99' };
     }
-
-    console.log(`[getProductPrices] Fetching prices for variants: Personal=${personalVariantId}, Guild=${guildVariantId}`);
 
     const [personal, guild] = await Promise.all([
       getVariant(personalVariantId).catch(err => {
@@ -89,11 +86,9 @@ export async function getProductPrices() {
       })
     ]);
 
-    // Helper to format price
     const formatPrice = (variant: any) => {
         if (!variant || !variant.data || !variant.data.data) {
-          console.warn('[getProductPrices] Variant data missing for formatting');
-          return '$4.99'; // Fallback price
+          return '$4.99';
         }
         try {
           const price = variant.data.data.attributes.price / 100;
@@ -102,8 +97,7 @@ export async function getProductPrices() {
               currency: 'USD',
           });
         } catch (e) {
-          console.error('[getProductPrices] Error formatting price:', e);
-          return '$4.99'; // Fallback price
+          return '$4.99';
         }
     };
 
@@ -114,7 +108,7 @@ export async function getProductPrices() {
 
   } catch (error) {
     console.error('Error fetching prices:', error);
-    return { personal: '$4.99', guild: '$19.99' }; // Fallback prices
+    return { personal: '$4.99', guild: '$19.99' };
   }
 }
 
@@ -181,12 +175,8 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
         },
     };
 
-    console.log('Creating checkout with payload:', JSON.stringify(checkoutPayload, null, 2));
-
     try {
-        // Validate environment variables before making API call
         if (!process.env.LEMONSQUEEZY_API_KEY) {
-            console.error('[getCheckoutURL] LEMON_SQUEEZY_API_KEY is missing');
             return { error: 'Payment configuration incomplete. Please contact support.' };
         }
 
@@ -196,39 +186,25 @@ export async function getCheckoutURL(userId: string, type: 'personal' | 'guild',
             checkoutPayload
         );
 
-        console.log('[getCheckoutURL] Checkout response:', JSON.stringify(checkout, null, 2));
-
-        // Check for errors in the response
         if (checkout.error) {
             console.error('[getCheckoutURL] Lemon Squeezy Error:', checkout.error);
             return { error: `Payment provider error: ${checkout.error.message || 'Unknown error'}` };
         }
 
-        // Extract URL from the nested response structure
         const checkoutUrl = checkout.data?.data?.attributes?.url;
-        
+
         if (!checkoutUrl) {
-            console.error('[getCheckoutURL] No checkout URL in response:', checkout);
             return { error: 'Failed to create checkout session. Please try again.' };
         }
 
-        console.log('[getCheckoutURL] Checkout URL created successfully:', checkoutUrl);
         return { url: checkoutUrl };
     } catch (lsError: any) {
-        console.error('[getCheckoutURL] Exception during createCheckout:', lsError);
-
-        // Check if it's an HTTP error with HTML response
         if (lsError.message && lsError.message.includes('Unexpected token')) {
-            console.error('[getCheckoutURL] Lemon Squeezy returned HTML instead of JSON.');
-            console.error('[getCheckoutURL] This usually means:');
-            console.error('[getCheckoutURL] 1. API Key is invalid/expired');
-            console.error('[getCheckoutURL] 2. Store ID or Variant ID is incorrect');
-            console.error('[getCheckoutURL] 3. Lemon Squeezy API is down');
-            return {
-                error: 'Payment provider configuration error. Please check API credentials or contact support.'
+            return { 
+                error: 'Payment provider configuration error. Please check API credentials or contact support.' 
             };
         }
-
+        
         return { error: 'Failed to connect to payment provider' };
     }
 

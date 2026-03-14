@@ -75,13 +75,9 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
     setProcessing(planType);
 
     try {
-        console.log('[SubscriptionModal] Requesting checkout URL for:', planType, billingInterval);
         const result = await getCheckoutURL(user.uid, planType, billingInterval);
 
-        console.log('[SubscriptionModal] Checkout result:', result);
-
         if (result.error) {
-            console.error('[SubscriptionModal] Checkout error:', result.error);
             toast.error(result.error);
         } else if (result.url) {
             window.location.href = result.url;
@@ -90,7 +86,6 @@ export function SubscriptionModal({ isOpen, onClose, initialPlan = 'personal' }:
             toast.error('Failed to create checkout session');
         }
     } catch (err: any) {
-        console.error('[SubscriptionModal] Unexpected error:', err);
         toast.error(err.message || t('unexpectedError'));
     }
 
