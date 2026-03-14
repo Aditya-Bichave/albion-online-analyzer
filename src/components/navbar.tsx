@@ -31,7 +31,8 @@ import {
   X,
   Search,
   MessageCircle,
-  MessageSquare
+  MessageSquare,
+  Store
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
@@ -129,7 +130,7 @@ export function Navbar() {
       icon: <Hammer className="h-4 w-4" />,
       submenu: [
         { id: 'gold-price', title: t('goldPrice'), href: '/tools/gold-price', icon: <Coins className="h-4 w-4 text-warning" />, category: 'market' },
-        { id: 'market-flipper', title: t('marketFlipper'), href: '/tools/market-flipper', icon: <Coins className="h-4 w-4" />, category: 'market' },
+        { id: 'market-flipper', title: t('marketFlipper'), href: '/tools/market-flipper', icon: <Store className="h-4 w-4" />, category: 'market' },
         { id: 'pvp-intel', title: t('pvpIntel'), href: '/tools/pvp-intel', icon: <Sword className="h-4 w-4" />, category: 'pvp' },
         { id: 'kill-feed', title: t('killFeed'), href: '/tools/kill-feed', icon: <Skull className="h-4 w-4" />, category: 'pvp' },
         { id: 'zvz-tracker', title: t('zvzTracker'), href: '/tools/zvz-tracker', icon: <Swords className="h-4 w-4" />, category: 'pvp' },
