@@ -1,29 +1,17 @@
 import { Metadata } from 'next';
 import KillFeedClient from './KillFeedClient';
-import { fetchRecentEvents } from './actions';
 import { getTranslations } from 'next-intl/server';
+
+export const revalidate = 30; // Revalidate every 30 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.killFeed');
-  let title = t('title');
-  let description = t('description');
+  const title = t('title');
   
-  try {
-    const result = await fetchRecentEvents('west', 1);
-    const events = result.events;
-    if (events && events.length > 0) {
-      const latest = events[0];
-      const killer = latest.Killer.Name;
-      const victim = latest.Victim.Name;
-      const fame = latest.TotalVictimKillFame.toLocaleString();
-      description = t('descriptionDynamic', { killer, victim, fame });
-    }
-  } catch (e) {
-    console.error('Failed to fetch Kill Feed metadata', e);
-  }
+  // Use static description - avoids live API call on every page request
+  const description = t('description');
 
   return {
-    title,
     description,
     keywords: ['Albion Online Kill Feed', 'Live PvP', 'High Value Kills', 'Albion PvP Tracker', 'Real-time Killboard'],
     openGraph: {

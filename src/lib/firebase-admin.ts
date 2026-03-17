@@ -9,21 +9,17 @@ const serviceAccount = {
 };
 
 if (!getApps().length) {
-  console.log('[FirebaseAdmin] Initializing Firebase Admin SDK...');
   if (!serviceAccount.projectId) console.warn('[FirebaseAdmin] Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID');
   if (!serviceAccount.clientEmail) console.warn('[FirebaseAdmin] Missing FIREBASE_CLIENT_EMAIL');
   if (!serviceAccount.privateKey) console.warn('[FirebaseAdmin] Missing FIREBASE_PRIVATE_KEY');
-  
+
   try {
     initializeApp({
       credential: cert(serviceAccount),
     });
-    console.log('[FirebaseAdmin] Initialization successful');
   } catch (error) {
     console.error('[FirebaseAdmin] Initialization failed:', error);
   }
-} else {
-  console.log('[FirebaseAdmin] App already initialized');
 }
 
 export const adminDb = getFirestore();

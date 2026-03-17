@@ -93,8 +93,6 @@ export async function verifyCaptcha(token: string) {
 }
 
 export async function sendVerificationEmail(email: string) {
-  console.log('[AuthAction] Starting sendVerificationEmail for:', email);
-  
   if (!email) {
     console.error('[AuthAction] No email provided');
     return { success: false, error: 'Email is required' };
@@ -102,18 +100,14 @@ export async function sendVerificationEmail(email: string) {
 
   try {
     // Generate the verification link using Firebase Admin SDK
-    console.log('[AuthAction] Generating verification link...');
     const link = await adminAuth.generateEmailVerificationLink(email);
-    console.log('[AuthAction] Link generated successfully');
 
     // Send the email using Resend
-    console.log('[AuthAction] Sending email via Resend...');
-    
+
     // Load messages directly for email templates
     let messages: any;
     try {
       messages = (await import(`@/../messages/en.json`)).default;
-      console.log('[AuthAction] Loaded messages for verification email');
     } catch (error) {
       console.error('Failed to load messages', error);
       messages = {};
@@ -148,7 +142,6 @@ export async function sendVerificationEmail(email: string) {
       return { success: false, error: 'Failed to send email service: ' + JSON.stringify(result.error) };
     }
 
-    console.log('[AuthAction] Email sent successfully');
     return { success: true };
   } catch (error: any) {
     console.error('[AuthAction] Error in sendVerificationEmail:', error);

@@ -60,8 +60,7 @@ export async function getUserInvoices(userId: string) {
      }
 
      // 2. Fallback: Fetch from Lemon Squeezy API if Firestore is empty (Sync)
-     console.log('No invoices in Firestore, syncing from Lemon Squeezy...');
-     
+
      const docRef = adminDb.collection('users').doc(userId);
      const docSnap = await docRef.get();
      
@@ -150,12 +149,8 @@ export async function getSubscriptionManagementData(userId: string) {
 
                 if (storeId) {
                     const filter: any = { userEmail, storeId };
-                    // Add logging to debug
-                    console.log(`Syncing subscriptions for email: ${userEmail}, storeId: ${storeId}`);
-                    
+
                     const allSubsRes = await listSubscriptions({ filter });
-                    
-                    // console.log(`Found ${allSubsRes.data?.data?.length || 0} subscriptions`);
 
                     if (allSubsRes.data?.data) {
                         const lsSubscriptions = allSubsRes.data.data;
@@ -217,11 +212,10 @@ export async function getSubscriptionManagementData(userId: string) {
                             if (!validSubscriptionIds.has(id)) {
                                 // Double check: If the user says they have 1 order, and we found 0, maybe we shouldn't delete?
                                 // But if LS says 0, it usually means 0.
-                                
+
                                 // One edge case: If the subscription is "expired" (not active/cancelled), LS listSubscriptions might filter it out?
                                 // Actually listSubscriptions returns all statuses by default unless filtered.
-                                
-                                console.log(`Pruning ghost subscription: ${id}`);
+
                                 delete subscriptionsMap[id];
                                 hasChanges = true;
                             }
@@ -346,7 +340,6 @@ export async function getSubscriptionManagementData(userId: string) {
             } catch (err: any) {
                 // Ignore 404s, which can happen if subscription ID is stale or from a different environment
                 if (err?.message?.includes('Not Found') || err?.cause?.errors?.[0]?.status === '404') {
-                     // console.log('Subscription not found in Lemon Squeezy (stale ID?)');
                 } else {
                     console.warn("Failed to sync subscription details:", err);
                 }
@@ -390,9 +383,8 @@ const REGION_URLS = {
 
 export async function searchAlbionCharacter(query: string) {
   if (!query || query.length < 2) return { players: [] };
-  
+
   const cleanQuery = query.trim();
-  console.log(`Searching for Albion character: "${cleanQuery}"`);
 
   const regions = ['Americas', 'Asia', 'Europe'] as const;
 
@@ -424,17 +416,15 @@ export async function searchAlbionCharacter(query: string) {
     const allPlayers = results.flat();
     
     // Exact match logic (case-insensitive) across all regions
-    const exactMatches = allPlayers.filter((p: any) => 
-        p.Name?.toLowerCase() === cleanQuery.toLowerCase() || 
+    const exactMatches = allPlayers.filter((p: any) =>
+        p.Name?.toLowerCase() === cleanQuery.toLowerCase() ||
         p.name?.toLowerCase() === cleanQuery.toLowerCase()
     );
 
     if (exactMatches.length > 0) {
-        console.log(`[AlbionAPI] Found exact matches:`, exactMatches.map((p: any) => `${p.Name} (${p.Region})`));
         return { players: exactMatches };
     }
-    
-    console.log(`[AlbionAPI] Found ${allPlayers.length} total players`);
+
     return { players: allPlayers };
 
   } catch (error) {
@@ -779,10 +769,9 @@ export async function updateUserProfileAndBuildsAction(uid: string, data: any) {
 
             if (chunks.length > 0) {
                 await Promise.all(chunks);
-                console.log(`Updated ${count} builds with new author name: ${newDisplayName}`);
             }
         }
-        
+
         return { success: true };
     } catch (error) {
         console.error('Error updating profile and builds:', error);

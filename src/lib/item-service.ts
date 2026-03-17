@@ -52,16 +52,43 @@ const ITEMS_JSON_URL = 'https://raw.githubusercontent.com/ao-data/ao-bin-dumps/m
 async function getRawItems(): Promise<AlbionItem[]> {
   if (cachedRawItems.length > 0) return cachedRawItems;
 
+  // Try to load from localStorage first (client-side only)
+  if (typeof window !== 'undefined') {
+    const cached = localStorage.getItem('albion_items_raw');
+    const cachedTime = localStorage.getItem('albion_items_raw_timestamp');
+    
+    if (cached && cachedTime) {
+      const age = Date.now() - parseInt(cachedTime);
+      if (age < 3600000) { // 1 hour cache
+        try {
+          cachedRawItems = JSON.parse(cached);
+          return cachedRawItems;
+        } catch (e) {
+          // Invalid cache, will refetch
+        }
+      }
+    }
+  }
+
   try {
-    console.log('Fetching Albion items database...');
     const response = await fetch(ITEMS_JSON_URL, {
         next: { revalidate: 3600 } // Cache for 1 hour
     });
-    
+
     if (!response.ok) throw new Error('Failed to fetch items');
-    
+
     cachedRawItems = await response.json();
-    console.log(`Loaded ${cachedRawItems.length} raw items.`);
+    
+    // Save to localStorage for future client-side requests
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('albion_items_raw', JSON.stringify(cachedRawItems));
+        localStorage.setItem('albion_items_raw_timestamp', Date.now().toString());
+      } catch (e) {
+        // localStorage might be full or disabled
+      }
+    }
+    
     return cachedRawItems || [];
   } catch (error) {
     console.error('Error fetching items:', error);
@@ -117,9 +144,7 @@ function processItemsForLocale(rawItems: AlbionItem[], locale: string): SimpleIt
 export async function getItems(locale: string = 'en'): Promise<SimpleItem[]> {
   // Check cache first
   if (cachedItemsByLocale.has(locale)) {
-    const cached = cachedItemsByLocale.get(locale)!;
-    console.log(`[getItems] Cache HIT for ${locale}: ${cached.length} items. Sample:`, cached.slice(0, 3));
-    return cached;
+    return cachedItemsByLocale.get(locale)!;
   }
 
   try {
@@ -128,7 +153,6 @@ export async function getItems(locale: string = 'en'): Promise<SimpleItem[]> {
 
     // Cache the processed items for this locale
     cachedItemsByLocale.set(locale, items);
-    console.log(`[getItems] Loaded ${items.length} items for locale ${locale}. Sample:`, items.slice(0, 3));
 
     return items;
   } catch (error) {
@@ -242,7 +266,6 @@ async function buildMultilingualIndex(): Promise<Map<string, { id: string; allNa
   });
 
   cachedMultilingualIndex = index;
-  console.log(`Built multilingual index with ${index.size} items across ${Object.keys(LOCALE_MAP).length} languages.`);
   return index;
 }
 

@@ -127,7 +127,7 @@ export async function getMarketPrices(
     // Batch requests
     const BATCH_SIZE = 50;
     const batches = [];
-    
+
     for (let i = 0; i < items.length; i += BATCH_SIZE) {
       batches.push(items.slice(i, i + BATCH_SIZE));
     }
@@ -135,12 +135,12 @@ export async function getMarketPrices(
     const pricePromises = batches.map(async (batch) => {
       const itemsParam = batch.join(',');
       const url = `${baseUrl}/api/v2/stats/prices/${itemsParam}.json?locations=${locationsParam}&qualities=${quality}`;
-      
-      const response = await fetch(url, { 
-        next: { revalidate: 60 },
+
+      const response = await fetch(url, {
+        next: { revalidate: 120 }, // Cache for 2 minutes instead of 1
         headers: { 'User-Agent': 'AlbionTools/1.0 (Development)' }
       });
-      
+
       if (!response.ok) return [];
       return await response.json() as MarketStat[];
     });
@@ -189,11 +189,11 @@ export async function getMarketVolume(
 ) {
   try {
     if (items.length === 0) return [];
-    
+
     const baseUrl = REGION_URLS[region];
     const BATCH_SIZE = 50;
     const batches = [];
-    
+
     for (let i = 0; i < items.length; i += BATCH_SIZE) {
       batches.push(items.slice(i, i + BATCH_SIZE));
     }
@@ -202,12 +202,12 @@ export async function getMarketVolume(
       const itemsParam = batch.join(',');
       // time-scale=24 gives daily resolution.
       const url = `${baseUrl}/api/v2/stats/history/${itemsParam}.json?locations=${encodeURIComponent(location)}&qualities=1&time-scale=24`;
-      
-      const response = await fetch(url, { 
-        next: { revalidate: 300 },
+
+      const response = await fetch(url, {
+        next: { revalidate: 600 }, // Cache for 10 minutes instead of 5
         headers: { 'User-Agent': 'AlbionTools/1.0 (Development)' }
       });
-      
+
       if (!response.ok) return [];
       return await response.json() as MarketHistory[];
     });

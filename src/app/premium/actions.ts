@@ -10,26 +10,9 @@ configureLemonSqueezy();
 // Helper to get user profile (admin)
 async function getUserProfileAdmin(uid: string) {
     try {
-        console.log(`[getUserProfileAdmin] Fetching profile for uid: ${uid}`);
-        
-        // DEBUG: Check what project we are connected to
-        console.log(`[getUserProfileAdmin] Env Project ID: ${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}`);
-        console.log(`[getUserProfileAdmin] Admin App Options: ${JSON.stringify(adminAuth.app.options)}`);
-        
-        // DEBUG: List first few users in Auth to see if we are in the right place
-        try {
-            const listUsersResult = await adminAuth.listUsers(5);
-            console.log(`[getUserProfileAdmin] Auth Users found: ${listUsersResult.users.length}`);
-            listUsersResult.users.forEach(u => console.log(` - ${u.uid} (${u.email})`));
-        } catch (e) {
-            console.error('[getUserProfileAdmin] Failed to list auth users:', e);
-        }
-
         const docRef = adminDb.collection('users').doc(uid);
         const docSnap = await docRef.get();
-        
-        console.log(`[getUserProfileAdmin] Exists: ${docSnap.exists}, Path: ${docRef.path}`);
-        
+
         if (docSnap.exists) {
             return docSnap.data() as any;
         }

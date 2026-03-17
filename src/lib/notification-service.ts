@@ -249,8 +249,6 @@ export async function checkAndNotifyRankUp(userId: string, builds: any[]) {
 
     // Only notify if rank has INCREASED and we haven't notified for this rank yet
     if (currentRankIndex > lastRankIndex) {
-      console.log(`User ${userId} ranked up to ${currentRank}`);
-      
       // Update lastNotifiedRank FIRST to prevent duplicate notifications
       const userRef = doc(db, 'users', userId);
       await updateDoc(userRef, {

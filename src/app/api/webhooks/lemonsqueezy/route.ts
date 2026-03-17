@@ -103,7 +103,6 @@ async function updateSubscriptionStatus(uid: string, data: any, eventType: strin
         }
 
         await docRef.set(updateData, { merge: true });
-        console.log(`Successfully updated subscription for user ${uid}. Effective plan: ${effectiveSubscription?.planType} (${effectiveSubscription?.status})`);
 
         // Notify user only if status CHANGED to active or trialing (prevents duplicates)
         // We compare against the previous effective status
@@ -170,8 +169,7 @@ async function saveOrderInvoice(uid: string, orderData: any) {
         await adminDb.collection('users').doc(uid)
             .collection('invoices').doc(orderData.id.toString())
             .set(invoiceData, { merge: true });
-            
-        console.log(`Saved invoice ${orderData.id} for user ${uid}`);
+
         return true;
     } catch (err) {
         console.error('Error saving invoice:', err);
@@ -206,8 +204,6 @@ export async function POST(req: NextRequest) {
     const payload = JSON.parse(text);
     const { meta } = payload;
     const custom_data = meta.custom_data;
-
-    console.log('Webhook received:', eventType, custom_data);
 
     if (!custom_data || !custom_data.user_id) {
        return NextResponse.json({ message: 'No user_id in custom_data' }, { status: 200 });

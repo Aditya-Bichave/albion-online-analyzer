@@ -11,18 +11,15 @@ export async function getThreadsAction(filters?: {
   authorId?: string;
   limit?: number;
 }) {
-  console.log('[CommunityAction] Fetching threads with filters:', filters);
   try {
     let query: any = adminDb.collection('threads');
 
     // Apply filters first
     if (filters?.category) {
-      console.log('[CommunityAction] Applying category filter:', filters.category);
       query = query.where('category', '==', filters.category);
     }
 
     if (filters?.server && filters.server !== 'All') {
-      console.log('[CommunityAction] Applying server filter:', filters.server);
       query = query.where('server', '==', filters.server);
     }
 
@@ -40,7 +37,6 @@ export async function getThreadsAction(filters?: {
     }
 
     const snapshot = await query.get();
-    console.log(`[CommunityAction] Found ${snapshot.size} threads`);
     return { success: true, threads: snapshot.docs.map((doc: any) => doc.data() as Thread) };
   } catch (error) {
     console.error('[CommunityAction] Error getting threads:', error);

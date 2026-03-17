@@ -180,7 +180,6 @@ function MarketFlipperContent() {
 
     localStorage.setItem('albion_watchlist', JSON.stringify(watchlist));
     if (user) {
-      console.log('Attempting to save watchlist for user:', user.uid);
       setSyncStatus('saving');
       saveUserPreferences(user.uid, { watchlist })
         .then(() => setSyncStatus('saved'))
@@ -196,7 +195,6 @@ function MarketFlipperContent() {
 
     localStorage.setItem('albion_custom_items', JSON.stringify(customItems));
     if (user) {
-      console.log('Attempting to save custom items for user:', user.uid);
       setSyncStatus('saving');
       saveUserPreferences(user.uid, { customItems })
         .then(() => setSyncStatus('saved'))

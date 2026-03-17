@@ -71,12 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const docRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(docRef);
 
-    console.log('[AuthContext] ensureProfileExists for user:', user.uid);
-    console.log('[AuthContext] Document exists:', docSnap.exists());
-    if (docSnap.exists()) {
-      console.log('[AuthContext] Existing data:', docSnap.data());
-    }
-
     // Resolve Email (check providerData if user.email is null)
     let email = user.email;
     if (!email && user.providerData && user.providerData.length > 0) {
@@ -98,8 +92,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!defaultPhotoURL && defaultDisplayName) {
       defaultPhotoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(defaultDisplayName)}&background=random`;
     }
-
-    console.log('[AuthContext] User data from Firebase Auth:', { email, displayName: defaultDisplayName, photoURL: defaultPhotoURL });
 
     if (!docSnap.exists()) {
       // Create new profile ONLY if it truly doesn't exist
@@ -205,7 +197,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signInWithPopup(auth, provider);
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {
-        console.log("Sign in popup closed by user");
         throw error;
       }
       console.error("Error signing in with Google", error);

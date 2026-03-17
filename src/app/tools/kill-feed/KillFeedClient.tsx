@@ -148,7 +148,7 @@ export default function KillFeedPage() {
   useEffect(() => {
     // Only auto-refresh on the first page
     if (autoRefresh && !selectedPlayer && page === 1) {
-      refreshIntervalRef.current = setInterval(loadFeed, 10000); // 10s refresh (reduced from 5s)
+      refreshIntervalRef.current = setInterval(loadFeed, 30000); // 30s refresh to reduce CPU usage
     } else {
       if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
     }

@@ -8,13 +8,9 @@ export interface EmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: EmailOptions) {
-  console.log('[EmailService] Attempting to send email to:', to);
-  
   if (!RESEND_API_KEY) {
     console.warn('[EmailService] RESEND_API_KEY is not set. Email notification skipped.');
     return { success: false, error: 'API key missing' };
-  } else {
-    console.log('[EmailService] RESEND_API_KEY is present (length: ' + RESEND_API_KEY.length + ')');
   }
 
   try {
@@ -45,7 +41,6 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
     }
 
     const data = await response.json();
-    console.log('[EmailService] Email sent successfully via Resend API:', data);
     return { success: true, data };
   } catch (error) {
     console.error('[EmailService] Error sending email:', error);

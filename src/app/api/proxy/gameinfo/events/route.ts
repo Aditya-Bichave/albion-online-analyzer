@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
     const response = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
+      },
+      // Cache for 10 seconds to reduce repeated API calls
+      next: { revalidate: 10 }
     });
 
     if (!response.ok) {
@@ -22,7 +24,13 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    
+    // Add cache control headers for edge caching
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30'
+      }
+    });
   } catch (error) {
     console.error('Proxy Error:', error);
     return NextResponse.json(

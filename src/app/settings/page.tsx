@@ -286,8 +286,7 @@ function SettingsContent() {
     try {
       // Clean up the search name - remove extra spaces and common issues
       const cleanSearchName = searchName.trim().replace(/\s+/g, ' ');
-      console.log(`Searching for character: "${cleanSearchName}"`);
-      
+
       const result = await searchAlbionCharacter(cleanSearchName);
       
       if (result.error) {

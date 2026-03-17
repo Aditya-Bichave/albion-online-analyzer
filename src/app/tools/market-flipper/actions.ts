@@ -25,8 +25,6 @@ export async function getMarketData(
     let baseItems = categoryItems.length > 0 ? categoryItems : POPULAR_ITEMS;
     const allItems = Array.from(new Set([...baseItems, ...additionalItems]));
 
-    console.log('[MarketData] Fetching market data for locale:', locale);
-
     // Fetch Prices, Volume, and Item Names in parallel
     const [data, historyData, itemsList] = await Promise.all([
       getMarketPrices(allItems, region),
@@ -37,8 +35,6 @@ export async function getMarketData(
       })
     ]);
 
-    console.log('[MarketData] Loaded items:', itemsList.length);
-
     // Build Name Map
     const nameMap = new Map<string, string>();
     if (Array.isArray(itemsList)) {
@@ -48,7 +44,6 @@ export async function getMarketData(
         }
       });
     }
-    console.log('[MarketData] nameMap size:', nameMap.size, 'Sample entries:', Array.from(nameMap.entries()).slice(0, 5));
 
     // Process volume data into a map: ItemId -> Avg Daily Volume (last 3 days)
     const volumeMap = new Map<string, number>();
@@ -114,7 +109,6 @@ function processMarketData(
       if (customItemSet.has(itemId) || (profit > 1000 && profitMargin > 10)) {
         const lookupId = itemId.split('@')[0];
         const itemName = nameMap.get(lookupId);
-        console.log('[MarketData] Looking up name for:', lookupId, '->', itemName || 'NOT FOUND');
         flips.push({
           itemId: itemId,
           buyCity: cityStat.city,

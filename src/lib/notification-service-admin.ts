@@ -82,11 +82,9 @@ async function sendEmailNotificationAdmin(profile: any, email: string, type: Not
   let messages: any;
   try {
     messages = (await import(`@/../messages/${locale}.json`)).default;
-    console.log(`[EmailService] Loaded messages for locale: ${locale}`);
   } catch (error) {
     console.error(`Failed to load messages for locale: ${locale}`, error);
     messages = (await import(`@/../messages/en.json`)).default;
-    console.log('[EmailService] Using fallback English messages');
   }
   
   // Create translation function for Common.Emails namespace
