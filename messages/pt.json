@@ -1204,7 +1204,17 @@
       "Group": "Grupo",
       "EscapeGathering": "Fuga/Coleta",
       "Ganking": "Ganking",
-      "Other": "Outro"
+      "Other": "Outro",
+      "Tank": "Tanque",
+      "Healer": "Curandeiro",
+      "DPS": "DPS",
+      "Burst": "Explosão",
+      "5v5": "5v5",
+      "Hellgate": "Portão Infernal",
+      "Faction Warfare": "Guerra de Facções",
+      "Gathering": "Coleta",
+      "Roaming": "Vagando",
+      "Escape": "Fuga"
     },
     "mobilityValues": {
       "low": "Baixa",

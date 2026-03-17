@@ -1537,7 +1537,17 @@
       "Group": "Groupe",
       "EscapeGathering": "Évasion/Récolte",
       "Ganking": "Ganking",
-      "Other": "Autre"
+      "Other": "Autre",
+      "Tank": "Tank",
+      "Healer": "Soigneur",
+      "DPS": "DPS",
+      "Burst": "Explosif",
+      "5v5": "5v5",
+      "Hellgate": "Porte de l'Enfer",
+      "Faction Warfare": "Guerre de Faction",
+      "Gathering": "Récolte",
+      "Roaming": "Errance",
+      "Escape": "Évasion"
     }
   },
   "Subscription": {

@@ -1555,7 +1555,17 @@
       "Group": "Grup",
       "EscapeGathering": "Kaçış/Toplama",
       "Ganking": "Ganking",
-      "Other": "Diğer"
+      "Other": "Diğer",
+      "Tank": "Tank",
+      "Healer": "Şifacı",
+      "DPS": "Hasar",
+      "Burst": "Patlama",
+      "5v5": "5v5",
+      "Hellgate": "Cehennem Kapısı",
+      "Faction Warfare": "Faksiyon Savaşı",
+      "Gathering": "Toplama",
+      "Roaming": "Gezgin",
+      "Escape": "Kaçış"
     }
   },
   "Subscription": {

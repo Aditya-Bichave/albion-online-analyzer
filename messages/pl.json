@@ -1538,7 +1538,17 @@
       "Group": "Grupa",
       "EscapeGathering": "Ucieczka/Zbieractwo",
       "Ganking": "Ganking",
-      "Other": "Inne"
+      "Other": "Inne",
+      "Tank": "Tank",
+      "Healer": "Uzdrowiciel",
+      "DPS": "DPS",
+      "Burst": "Burst",
+      "5v5": "5v5",
+      "Hellgate": "Piekielne Wrota",
+      "Faction Warfare": "Wojna Frakcji",
+      "Gathering": "Zbieractwo",
+      "Roaming": "Włóczęga",
+      "Escape": "Ucieczka"
     }
   },
   "Subscription": {

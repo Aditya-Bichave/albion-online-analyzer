@@ -1544,7 +1544,17 @@
       "Group": "그룹",
       "EscapeGathering": "도주/채집",
       "Ganking": "갱킹",
-      "Other": "기타"
+      "Other": "기타",
+      "Tank": "탱커",
+      "Healer": "힐러",
+      "DPS": "딜러",
+      "Burst": "폭발력",
+      "5v5": "5v5",
+      "Hellgate": "헬게이트",
+      "Faction Warfare": "진영전",
+      "Gathering": "채집",
+      "Roaming": "유랑",
+      "Escape": "도주"
     }
   },
   "Subscription": {

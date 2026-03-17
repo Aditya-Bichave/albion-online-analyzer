@@ -1493,7 +1493,17 @@
       "Group": "团队",
       "EscapeGathering": "逃生/采集",
       "Ganking": "抓人",
-      "Other": "其他"
+      "Other": "其他",
+      "Tank": "坦克",
+      "Healer": "治疗",
+      "DPS": "输出",
+      "Burst": "爆发",
+      "5v5": "5v5",
+      "Hellgate": "地狱之门",
+      "Faction Warfare": "阵营战",
+      "Gathering": "采集",
+      "Roaming": "漫游",
+      "Escape": "逃生"
     }
   },
   "Subscription": {

@@ -1540,7 +1540,17 @@
       "Group": "Grupo",
       "EscapeGathering": "Escape/Recolección",
       "Ganking": "Ganking",
-      "Other": "Otro"
+      "Other": "Otro",
+      "Tank": "Tanque",
+      "Healer": "Sanador",
+      "DPS": "DPS",
+      "Burst": "Explosivo",
+      "5v5": "5v5",
+      "Hellgate": "Puerta Infernal",
+      "Faction Warfare": "Guerra de Facciones",
+      "Gathering": "Recolección",
+      "Roaming": "Deambular",
+      "Escape": "Escape"
     }
   },
   "Subscription": {

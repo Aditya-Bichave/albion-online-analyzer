@@ -1554,7 +1554,17 @@
       "Group": "Group",
       "EscapeGathering": "Escape/Gathering",
       "Ganking": "Ganking",
-      "Other": "Other"
+      "Other": "Other",
+      "Tank": "Tank",
+      "Healer": "Healer",
+      "DPS": "DPS",
+      "Burst": "Burst",
+      "5v5": "5v5",
+      "Hellgate": "Hellgate",
+      "Faction Warfare": "Faction Warfare",
+      "Gathering": "Gathering",
+      "Roaming": "Roaming",
+      "Escape": "Escape"
     }
   },
   "Subscription": {

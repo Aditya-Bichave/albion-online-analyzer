@@ -1537,7 +1537,17 @@
       "Group": "Группа",
       "EscapeGathering": "Побег/Сбор",
       "Ganking": "Ганк",
-      "Other": "Другое"
+      "Other": "Другое",
+      "Tank": "Танк",
+      "Healer": "Хилер",
+      "DPS": "Урон",
+      "Burst": "Бёрст",
+      "5v5": "5v5",
+      "Hellgate": "Адские Врата",
+      "Faction Warfare": "Война Фракций",
+      "Gathering": "Сбор",
+      "Roaming": "Бродяга",
+      "Escape": "Побег"
     }
   },
   "Subscription": {
