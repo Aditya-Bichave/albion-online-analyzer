@@ -51,3 +51,4 @@ public/workbox-*.js.map
 # *_*js
 # *_*.txt
 NUL
+.item-cache.json
