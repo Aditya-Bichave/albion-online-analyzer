@@ -184,24 +184,33 @@
     "logout": "Déconnexion"
   },
   "Footer": {
-    "description": "Le compagnon indispensable pour les joueurs d'Albion Online. Flipper du marché, infos PvP, calculateurs d'artisanat et plus encore.",
     "tools": "Outils",
-    "marketFlipper": "Marché Flipper",
+    "marketFlipper": "Market Flipper",
+    "killFeed": "Kill Feed",
     "pvpIntel": "Infos PvP",
+    "craftingCalc": "Calculatrice d'Artisanat",
+    "goldPrice": "Prix de l'Or",
     "zvzTracker": "Suivi ZvZ",
-    "craftingPlanner": "Planificateur d'Artisanat",
-    "resources": "Ressources",
-    "soloBuilds": "Builds Solo",
-    "zvzBuilds": "Builds ZvZ",
-    "farmingProfit": "Calculateur d'Agriculture",
-    "aboutUs": "À propos",
-    "legal": "Légal",
-    "privacyPolicy": "Politique de Confidentialité",
-    "termsOfService": "Conditions d'Utilisation",
-    "cookiePolicy": "Politique de Cookies",
-    "refundPolicy": "Politique de Remboursement",
-    "disclaimer": "AlbionKit est un outil créé par la communauté et n'est pas affilié à Sandbox Interactive GmbH. Albion Online et son logo sont des marques de Sandbox Interactive GmbH.",
-    "rightsReserved": "© {year} AlbionKit. Tous droits réservés."
+    "calculators": "Calculatrices",
+    "farming": "Agriculture",
+    "cooking": "Cuisine",
+    "alchemy": "Alchimie",
+    "laborers": "Ouvriers",
+    "animal": "Animaux",
+    "choppedFish": "Poisson Haché",
+    "enchanting": "Enchantement",
+    "community": "Communauté",
+    "builds": "Builds",
+    "forum": "Communauté",
+    "about": "À Propos de Nous",
+    "legal": "Mentions Légales",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "cookies": "Politique des Cookies",
+    "refund": "Politique de Remboursement",
+    "description": "L'outil ultime d'Albion Online pour le commerce du marché, le suivi PvP et le partage de builds.",
+    "allRightsReserved": "Tous droits réservés.",
+    "notAffiliated": "Non affilié à Sandbox Interactive Ltd. Albion Online est une marque de Sandbox Interactive Ltd."
   },
   "HomePage": {
     "heroTitle": "Optimisez chaque session sur ",
@@ -805,11 +814,20 @@
     },
     "killFeed": {
       "title": "Flux de Kills en direct",
-      "description": "Surveillez l'activité PvP en temps réel sur tous les serveurs Albion Online. Analysez les logs de combat, suivez les meilleurs joueurs et guildes, examinez les statistiques de kills détaillées et restez informé des batailles pendant qu'elles se déroulent. Essentiel pour les joueurs PvP."
+      "description": "Surveillez l'activité PvP en temps réel sur tous les serveurs Albion Online. Analysez les logs de combat, suivez les meilleurs joueurs et guildes, examinez les statistiques de kills détaillées et restez informé des batailles pendant qu'elles se déroulent. Essentiel pour les joueurs PvP.",
+      "descriptionDynamic": "En direct : {killer} vient de tuer {victim} pour {fame} de Gloire ! Suivez les kills PvP, les batailles et le butin en temps réel dans Albion Online."
     },
     "goldPrice": {
       "title": "Suivi du prix de l'or",
-      "description": "Suivez l'historique et les tendances des taux de change Or vers Argent dans Albion Online. Prenez des décisions éclairées sur les achats d'or, surveillez les coûts premium et analysez les tendances du marché avec des données en temps réel."
+      "description": "Suivez l'historique et les tendances des taux de change Or vers Argent dans Albion Online. Prenez des décisions éclairées sur les achats d'or, surveillez les coûts premium et analysez les tendances du marché avec des données en temps réel.",
+      "descriptionDynamic": "Le prix actuel de l'or est de {price} Argent. Suivez l'historique, calculez les coûts premium et analysez les tendances du marché."
+    },
+    "zvzTracker": {
+      "title": "Suivi ZvZ",
+      "description": "Suivez les batailles massives en monde ouvert et les guerres de guildes dans Albion Online. Surveillance de batailles ZvZ en temps réel avec décomptes de kills et classements de guildes.",
+      "liveTitle": "{count} Live Battles",
+      "liveDescription": "Currently tracking {count} active battles in {region}. Top battle: {kills} kills.",
+      "latestDescription": "Track recent massive battles. Latest: {kills} kills in {location}."
     },
     "crafting": {
       "title": "Calculateur de profit d'artisanat",
@@ -846,10 +864,6 @@
     "settings": {
       "title": "Paramètres",
       "description": "Configurez vos préférences AlbionKit, paramètres de notification, options de langue et gestion de compte. Personnalisez votre expérience."
-    },
-    "zvzTracker": {
-      "title": "Suivi ZvZ",
-      "description": "Suivez les batailles massives en monde ouvert et les guerres de guildes dans Albion Online. Surveillance de batailles ZvZ en temps réel avec décomptes de kills et classements de guildes."
     }
   },
   "Alchemy": {
@@ -1046,7 +1060,13 @@
       "T5_MEAL_SALAD": "Salade de navets",
       "T6_MEAL_SALAD": "Salade de chou",
       "T7_MEAL_SALAD": "Salade de pommes de terre",
-      "T8_MEAL_SALAD": "Salade avalonienne"
+      "T8_MEAL_SALAD": "Salade avalonienne",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Carottes",
@@ -2087,7 +2107,8 @@
       "food": "Nourriture",
       "mount": "Monture",
       "bag": "Sac"
-    }
+    },
+    "youtubePlaceholder": "https://youtube.com/watch?v=..."
   },
   "ServerSelector": {
     "west": "Amériques (West)",
@@ -2624,7 +2645,9 @@
       "low": "Faible",
       "medium": "Moyenne",
       "high": "Élevée"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "Perdu dans les Brumes ?",
@@ -2658,34 +2681,5 @@
       "large-scale": "Grande Escouade",
       "group": "Groupe"
     }
-  },
-  "Footer": {
-    "tools": "Outils",
-    "marketFlipper": "Market Flipper",
-    "killFeed": "Kill Feed",
-    "pvpIntel": "Infos PvP",
-    "craftingCalc": "Calculatrice d'Artisanat",
-    "goldPrice": "Prix de l'Or",
-    "zvzTracker": "Suivi ZvZ",
-    "calculators": "Calculatrices",
-    "farming": "Agriculture",
-    "cooking": "Cuisine",
-    "alchemy": "Alchimie",
-    "laborers": "Ouvriers",
-    "animal": "Animaux",
-    "choppedFish": "Poisson Haché",
-    "enchanting": "Enchantement",
-    "community": "Communauté",
-    "builds": "Builds",
-    "forum": "Communauté",
-    "about": "À Propos de Nous",
-    "legal": "Mentions Légales",
-    "privacy": "Politique de Confidentialité",
-    "terms": "Conditions d'Utilisation",
-    "cookies": "Politique des Cookies",
-    "refund": "Politique de Remboursement",
-    "description": "L'outil ultime d'Albion Online pour le commerce du marché, le suivi PvP et le partage de builds.",
-    "allRightsReserved": "Tous droits réservés.",
-    "notAffiliated": "Non affilié à Sandbox Interactive Ltd. Albion Online est une marque de Sandbox Interactive Ltd."
   }
 }

@@ -184,24 +184,33 @@
     "logout": "Cerrar Sesión"
   },
   "Footer": {
-    "description": "El compañero esencial para los jugadores de Albion Online. Flipper de mercado, información PvP, calculadoras de artesanía y más.",
     "tools": "Herramientas",
-    "marketFlipper": "Flipper de Mercado",
+    "marketFlipper": "Reventa de Mercado",
+    "killFeed": "Feed de Asesinatos",
     "pvpIntel": "Información PvP",
+    "craftingCalc": "Calculadora de Artesanía",
+    "goldPrice": "Precio del Oro",
     "zvzTracker": "Rastreador ZvZ",
-    "craftingPlanner": "Planificador de Artesanía",
-    "resources": "Recursos",
-    "soloBuilds": "Builds Solo",
-    "zvzBuilds": "Builds ZvZ",
-    "farmingProfit": "Calculadora de Agricultura",
-    "aboutUs": "Sobre Nosotros",
+    "calculators": "Calculadoras",
+    "farming": "Agricultura",
+    "cooking": "Cocina",
+    "alchemy": "Alquimia",
+    "laborers": "Trabajadores",
+    "animal": "Animales",
+    "choppedFish": "Pescado Picado",
+    "enchanting": "Encantamiento",
+    "community": "Comunidad",
+    "builds": "Builds",
+    "forum": "Comunidad",
+    "about": "Sobre Nosotros",
     "legal": "Legal",
-    "privacyPolicy": "Política de Privacidad",
-    "termsOfService": "Términos de Servicio",
-    "cookiePolicy": "Política de Cookies",
-    "refundPolicy": "Política de Reembolso",
-    "disclaimer": "AlbionKit es una herramienta creada por la comunidad y no está afiliada, respaldada ni patrocinada por Sandbox Interactive GmbH. Albion Online y el logotipo de Albion Online son marcas comerciales de Sandbox Interactive GmbH.",
-    "rightsReserved": "© {year} AlbionKit. Todos los derechos reservados."
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "cookies": "Política de Cookies",
+    "refund": "Política de Reembolso",
+    "description": "La herramienta definitiva de Albion Online para comercio de mercado, seguimiento PvP y compartir builds.",
+    "allRightsReserved": "Todos los derechos reservados.",
+    "notAffiliated": "No afiliado con Sandbox Interactive Ltd. Albion Online es una marca comercial de Sandbox Interactive Ltd."
   },
   "HomePage": {
     "heroTitle": "Haz que cada sesión cuente en ",
@@ -805,11 +814,13 @@
     },
     "killFeed": {
       "title": "Feed de Muertes en Vivo",
-      "description": "Monitorea la actividad PvP en tiempo real en todos los servidores de Albion Online. Analiza registros de combate, rastrea los mejores jugadores y gremios, revisa estadísticas detalladas de kills y mantente informado sobre las batallas mientras ocurren. Esencial para jugadores PvP."
+      "description": "Monitorea la actividad PvP en tiempo real en todos los servidores de Albion Online. Analiza registros de combate, rastrea los mejores jugadores y gremios, revisa estadísticas detalladas de kills y mantente informado sobre las batallas mientras ocurren. Esencial para jugadores PvP.",
+      "descriptionDynamic": "En vivo: ¡{killer} acaba de matar a {victim} por {fame} de Fama! Rastrea muertes PvP, batallas y botín en tiempo real en Albion Online."
     },
     "goldPrice": {
       "title": "Rastreador de Precio del Oro",
-      "description": "Rastrea el historial y las tendencias de las tasas de cambio de Oro a Plata en Albion Online. Toma decisiones informadas sobre compras de oro, monitorea costos de premium y analiza tendencias del mercado con datos en tiempo real."
+      "description": "Rastrea el historial y las tendencias de las tasas de cambio de Oro a Plata en Albion Online. Toma decisiones informadas sobre compras de oro, monitorea costos de premium y analiza tendencias del mercado con datos en tiempo real.",
+      "descriptionDynamic": "El precio actual del Oro es {price} de Plata. Rastrea el historial, calcula costos de premium y analiza tendencias del mercado."
     },
     "crafting": {
       "title": "Calculadora de Beneficios de Artesanía",
@@ -1049,7 +1060,13 @@
       "T5_MEAL_SALAD": "Ensalada de Nabo",
       "T6_MEAL_SALAD": "Ensalada de Col",
       "T7_MEAL_SALAD": "Ensalada de Patata",
-      "T8_MEAL_SALAD": "Ensalada Avalónica"
+      "T8_MEAL_SALAD": "Ensalada Avalónica",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Zanahorias",
@@ -1899,11 +1916,6 @@
       "supporter": "Seguidor",
       "supporterDesc": "Seguidor Premium"
     },
-    "regions": {
-      "Americas": "Américas",
-      "Asia": "Asia",
-      "Europe": "Europa"
-    },
     "hidden": "Oculto",
     "hiddenBuild": "Este build está oculto al público"
   },
@@ -2095,7 +2107,8 @@
       "food": "Comida",
       "mount": "Montura",
       "bag": "Bolsa"
-    }
+    },
+    "youtubePlaceholder": "https://youtube.com/watch?v=..."
   },
   "Auth": {
     "loginTitle": "Bienvenido de Nuevo",
@@ -2306,7 +2319,9 @@
       "low": "Baja",
       "medium": "Media",
       "high": "Alta"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "ServerSelector": {
     "west": "América (West)",
@@ -2692,34 +2707,5 @@
       "large-scale": "Gran Escala",
       "group": "Grupo"
     }
-  },
-  "Footer": {
-    "tools": "Herramientas",
-    "marketFlipper": "Reventa de Mercado",
-    "killFeed": "Feed de Asesinatos",
-    "pvpIntel": "Información PvP",
-    "craftingCalc": "Calculadora de Artesanía",
-    "goldPrice": "Precio del Oro",
-    "zvzTracker": "Rastreador ZvZ",
-    "calculators": "Calculadoras",
-    "farming": "Agricultura",
-    "cooking": "Cocina",
-    "alchemy": "Alquimia",
-    "laborers": "Trabajadores",
-    "animal": "Animales",
-    "choppedFish": "Pescado Picado",
-    "enchanting": "Encantamiento",
-    "community": "Comunidad",
-    "builds": "Builds",
-    "forum": "Comunidad",
-    "about": "Sobre Nosotros",
-    "legal": "Legal",
-    "privacy": "Política de Privacidad",
-    "terms": "Términos de Servicio",
-    "cookies": "Política de Cookies",
-    "refund": "Política de Reembolso",
-    "description": "La herramienta definitiva de Albion Online para comercio de mercado, seguimiento PvP y compartir builds.",
-    "allRightsReserved": "Todos los derechos reservados.",
-    "notAffiliated": "No afiliado con Sandbox Interactive Ltd. Albion Online es una marca comercial de Sandbox Interactive Ltd."
   }
 }

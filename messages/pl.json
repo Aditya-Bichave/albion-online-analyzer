@@ -184,24 +184,33 @@
     "logout": "Wyloguj"
   },
   "Footer": {
-    "description": "Niezbędny towarzysz gracza Albion Online. Flipper rynkowy, wywiad PvP, kalkulatory i więcej.",
     "tools": "Narzędzia",
-    "marketFlipper": "Flipper Rynkowy",
-    "pvpIntel": "Wywiad PvP",
-    "zvzTracker": "Tracker ZvZ",
-    "craftingPlanner": "Planer Craftingu",
-    "resources": "Zasoby",
-    "soloBuilds": "Buildy Solo",
-    "zvzBuilds": "Buildy ZvZ",
-    "farmingProfit": "Zyski z Wyspy",
-    "aboutUs": "O nas",
+    "marketFlipper": "Market Flipper",
+    "killFeed": "Kill Feed",
+    "pvpIntel": "Informacje PvP",
+    "craftingCalc": "Kalkulator Rzemiosła",
+    "goldPrice": "Cena Złota",
+    "zvzTracker": "ZvZ Tracker",
+    "calculators": "Kalkulatory",
+    "farming": "Farming",
+    "cooking": "Gotowanie",
+    "alchemy": "Alchemia",
+    "laborers": "Pracownicy",
+    "animal": "Zwierzęta",
+    "choppedFish": "Ryba w Kawałkach",
+    "enchanting": "Zaklinanie",
+    "community": "Społeczność",
+    "builds": "Buildy",
+    "forum": "Społeczność",
+    "about": "O nas",
     "legal": "Prawne",
-    "privacyPolicy": "Prywatność",
-    "termsOfService": "Regulamin",
-    "cookiePolicy": "Ciasteczka",
-    "refundPolicy": "Zwroty",
-    "disclaimer": "AlbionKit jest narzędziem społecznościowym i nie jest powiązany z Sandbox Interactive GmbH. Albion Online oraz logo Albion Online są znakami towarowymi Sandbox Interactive GmbH.",
-    "rightsReserved": "© {year} AlbionKit. Wszelkie prawa zastrzeżone."
+    "privacy": "Polityka Prywatności",
+    "terms": "Warunki Korzystania",
+    "cookies": "Polityka Cookies",
+    "refund": "Polityka Zwrotów",
+    "description": "Najlepsze narzędzie do Albion Online do handlu na rynku, śledzenia PvP i udostępniania buildów.",
+    "allRightsReserved": "Wszelkie prawa zastrzeżone.",
+    "notAffiliated": "Nie powiązane z Sandbox Interactive Ltd. Albion Online jest znakiem towarowym Sandbox Interactive Ltd."
   },
   "HomePage": {
     "heroTitle": "Wykorzystaj każdą sesję w ",
@@ -851,6 +860,10 @@
     "crafting": {
       "title": "Zyski z Rzemiosła",
       "description": "Obliczaj zyski z wytwarzania, efektywność skupienia i wskaźniki zwrotu zasobów dla dowolnego przedmiotu w Albion Online. Kompleksowa optymalizacja produkcji."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
     }
   },
   "Alchemy": {
@@ -1047,7 +1060,13 @@
       "T5_MEAL_SALAD": "Sałatka z Rzepy",
       "T6_MEAL_SALAD": "Sałatka Kapuściana",
       "T7_MEAL_SALAD": "Sałatka Ziemniaczana",
-      "T8_MEAL_SALAD": "Sałatka Awalońska"
+      "T8_MEAL_SALAD": "Sałatka Awalońska",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Marchew",
@@ -1897,11 +1916,6 @@
       "supporter": "Wspierający",
       "supporterDesc": "Wspierający Premium"
     },
-    "regions": {
-      "Americas": "Ameryki",
-      "Asia": "Azja",
-      "Europe": "Europa"
-    },
     "hidden": "Ukryty",
     "hiddenBuild": "Ten build jest ukryty przed publicznością"
   },
@@ -2093,7 +2107,8 @@
       "mount": "Wierzchowiec",
       "bag": "Torba"
     },
-    "youtubePlaceholder": "https://youtube.com/watch?v=..."
+    "youtubePlaceholder": "https://youtube.com/watch?v=...",
+    "loading": "Loading..."
   },
   "ServerSelector": {
     "west": "Ameryki (West)",
@@ -2630,7 +2645,9 @@
       "low": "Niska",
       "medium": "Średnia",
       "high": "Wysoka"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "Zgubiłeś się we Mgle?",
@@ -2664,34 +2681,5 @@
       "large-scale": "Duże Zespoły",
       "group": "Grupa"
     }
-  },
-  "Footer": {
-    "tools": "Narzędzia",
-    "marketFlipper": "Market Flipper",
-    "killFeed": "Kill Feed",
-    "pvpIntel": "Informacje PvP",
-    "craftingCalc": "Kalkulator Rzemiosła",
-    "goldPrice": "Cena Złota",
-    "zvzTracker": "ZvZ Tracker",
-    "calculators": "Kalkulatory",
-    "farming": "Farming",
-    "cooking": "Gotowanie",
-    "alchemy": "Alchemia",
-    "laborers": "Pracownicy",
-    "animal": "Zwierzęta",
-    "choppedFish": "Ryba w Kawałkach",
-    "enchanting": "Zaklinanie",
-    "community": "Społeczność",
-    "builds": "Buildy",
-    "forum": "Społeczność",
-    "about": "O nas",
-    "legal": "Prawne",
-    "privacy": "Polityka Prywatności",
-    "terms": "Warunki Korzystania",
-    "cookies": "Polityka Cookies",
-    "refund": "Polityka Zwrotów",
-    "description": "Najlepsze narzędzie do Albion Online do handlu na rynku, śledzenia PvP i udostępniania buildów.",
-    "allRightsReserved": "Wszelkie prawa zastrzeżone.",
-    "notAffiliated": "Nie powiązane z Sandbox Interactive Ltd. Albion Online jest znakiem towarowym Sandbox Interactive Ltd."
   }
 }

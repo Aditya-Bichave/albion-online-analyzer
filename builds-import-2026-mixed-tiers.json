@@ -47,7 +47,7 @@
         "Armor": {"Type": "T6_ARMOR_LEATHER_SET3", "Quality": 3},
         "Shoes": {"Type": "T6_SHOES_PLATE_SET1", "Quality": 3},
         "Cape": {"Type": "T6_CAPEITEM_UNDEAD", "Quality": 3},
-        "Potion": {"Type": "T6_POTION_CLEANSE", "Quality": 3},
+        "Potion": {"Type": "T5_POTION_CLEANSE2", "Quality": 3},
         "Food": {"Type": "T6_MEAL_STEW"},
         "Mount": {"Type": "T6_MOUNT_ARMORED_HORSE"},
         "Bag": {"Type": "T6_BAG"}
@@ -69,8 +69,8 @@
         "Armor": {"Type": "T5_ARMOR_LEATHER_SET3", "Quality": 2},
         "Shoes": {"Type": "T5_SHOES_LEATHER_SET3", "Quality": 2},
         "Cape": {"Type": "T5_CAPE", "Quality": 2},
-        "Potion": {"Type": "T5_POTION_GATHER", "Quality": 2},
-        "Food": {"Type": "T5_MEAL_STEW"},
+        "Potion": {"Type": "T6_POTION_GATHER", "Quality": 2},
+        "Food": {"Type": "T6_MEAL_STEW"},
         "Mount": {"Type": "T5_MOUNT_OX"},
         "Bag": {"Type": "T5_BAG"}
       }
@@ -91,8 +91,8 @@
         "Armor": {"Type": "T7_ARMOR_PLATE_SET2", "Quality": 3},
         "Shoes": {"Type": "T7_SHOES_PLATE_SET2", "Quality": 3},
         "Cape": {"Type": "T7_CAPE", "Quality": 3},
-        "Potion": {"Type": "T7_POTION_BERSERK", "Quality": 3},
-        "Food": {"Type": "T7_MEAL_STEW"},
+        "Potion": {"Type": "T6_POTION_BERSERK", "Quality": 3},
+        "Food": {"Type": "T6_MEAL_STEW"},
         "Mount": {"Type": "T7_MOUNT_ARMORED_HORSE"},
         "Bag": {"Type": "T7_BAG"}
       }
@@ -131,8 +131,8 @@
       "mobility": "high",
       "difficulty": "medium",
       "items": {
-        "MainHand": {"Type": "T6_MAIN_DAGGERS", "Quality": 3},
-        "OffHand": {"Type": "T6_OFF_DAGGERS", "Quality": 3},
+        "MainHand": {"Type": "T6_2H_DAGGERPAIR", "Quality": 3},
+        "OffHand": {"Type": "T6_OFF_TORCH", "Quality": 3},
         "Head": {"Type": "T6_HEAD_LEATHER_SET3", "Quality": 3},
         "Armor": {"Type": "T6_ARMOR_LEATHER_SET3", "Quality": 3},
         "Shoes": {"Type": "T6_SHOES_LEATHER_SET3", "Quality": 3},
@@ -182,9 +182,9 @@
         "Armor": {"Type": "T5_ARMOR_LEATHER_SET3", "Quality": 2},
         "Shoes": {"Type": "T5_SHOES_LEATHER_SET3", "Quality": 2},
         "Cape": {"Type": "T5_CAPE", "Quality": 2},
-        "Potion": {"Type": "T5_POTION_BERSERK", "Quality": 2},
-        "Food": {"Type": "T5_MEAL_STEW"},
-        "Mount": {"Type": "T5_MOUNT_ARMORED_HORSE"},
+        "Potion": {"Type": "T6_POTION_BERSERK", "Quality": 2},
+        "Food": {"Type": "T6_MEAL_STEW"},
+        "Mount": {"Type": "T6_MOUNT_ARMORED_HORSE"},
         "Bag": {"Type": "T5_BAG"}
       }
     },
@@ -205,9 +205,9 @@
         "Armor": {"Type": "T7_ARMOR_CLOTH_SET2", "Quality": 2},
         "Shoes": {"Type": "T7_SHOES_CLOTH_SET2", "Quality": 2},
         "Cape": {"Type": "T7_CAPE", "Quality": 2},
-        "Potion": {"Type": "T7_POTION_COOLDOWN", "Quality": 2},
-        "Food": {"Type": "T7_MEAL_STEW"},
-        "Mount": {"Type": "T7_MOUNT_HORSE"},
+        "Potion": {"Type": "T6_POTION_COOLDOWN", "Quality": 2},
+        "Food": {"Type": "T6_MEAL_STEW"},
+        "Mount": {"Type": "T6_MOUNT_HORSE"},
         "Bag": {"Type": "T7_BAG"}
       }
     },

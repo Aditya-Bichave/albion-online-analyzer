@@ -184,24 +184,33 @@
     "logout": "Выйти"
   },
   "Footer": {
-    "description": "Незаменимый помощник для игроков Albion Online. Перепродажа, PvP разведка, калькуляторы крафта и многое другое.",
     "tools": "Инструменты",
-    "marketFlipper": "Перепродажа",
-    "pvpIntel": "PvP Разведка",
+    "marketFlipper": "Market Flipper",
+    "killFeed": "Kill Feed",
+    "pvpIntel": "PvP Информация",
+    "craftingCalc": "Калькулятор Ремесла",
+    "goldPrice": "Цена Золота",
     "zvzTracker": "ZvZ Трекер",
-    "craftingPlanner": "Планировщик Крафта",
-    "resources": "Ресурсы",
-    "soloBuilds": "Соло Сборки",
-    "zvzBuilds": "ZvZ Сборки",
-    "farmingProfit": "Прибыль Фермы",
-    "aboutUs": "О нас",
-    "legal": "Юридическая информация",
-    "privacyPolicy": "Конфиденциальность",
-    "termsOfService": "Условия использования",
-    "cookiePolicy": "Файлы Cookie",
-    "refundPolicy": "Возврат средств",
-    "disclaimer": "AlbionKit — это фанатский проект, не связанный с Sandbox Interactive GmbH. Albion Online и логотип Albion Online являются товарными знаками Sandbox Interactive GmbH.",
-    "rightsReserved": "© {year} AlbionKit. Все права защищены."
+    "calculators": "Калькуляторы",
+    "farming": "Фермерство",
+    "cooking": "Готовка",
+    "alchemy": "Алхимия",
+    "laborers": "Работники",
+    "animal": "Животные",
+    "choppedFish": "Рыбный Фарш",
+    "enchanting": "Зачарование",
+    "community": "Сообщество",
+    "builds": "Билды",
+    "forum": "Сообщество",
+    "about": "О нас",
+    "legal": "Правовая информация",
+    "privacy": "Политика Конфиденциальности",
+    "terms": "Условия Использования",
+    "cookies": "Политика Cookies",
+    "refund": "Политика Возврата",
+    "description": "Лучший инструмент для Albion Online для торговли на рынке, отслеживания PvP и обмена билдами.",
+    "allRightsReserved": "Все права защищены.",
+    "notAffiliated": "Не связано с Sandbox Interactive Ltd. Albion Online является торговой маркой Sandbox Interactive Ltd."
   },
   "HomePage": {
     "heroTitle": "Сделайте каждую сессию эффективной в ",
@@ -805,11 +814,20 @@
     },
     "killFeed": {
       "title": "Лента Убийств",
-      "description": "Следите за PvP-активностью в реальном времени на всех серверах Albion Online. Анализируйте боевые логи, отслеживайте топ-игроков и гильдии, просматривайте детальную статистику убийств и будьте в курсе сражений по мере их прохождения. Необходимо для PvP-игроков."
+      "description": "Следите за PvP-активностью в реальном времени на всех серверах Albion Online. Анализируйте боевые логи, отслеживайте топ-игроков и гильдии, просматривайте детальную статистику убийств и будьте в курсе сражений по мере их прохождения. Необходимо для PvP-игроков.",
+      "descriptionDynamic": "Прямо сейчас: {killer} только что убил {victim} за {fame} славы! Отслеживайте PvP-убийства, сражения и добычу в реальном времени в Albion Online."
     },
     "goldPrice": {
       "title": "Отслеживание цены на золото",
-      "description": "Отслеживайте историю и тенденции курса обмена золота на серебро в Albion Online. Принимайте обоснованные решения о покупке золота, отслеживайте стоимость премиума и анализируйте рыночные тенденции с данными в реальном времени."
+      "description": "Отслеживайте историю и тенденции курса обмена золота на серебро в Albion Online. Принимайте обоснованные решения о покупке золота, отслеживайте стоимость премиума и анализируйте рыночные тенденции с данными в реальном времени.",
+      "descriptionDynamic": "Текущая цена на золото составляет {price} серебра. Отслеживайте историю, рассчитывайте стоимость премиума и анализируйте рыночные тенденции."
+    },
+    "zvzTracker": {
+      "title": "ZvZ-трекер",
+      "description": "Отслеживайте массовые сражения в открытом мире и войны гильдий в Albion Online. Мониторинг ZvZ-сражений в реальном времени с подсчетом убийств и рейтингами гильдий.",
+      "liveTitle": "{count} Live Battles",
+      "liveDescription": "Currently tracking {count} active battles in {region}. Top battle: {kills} kills.",
+      "latestDescription": "Track recent massive battles. Latest: {kills} kills in {location}."
     },
     "crafting": {
       "title": "Калькулятор прибыли ремесла",
@@ -846,10 +864,6 @@
     "settings": {
       "title": "Настройки",
       "description": "Настройте предпочтения AlbionKit, параметры уведомлений, языковые опции и управление аккаунтом. Настройте свой опыт."
-    },
-    "zvzTracker": {
-      "title": "ZvZ-трекер",
-      "description": "Отслеживайте массовые сражения в открытом мире и войны гильдий в Albion Online. Мониторинг ZvZ-сражений в реальном времени с подсчетом убийств и рейтингами гильдий."
     }
   },
   "Alchemy": {
@@ -1046,7 +1060,13 @@
       "T5_MEAL_SALAD": "Репный салат",
       "T6_MEAL_SALAD": "Капустный салат",
       "T7_MEAL_SALAD": "Картофельный салат",
-      "T8_MEAL_SALAD": "Авалонский салат"
+      "T8_MEAL_SALAD": "Авалонский салат",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Морковь",
@@ -2087,7 +2107,8 @@
       "mount": "Верховое животное",
       "bag": "Сумка"
     },
-    "youtubePlaceholder": "https://youtube.com/watch?v=..."
+    "youtubePlaceholder": "https://youtube.com/watch?v=...",
+    "loading": "Loading..."
   },
   "ServerSelector": {
     "west": "Америка (West)",
@@ -2624,7 +2645,9 @@
       "low": "Низкая",
       "medium": "Средняя",
       "high": "Высокая"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "Заблудились в Туманах?",
@@ -2658,34 +2681,5 @@
       "large-scale": "Крупные группы",
       "group": "Группа"
     }
-  },
-  "Footer": {
-    "tools": "Инструменты",
-    "marketFlipper": "Market Flipper",
-    "killFeed": "Kill Feed",
-    "pvpIntel": "PvP Информация",
-    "craftingCalc": "Калькулятор Ремесла",
-    "goldPrice": "Цена Золота",
-    "zvzTracker": "ZvZ Трекер",
-    "calculators": "Калькуляторы",
-    "farming": "Фермерство",
-    "cooking": "Готовка",
-    "alchemy": "Алхимия",
-    "laborers": "Работники",
-    "animal": "Животные",
-    "choppedFish": "Рыбный Фарш",
-    "enchanting": "Зачарование",
-    "community": "Сообщество",
-    "builds": "Билды",
-    "forum": "Сообщество",
-    "about": "О нас",
-    "legal": "Правовая информация",
-    "privacy": "Политика Конфиденциальности",
-    "terms": "Условия Использования",
-    "cookies": "Политика Cookies",
-    "refund": "Политика Возврата",
-    "description": "Лучший инструмент для Albion Online для торговли на рынке, отслеживания PvP и обмена билдами.",
-    "allRightsReserved": "Все права защищены.",
-    "notAffiliated": "Не связано с Sandbox Interactive Ltd. Albion Online является торговой маркой Sandbox Interactive Ltd."
   }
 }

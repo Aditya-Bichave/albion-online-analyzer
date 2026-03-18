@@ -136,7 +136,8 @@
         "baseTitle": "金币警报：价格正在{trendText}！",
         "preview": "金币市场波动检测：{price} 银币 ({change}%)"
       }
-    }
+    },
+    "markAllAsRead": "Mark all as read"
   },
   "CommandMenu": {
     "placeholder": "输入命令或搜索...",
@@ -178,24 +179,33 @@
     "logout": "退出登录"
   },
   "Footer": {
-    "description": "Albion Online 玩家的必备伴侣。提供市场分析、PvP 情报、制作计算等多种工具。",
     "tools": "工具",
-    "marketFlipper": "市场搬砖",
+    "marketFlipper": "市场翻转器",
+    "killFeed": "击杀动态",
     "pvpIntel": "PvP 情报",
-    "zvzTracker": "ZvZ 追踪",
-    "craftingPlanner": "制作规划",
-    "resources": "资源",
-    "soloBuilds": "单人配置",
-    "zvzBuilds": "ZvZ 配置",
-    "farmingProfit": "岛屿利润",
-    "aboutUs": "关于我们",
-    "legal": "法律信息",
-    "privacyPolicy": "隐私政策",
-    "termsOfService": "服务条款",
-    "cookiePolicy": "Cookie 政策",
-    "refundPolicy": "退款政策",
-    "disclaimer": "AlbionKit 是由社区创建的工具，与 Sandbox Interactive GmbH 无关。Albion Online 及其徽标是 Sandbox Interactive GmbH 的商标。",
-    "rightsReserved": "© {year} AlbionKit. 保留所有权利。"
+    "craftingCalc": "制作计算器",
+    "goldPrice": "金币价格",
+    "zvzTracker": "ZvZ 追踪器",
+    "calculators": "计算器",
+    "farming": "农业",
+    "cooking": "烹饪",
+    "alchemy": "炼金术",
+    "laborers": "劳工",
+    "animal": "动物",
+    "choppedFish": "鱼肉碎",
+    "enchanting": "附魔",
+    "community": "社区",
+    "builds": "Builds",
+    "forum": "社区",
+    "about": "关于我们",
+    "legal": "法律",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "cookies": "Cookie 政策",
+    "refund": "退款政策",
+    "description": "Albion Online 终极伴侣工具，用于市场交易、PvP 追踪和 Build 分享。",
+    "allRightsReserved": "版权所有。",
+    "notAffiliated": "与 Sandbox Interactive Ltd. 无关。Albion Online 是 Sandbox Interactive Ltd. 的商标。"
   },
   "HomePage": {
     "heroTitle": "让你的每一次上线更有价值 ",
@@ -728,6 +738,27 @@
       "avgFame": "平均声望",
       "totalFame": "总声望",
       "highestFame": "最高声望"
+    },
+    "regions": {
+      "americas": "Americas",
+      "asia": "Asia",
+      "europe": "Europe"
+    },
+    "deathFame": "Death Fame",
+    "pveFame": "PvE Fame",
+    "killDeathRatio": "K/D Ratio",
+    "killDeathRatioTooltip": "Kill/Death Ratio - Total kills divided by total deaths",
+    "lethalKills": "Lethal Kills",
+    "lethalDeaths": "Lethal Deaths",
+    "knockouts": "Knockouts",
+    "knockedOut": "Knocked Out",
+    "killed": "Killed",
+    "knockedOutBy": "Knocked Out By",
+    "killedBy": "Killed By",
+    "killType": {
+      "kill": "KILL",
+      "death": "DEATH",
+      "knockout": "KO"
     }
   },
   "MarketTicker": {
@@ -820,6 +851,14 @@
       "liveTitle": "{count} 场实时战斗 - ZvZ 追踪",
       "liveDescription": "正在追踪 {region} 的 {count} 场活跃战斗。顶级战斗：{kills} 次击杀。",
       "latestDescription": "追踪近期的大规模战斗。最新：位于 {location}，共有 {kills} 次击杀。"
+    },
+    "crafting": {
+      "title": "Crafting",
+      "description": "Calculate crafting profits, focus efficiency, and resource return rates for any item in Albion Online. Optimize your crafting strategy with real-time material costs and market prices."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
     }
   },
   "Alchemy": {
@@ -1016,7 +1055,13 @@
       "T5_MEAL_SALAD": "芜菁沙拉",
       "T6_MEAL_SALAD": "卷心菜沙拉",
       "T7_MEAL_SALAD": "土豆沙拉",
-      "T8_MEAL_SALAD": "阿瓦隆沙拉"
+      "T8_MEAL_SALAD": "阿瓦隆沙拉",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "胡萝卜",
@@ -1372,6 +1417,22 @@
       "threat": "基于近期 PvP 活动和装备估算的危险程度。",
       "mastery": "各武器类型的表现明细。",
       "activity": "基于 UTC 时间的活跃高峰期。"
+    },
+    "analytics": {
+      "title": "Advanced Analytics",
+      "recentFameTrend": "Recent Fame Trend",
+      "cumulativeFame": "Cumulative Fame",
+      "activityByHour": "Activity by Hour (UTC)",
+      "kills": "Kills",
+      "deaths": "Deaths",
+      "opponentIpVsFame": "Opponent IP vs Fame Value",
+      "victory": "Victory",
+      "defeat": "Defeat",
+      "itemPower": "Item Power",
+      "fame": "Fame",
+      "vs": "vs",
+      "wins": "Wins",
+      "losses": "Losses"
     }
   },
   "ZvzTracker": {
@@ -1609,7 +1670,15 @@
       "guild": "公会",
       "noGuild": "无公会",
       "actionRequired": "需要操作",
-      "guildLicensePending": "你已购买公会许可但尚未关联公会。关联角色以激活。"
+      "guildLicensePending": "你已购买公会许可但尚未关联公会。关联角色以激活。",
+      "apiUnavailable": "Albion API is temporarily unavailable. Please try again in a few moments.",
+      "searchFailed": "Unable to search for characters. The Albion Online API may be experiencing issues.",
+      "unexpectedError": "An unexpected error occurred",
+      "cancel": "Cancel",
+      "backToList": "Back to list",
+      "multipleFound": "Found {count} characters. Please select yours:",
+      "select": "Select",
+      "edit": "Edit"
     },
     "profile": {
       "visuals": "横幅与头像",
@@ -1630,7 +1699,16 @@
       "social": "社交链接",
       "save": "保存更改",
       "success": "资料已更新",
-      "error": "更新失败"
+      "error": "更新失败",
+      "regions": {
+        "Americas": "Americas",
+        "Asia": "Asia",
+        "Europe": "Europe"
+      },
+      "discordPlaceholder": "username",
+      "twitterPlaceholder": "@username",
+      "twitchPlaceholder": "channel",
+      "youtubePlaceholder": "channel"
     },
     "billing": {
       "title": "订阅管理",
@@ -1657,7 +1735,16 @@
       "loadingInvoices": "加载发票中...",
       "noHistory": "暂无账单记录。",
       "cancelSuccess": "订阅已成功取消。你将保留权限至当前周期结束。",
-      "cancelError": "取消订阅失败"
+      "cancelError": "取消订阅失败",
+      "pdf": "PDF",
+      "subscriptionRenewal": "Subscription Renewal",
+      "statusTypes": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "past_due": "Past Due"
+      }
     },
     "preferences": {
       "title": "应用偏好",
@@ -1686,7 +1773,9 @@
       "marketAlerts": "关注列表提醒",
       "marketAlertsDesc": "当关注物品有利可图时通知",
       "goldAlerts": "金价提醒",
-      "goldAlertsDesc": "价格大幅波动时通知"
+      "goldAlertsDesc": "价格大幅波动时通知",
+      "selectServer": "Select Server",
+      "selectCity": "Select City"
     },
     "security": {
       "title": "安全与政策",
@@ -1709,7 +1798,12 @@
       "googleManaged": "由 Google 管理",
       "googleManagedDesc": "你通过 Google 账号 ({email}) 登录。请在 Google 账号设置中修改密码。",
       "goToGoogle": "前往 Google 账号",
-      "policies": "政策与法律"
+      "policies": "政策与法律",
+      "newEmailPlaceholder": "new@email.com",
+      "passwordPlaceholder": "••••••••",
+      "policiesSubtext": "Rules and regulations",
+      "privacySubtext": "Data protection & usage",
+      "termsSubtext": "Rules & user agreement"
     },
     "sidebar": {
       "status": "账号状态",
@@ -1811,7 +1905,16 @@
       "Europe": "欧洲"
     },
     "hidden": "隐藏",
-    "hiddenBuild": "此配置对公众隐藏"
+    "hiddenBuild": "此配置对公众隐藏",
+    "roles": {
+      "Tank": "Tank",
+      "Healer": "Healer",
+      "Melee DPS": "Melee DPS",
+      "Ranged DPS": "Ranged DPS",
+      "Support": "Support",
+      "Gatherer": "Gatherer",
+      "Crafter": "Crafter"
+    }
   },
   "ThreadDetail": {
     "deleteSuccess": "帖子已删除",
@@ -2373,7 +2476,8 @@
       "food": "食物",
       "mount": "坐骑",
       "bag": "包裹"
-    }
+    },
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "迷失在迷雾中？",
@@ -2586,33 +2690,9 @@
       }
     }
   },
-  "Footer": {
-    "tools": "工具",
-    "marketFlipper": "市场翻转器",
-    "killFeed": "击杀动态",
-    "pvpIntel": "PvP 情报",
-    "craftingCalc": "制作计算器",
-    "goldPrice": "金币价格",
-    "zvzTracker": "ZvZ 追踪器",
-    "calculators": "计算器",
-    "farming": "农业",
-    "cooking": "烹饪",
-    "alchemy": "炼金术",
-    "laborers": "劳工",
-    "animal": "动物",
-    "choppedFish": "鱼肉碎",
-    "enchanting": "附魔",
-    "community": "社区",
-    "builds": "Builds",
-    "forum": "社区",
-    "about": "关于我们",
-    "legal": "法律",
-    "privacy": "隐私政策",
-    "terms": "服务条款",
-    "cookies": "Cookie 政策",
-    "refund": "退款政策",
-    "description": "Albion Online 终极伴侣工具，用于市场交易、PvP 追踪和 Build 分享。",
-    "allRightsReserved": "版权所有。",
-    "notAffiliated": "与 Sandbox Interactive Ltd. 无关。Albion Online 是 Sandbox Interactive Ltd. 的商标。"
+  "regions": {
+    "Americas": "Americas",
+    "Asia": "Asia",
+    "Europe": "Europe"
   }
 }

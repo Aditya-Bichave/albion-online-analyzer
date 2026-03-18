@@ -184,30 +184,33 @@
     "logout": "Çıkış Yap"
   },
   "Footer": {
-    "description": "Albion Online oyuncuları için temel rehber. Piyasa araçları, PvP bilgileri, zanaat hesaplayıcıları ve daha fazlasını sağlar.",
     "tools": "Araçlar",
-    "marketFlipper": "Piyasa Al-Sat",
-    "pvpIntel": "PvP Bilgi",
-    "zvzTracker": "ZvZ Takip",
-    "craftingPlanner": "Zanaat Planlayıcı",
-    "resources": "Kaynaklar",
-     "soloBuilds": "Solo Buildler",
-     "zvzBuilds": "ZvZ Buildler",
-     "smallScaleBuilds": "Küçük Ölçekli Buildler",
-     "pvpBuilds": "PvP Buildler",
-     "soloBuildsDesc": "Solo oyun için en iyi buildler",
-     "zvzBuildsDesc": "Büyük ölçekli için meta buildler",
-     "smallScaleBuildsDesc": "Küçük gruplar için buildler",
-     "pvpBuildsDesc": "Genel PvP buildler",
-     "farmingProfit": "Ada Karlılığı",
-    "aboutUs": "Hakkımızda",
+    "marketFlipper": "Pazar Çevirici",
+    "killFeed": "Ölüm Akışı",
+    "pvpIntel": "PvP Bilgisi",
+    "craftingCalc": "Zanaat Hesaplayıcı",
+    "goldPrice": "Altın Fiyatı",
+    "zvzTracker": "ZvZ Takipçisi",
+    "calculators": "Hesaplayıcılar",
+    "farming": "Çiftçilik",
+    "cooking": "Yemek Pişirme",
+    "alchemy": "Simya",
+    "laborers": "İşçiler",
+    "animal": "Hayvanlar",
+    "choppedFish": "Doğranmış Balık",
+    "enchanting": "Büyüleme",
+    "community": "Topluluk",
+    "builds": "Buildler",
+    "forum": "Topluluk",
+    "about": "Hakkımızda",
     "legal": "Yasal",
-    "privacyPolicy": "Gizlilik Politikası",
-    "termsOfService": "Kullanım Koşulları",
-    "cookiePolicy": "Çerez Politikası",
-    "refundPolicy": "İade Politikası",
-    "disclaimer": "AlbionKit topluluk tarafından oluşturulmuş bir araçtır ve Sandbox Interactive GmbH ile bağlantılı değildir. Albion Online ve logosu Sandbox Interactive GmbH'nin ticari markalarıdır.",
-    "rightsReserved": "© {year} AlbionKit. Tüm hakları saklıdır."
+    "privacy": "Gizlilik Politikası",
+    "terms": "Hizmet Koşulları",
+    "cookies": "Çerez Politikası",
+    "refund": "İade Politikası",
+    "description": "Albion Online için pazar ticareti, PvP takibi ve build paylaşımı için en iyi yardımcı araç.",
+    "allRightsReserved": "Tüm hakları saklıdır.",
+    "notAffiliated": "Sandbox Interactive Ltd. ile bağlantılı değildir. Albion Online, Sandbox Interactive Ltd.'nin tescilli markasıdır."
   },
   "HomePage": {
     "heroTitle": "Albion'da her anını değerli kıl ",
@@ -848,11 +851,11 @@
       "description": "Nadir balıkları doğrudan satmanın mı yoksa balık sosu yapmak için işlemenin mi daha karlı olduğunu belirle. Kapsamlı piyasa değeri analizi."
     },
     "zvzTracker": {
-      "title": "ZvZ Takip",
-      "description": "Albion Online'da büyük ölçekli açık dünya savaşlarını ve lonca savaşlarını takip et. Tüm sunuculardan gerçek zamanlı ZvZ savaş istatistikleri.",
-      "liveTitle": "{count} Canlı Savaş - ZvZ Takip",
+      "title": "ZvZ Takipçisi",
+      "description": "Albion Online'daki devasa açık dünya savaşlarını ve lonca savaşlarını takip edin. Gerçek zamanlı ZvZ savaş izleme ile kill sayıları ve lonca sıralamaları.",
+      "liveTitle": "{count} Canlı Savaş",
       "liveDescription": "Şu anda {region} bölgesinde {count} aktif savaş takip ediliyor. En büyük savaş: {kills} kill.",
-      "latestDescription": "Son büyük ölçekli savaşları takip edin. Son: {location} konumunda {kills} kill."
+      "latestDescription": "Son büyük savaşları takip edin. En son: {location} konumunda {kills} kill."
     },
     "crafting": {
       "title": "Zanaat",
@@ -861,13 +864,6 @@
     "settings": {
       "title": "Ayarlar",
       "description": "AlbionKit tercihlerinizi, bildirim ayarlarınızı, dil seçeneklerinizi ve hesap yönetiminizi yapılandırın. Deneyiminizi özelleştirin."
-    },
-    "zvzTracker": {
-      "title": "ZvZ Takipçisi",
-      "description": "Albion Online'daki devasa açık dünya savaşlarını ve lonca savaşlarını takip edin. Gerçek zamanlı ZvZ savaş izleme ile kill sayıları ve lonca sıralamaları.",
-      "liveTitle": "{count} Canlı Savaş",
-      "liveDescription": "Şu anda {region} bölgesinde {count} aktif savaş takip ediliyor. En büyük savaş: {kills} kill.",
-      "latestDescription": "Son büyük savaşları takip edin. En son: {location} konumunda {kills} kill."
     }
   },
   "Alchemy": {
@@ -1064,7 +1060,13 @@
       "T5_MEAL_SALAD": "Şalgam Salatası",
       "T6_MEAL_SALAD": "Lahana Salatası",
       "T7_MEAL_SALAD": "Patates Salatası",
-      "T8_MEAL_SALAD": "Avalon Salatası"
+      "T8_MEAL_SALAD": "Avalon Salatası",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Havuç",
@@ -2644,7 +2646,8 @@
       "low": "Düşük",
       "medium": "Orta",
       "high": "Yüksek"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit."
   },
   "NotFound": {
     "title": "Sislerde mi kayboldunuz?",
@@ -2678,34 +2681,5 @@
       "large-scale": "Geniş Ölçekli",
       "group": "Grup"
     }
-  },
-  "Footer": {
-    "tools": "Araçlar",
-    "marketFlipper": "Pazar Çevirici",
-    "killFeed": "Ölüm Akışı",
-    "pvpIntel": "PvP Bilgisi",
-    "craftingCalc": "Zanaat Hesaplayıcı",
-    "goldPrice": "Altın Fiyatı",
-    "zvzTracker": "ZvZ Takipçisi",
-    "calculators": "Hesaplayıcılar",
-    "farming": "Çiftçilik",
-    "cooking": "Yemek Pişirme",
-    "alchemy": "Simya",
-    "laborers": "İşçiler",
-    "animal": "Hayvanlar",
-    "choppedFish": "Doğranmış Balık",
-    "enchanting": "Büyüleme",
-    "community": "Topluluk",
-    "builds": "Buildler",
-    "forum": "Topluluk",
-    "about": "Hakkımızda",
-    "legal": "Yasal",
-    "privacy": "Gizlilik Politikası",
-    "terms": "Hizmet Koşulları",
-    "cookies": "Çerez Politikası",
-    "refund": "İade Politikası",
-    "description": "Albion Online için pazar ticareti, PvP takibi ve build paylaşımı için en iyi yardımcı araç.",
-    "allRightsReserved": "Tüm hakları saklıdır.",
-    "notAffiliated": "Sandbox Interactive Ltd. ile bağlantılı değildir. Albion Online, Sandbox Interactive Ltd.'nin tescilli markasıdır."
   }
 }

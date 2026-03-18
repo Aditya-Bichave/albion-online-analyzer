@@ -184,24 +184,33 @@
     "logout": "Sair"
   },
   "Footer": {
-    "description": "O companheiro essencial para jogadores de Albion Online. Flipper de mercado, informações PvP, calculadoras e mais.",
     "tools": "Ferramentas",
-    "marketFlipper": "Flipper de Mercado",
-    "pvpIntel": "Informação PvP",
+    "marketFlipper": "Market Flipper",
+    "killFeed": "Kill Feed",
+    "pvpIntel": "Informações PvP",
+    "craftingCalc": "Calculadora de Artesanato",
+    "goldPrice": "Preço do Ouro",
     "zvzTracker": "Rastreador ZvZ",
-    "craftingPlanner": "Planejador de Craft",
-    "resources": "Recursos",
-    "soloBuilds": "Builds Solo",
-    "zvzBuilds": "Builds ZvZ",
-    "farmingProfit": "Calculadora de Ilha",
-    "aboutUs": "Sobre Nós",
-    "legal": "Legal",
-    "privacyPolicy": "Privacidade",
-    "termsOfService": "Termos de Uso",
-    "cookiePolicy": "Política de Cookies",
-    "refundPolicy": "Reembolso",
-    "disclaimer": "AlbionKit é uma ferramenta criada pela comunidade e não é afiliada à Sandbox Interactive GmbH. Albion Online e seu logo são marcas da Sandbox Interactive GmbH.",
-    "rightsReserved": "© {year} AlbionKit. Todos os direitos reservados."
+    "calculators": "Calculadoras",
+    "farming": "Agricultura",
+    "cooking": "Cozinha",
+    "alchemy": "Alquimia",
+    "laborers": "Trabalhadores",
+    "animal": "Animais",
+    "choppedFish": "Peixe Picado",
+    "enchanting": "Encantamento",
+    "community": "Comunidade",
+    "builds": "Builds",
+    "forum": "Comunidade",
+    "about": "Sobre Nós",
+    "legal": "Jurídico",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "cookies": "Política de Cookies",
+    "refund": "Política de Reembolso",
+    "description": "A ferramenta definitiva de Albion Online para negociação de mercado, rastreamento PvP e compartilhamento de builds.",
+    "allRightsReserved": "Todos os direitos reservados.",
+    "notAffiliated": "Não afiliado à Sandbox Interactive Ltd. Albion Online é uma marca comercial da Sandbox Interactive Ltd."
   },
   "HomePage": {
     "heroTitle": "Faça cada sessão valer a pena em ",
@@ -851,6 +860,10 @@
     "crafting": {
       "title": "Lucros de Craft",
       "description": "Calcule lucros de fabricação, eficiência de foco e taxas de retorno de recursos para qualquer item em Albion Online. Otimização completa de produção."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
     }
   },
   "Auth": {
@@ -1220,7 +1233,9 @@
       "low": "Baixa",
       "medium": "Média",
       "high": "Alta"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "Perdido nas Névoas?",
@@ -1449,7 +1464,13 @@
       "T5_MEAL_SALAD": "Turnip Salad",
       "T6_MEAL_SALAD": "Cabbage Salad",
       "T7_MEAL_SALAD": "Potato Salad",
-      "T8_MEAL_SALAD": "Avalonian Salad"
+      "T8_MEAL_SALAD": "Avalonian Salad",
+      "T1_MEAL_SOUP": "Carrot Soup",
+      "T2_MEAL_SALAD": "Bean Salad",
+      "T3_MEAL_SOUP": "Wheat Soup",
+      "T3_MEAL_ROAST": "Roast Chicken",
+      "T3_MEAL_PIE": "Chicken Pie",
+      "T3_MEAL_OMELETTE": "Chicken Omelette"
     },
     "ingredients": {
       "T1_CARROT": "Cenouras",
@@ -1940,7 +1961,17 @@
       "Group": "Grupo",
       "EscapeGathering": "Fuga/Coleta",
       "Ganking": "Ganking",
-      "Other": "Outro"
+      "Other": "Outro",
+      "Tank": "Tank",
+      "Healer": "Healer",
+      "DPS": "DPS",
+      "Burst": "Burst",
+      "5v5": "5v5",
+      "Hellgate": "Hellgate",
+      "Faction Warfare": "Faction Warfare",
+      "Gathering": "Gathering",
+      "Roaming": "Roaming",
+      "Escape": "Escape"
     }
   },
   "Subscription": {
@@ -2289,11 +2320,6 @@
       "supporter": "Apoiador",
       "supporterDesc": "Apoiador Premium"
     },
-    "regions": {
-      "Americas": "Américas",
-      "Asia": "Ásia",
-      "Europe": "Europa"
-    },
     "hidden": "Oculto",
     "hiddenBuild": "Esta build está oculta do público"
   },
@@ -2485,7 +2511,8 @@
       "mount": "Montaria",
       "bag": "Bolsa"
     },
-    "youtubePlaceholder": "https://youtube.com/watch?v=..."
+    "youtubePlaceholder": "https://youtube.com/watch?v=...",
+    "loading": "Loading..."
   },
   "ServerSelector": {
     "west": "Américas",
@@ -2664,34 +2691,5 @@
         "content": "Oferecemos um teste gratuito de 7 dias para novos assinantes mensais. Você pode cancelar a qualquer momento durante o período de teste para evitar ser cobrado. Uma vez que o teste termina e o primeiro pagamento é processado, nenhum reembolso será emitido para esse período."
       }
     }
-  },
-  "Footer": {
-    "tools": "Ferramentas",
-    "marketFlipper": "Market Flipper",
-    "killFeed": "Kill Feed",
-    "pvpIntel": "Informações PvP",
-    "craftingCalc": "Calculadora de Artesanato",
-    "goldPrice": "Preço do Ouro",
-    "zvzTracker": "Rastreador ZvZ",
-    "calculators": "Calculadoras",
-    "farming": "Agricultura",
-    "cooking": "Cozinha",
-    "alchemy": "Alquimia",
-    "laborers": "Trabalhadores",
-    "animal": "Animais",
-    "choppedFish": "Peixe Picado",
-    "enchanting": "Encantamento",
-    "community": "Comunidade",
-    "builds": "Builds",
-    "forum": "Comunidade",
-    "about": "Sobre Nós",
-    "legal": "Jurídico",
-    "privacy": "Política de Privacidade",
-    "terms": "Termos de Serviço",
-    "cookies": "Política de Cookies",
-    "refund": "Política de Reembolso",
-    "description": "A ferramenta definitiva de Albion Online para negociação de mercado, rastreamento PvP e compartilhamento de builds.",
-    "allRightsReserved": "Todos os direitos reservados.",
-    "notAffiliated": "Não afiliado à Sandbox Interactive Ltd. Albion Online é uma marca comercial da Sandbox Interactive Ltd."
   }
 }

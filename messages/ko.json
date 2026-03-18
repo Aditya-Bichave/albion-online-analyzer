@@ -184,24 +184,33 @@
     "logout": "로그아웃"
   },
   "Footer": {
-    "description": "알비온 온라인 플레이어를 위한 필수 동반자. 시장 분석, PvP 정보, 제작 계산기 등 다양한 도구를 제공합니다.",
     "tools": "도구",
-    "marketFlipper": "시장 시세 차익",
+    "marketFlipper": "시장 플리퍼",
+    "killFeed": "킬 피드",
     "pvpIntel": "PvP 정보",
-    "zvzTracker": "ZvZ 추적",
-    "craftingPlanner": "제작 플래너",
-    "resources": "리소스",
-    "soloBuilds": "솔로 빌드",
-    "zvzBuilds": "ZvZ 빌드",
-    "farmingProfit": "섬 수익 계산기",
-    "aboutUs": "소개",
-    "legal": "법적 고지",
-    "privacyPolicy": "개인정보 처리방침",
-    "termsOfService": "이용 약관",
-    "cookiePolicy": "쿠키 정책",
-    "refundPolicy": "환불 정책",
-    "disclaimer": "AlbionKit은 커뮤니티에서 제작한 도구이며 Sandbox Interactive GmbH와 관련이 없습니다. Albion Online 및 로고는 Sandbox Interactive GmbH의 상표입니다.",
-    "rightsReserved": "© {year} AlbionKit. 모든 권리 보유."
+    "craftingCalc": "제작 계산기",
+    "goldPrice": "골드 가격",
+    "zvzTracker": "ZvZ 추적기",
+    "calculators": "계산기",
+    "farming": "농사",
+    "cooking": "요리",
+    "alchemy": "연금술",
+    "laborers": "노동자",
+    "animal": "동물",
+    "choppedFish": "다진 생선",
+    "enchanting": "마법 부여",
+    "community": "커뮤니티",
+    "builds": "빌드",
+    "forum": "커뮤니티",
+    "about": "소개",
+    "legal": "법률",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관",
+    "cookies": "쿠키 정책",
+    "refund": "환불 정책",
+    "description": "알비온 온라인의 시장 거래, PvP 추적 및 빌드 공유를 위한 궁극의 동반자 도구입니다.",
+    "allRightsReserved": "모든 권리 보유.",
+    "notAffiliated": "Sandbox Interactive Ltd. 와는 무관합니다. Albion Online 은 Sandbox Interactive Ltd. 의 상표입니다."
   },
   "HomePage": {
     "heroTitle": "모든 세션을 가치 있게, ",
@@ -851,6 +860,10 @@
     "crafting": {
       "title": "제작 수익 계산기",
       "description": "알비온 온라인의 모든 아이템에 대한 제작 수익, 집중력 효율 및 자원 반환률을 계산하세요. 포괄적인 생산 최적화 도구."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
     }
   },
   "Alchemy": {
@@ -2094,7 +2107,8 @@
       "mount": "탈것",
       "bag": "가방"
     },
-    "youtubePlaceholder": "https://youtube.com/watch?v=..."
+    "youtubePlaceholder": "https://youtube.com/watch?v=...",
+    "loading": "Loading..."
   },
   "ServerSelector": {
     "west": "아메리카 (West)",
@@ -2631,7 +2645,9 @@
       "low": "낮음",
       "medium": "보통",
       "high": "높음"
-    }
+    },
+    "checkoutBuild": "Check out this {category} build by {author} on AlbionKit.",
+    "commentError": "Failed to post comment"
   },
   "NotFound": {
     "title": "안개 속에서 길을 잃으셨나요?",
@@ -2665,34 +2681,5 @@
       "large-scale": "대규모",
       "group": "그룹"
     }
-  },
-  "Footer": {
-    "tools": "도구",
-    "marketFlipper": "시장 플리퍼",
-    "killFeed": "킬 피드",
-    "pvpIntel": "PvP 정보",
-    "craftingCalc": "제작 계산기",
-    "goldPrice": "골드 가격",
-    "zvzTracker": "ZvZ 추적기",
-    "calculators": "계산기",
-    "farming": "농사",
-    "cooking": "요리",
-    "alchemy": "연금술",
-    "laborers": "노동자",
-    "animal": "동물",
-    "choppedFish": "다진 생선",
-    "enchanting": "마법 부여",
-    "community": "커뮤니티",
-    "builds": "빌드",
-    "forum": "커뮤니티",
-    "about": "소개",
-    "legal": "법률",
-    "privacy": "개인정보처리방침",
-    "terms": "이용약관",
-    "cookies": "쿠키 정책",
-    "refund": "환불 정책",
-    "description": "알비온 온라인의 시장 거래, PvP 추적 및 빌드 공유를 위한 궁극의 동반자 도구입니다.",
-    "allRightsReserved": "모든 권리 보유.",
-    "notAffiliated": "Sandbox Interactive Ltd. 와는 무관합니다. Albion Online 은 Sandbox Interactive Ltd. 의 상표입니다."
   }
 }
