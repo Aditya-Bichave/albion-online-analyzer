@@ -12,22 +12,11 @@ export interface GuildLicense {
   allowAllianceAccess?: boolean;
 }
 
-export interface UserSubscription {
-  status: 'active' | 'past_due' | 'unpaid' | 'cancelled' | 'expired' | 'trialing';
-  planType: 'personal' | 'guild';
-  renewsAt?: string;
-  endsAt?: string;
-  lemonSqueezySubscriptionId?: string;
-  customerId?: string;
-  trialEndsAt?: string;
-}
-
 export interface UserPreferences {
   emailNotifications?: boolean;
   publicProfile?: boolean;
   showBadges?: boolean;
   compactMode?: boolean;
-  hasUsedTrial?: boolean; // Track if user already used the 7-day trial
 
   // New Preferences
   defaultServer?: 'Americas' | 'Asia' | 'Europe';
@@ -81,12 +70,10 @@ export interface UserProfile {
   guildId?: string;
   allianceName?: string;
   allianceId?: string;
-  isPremium?: boolean; // Replaces isPatron
   isAdmin?: boolean; // Admin role flag
   hasPendingGuildLicense?: boolean; // Purchased guild license but not yet linked to a guild
   updatedAt: string;
   locale?: string;
-  subscription?: UserSubscription;
   preferences?: UserPreferences;
   socialLinks?: SocialLinks;
   gameplay?: GameplayPreferences;
@@ -112,39 +99,7 @@ export function calculateUserGamification(profile: UserProfile, builds: any[]) {
   // Calculate Badges
   const badges: UserBadge[] = [];
 
-  // 1. Subscription Badges (Adept / Guild Master)
-  let isSupporter = profile.isPremium || profile.subscription?.status === 'active';
-
-  // Check for grace period support
-  if (!isSupporter && profile.subscription?.status === 'cancelled' && profile.subscription.endsAt) {
-    const endsAt = new Date(formatFirestoreDate(profile.subscription.endsAt));
-    if (endsAt > new Date()) {
-      isSupporter = true;
-    }
-  }
-
-  if (isSupporter) {
-    if (profile.subscription?.planType === 'guild') {
-      badges.push({
-        id: 'guild_master',
-        label: 'Guild Master',
-        icon: 'Shield',
-        description: 'Guild License Holder',
-        color: 'text-blue-500'
-      });
-    } else {
-      // Default to Adept for personal plans or legacy premium
-      badges.push({
-        id: 'adept',
-        label: 'Adept',
-        icon: 'Crown',
-        description: 'Premium Supporter',
-        color: 'text-amber-500'
-      });
-    }
-  }
-
-  // 2. Contributor (First Build)
+  // 1. Contributor (First Build)
   if (buildCount >= 1) {
     badges.push({
       id: 'builder',
@@ -304,60 +259,7 @@ export async function checkAllianceLicense(allianceId: string): Promise<GuildLic
   }
 }
 
-export async function updateSubscriptionStatus(
-  uid: string,
-  data: UserSubscription
-) {
-  try {
-    const docRef = doc(db, 'users', uid);
-
-    // Logic:
-    // If status is active -> set isPatron = true (if personal)
-    // If status is cancelled, check if endsAt is in the future.
-    // If endsAt > now, treat as active (grace period).
-
-    const isNowActive = data.status === 'active';
-    let hasAccess = isNowActive;
-
-    if (data.status === 'cancelled' && data.endsAt) {
-      const endsAtDate = new Date(data.endsAt);
-      if (endsAtDate > new Date()) {
-        hasAccess = true;
-      }
-    }
-
-    const updateData: any = {
-      subscription: data,
-      updatedAt: new Date().toISOString()
-    };
-
-    if (data.planType === 'personal') {
-      updateData.isPremium = hasAccess;
-      // Legacy cleanup (optional): updateData.isPatron = deleteField(); or just set false/null if desired
-      // For now, we just prioritize isPremium in checkAccess
-    } else if (data.planType === 'guild') {
-      // We'll handle guild license toggle separately in the webhook logic usually, 
-      // but let's keep user profile updated too
-    }
-
-    await setDoc(docRef, updateData, { merge: true });
-    return true;
-  } catch (err) {
-    console.error('Error updating subscription status:', err);
-    return false;
-  }
-}
-
-export async function activatePersonalPremium(uid: string) {
-  try {
-    await updateUserProfile(uid, { isPremium: true });
-    return true;
-  } catch (err) {
-    console.error('Error activating personal premium:', err);
-    return false;
-  }
-}
-
+// Legacy functions removed - app is now free!
 export async function activateGuildLicense(guildId: string, purchasedByUid: string, allianceId?: string, allianceName?: string) {
   try {
     const docRef = doc(db, 'guild_licenses', guildId);
@@ -499,56 +401,10 @@ export async function processPendingGuildLicense(uid: string, guildId: string, a
   }
 }
 
-// Check if user has access (either solo premium OR member of premium guild)
-export async function checkAccess(uid: string): Promise<{
-  hasAccess: boolean;
-  reason: 'none' | 'premium' | 'guild' | 'alliance' | 'pending_guild';
-  providerId?: string;
-}> {
-  const profile = await getUserProfile(uid);
-  if (!profile) return { hasAccess: false, reason: 'none' };
-
-  if (profile.hasPendingGuildLicense) return { hasAccess: true, reason: 'pending_guild' }; // Special state
-
-  // Priority 1: Subscription Status
-  if (profile.subscription?.status === 'active') {
-    if (profile.subscription.planType === 'guild') {
-      return { hasAccess: true, reason: 'guild' };
-    }
-    return { hasAccess: true, reason: 'premium' };
-  }
-
-  // Check for cancelled but still valid subscription (Grace Period)
-  if (profile.subscription?.status === 'cancelled' && profile.subscription.endsAt) {
-    // Use helper to safely handle String or Timestamp
-    const endsAtStr = formatFirestoreDate(profile.subscription.endsAt);
-    const endsAt = new Date(endsAtStr);
-
-    if (endsAt > new Date()) {
-      if (profile.subscription.planType === 'guild') {
-        return { hasAccess: true, reason: 'guild' };
-      }
-      return { hasAccess: true, reason: 'premium' };
-    }
-  }
-
-  // Priority 2: Manual/Legacy Flag
-  if (profile.isPremium) return { hasAccess: true, reason: 'premium' };
-  if ((profile as any).isPatron) return { hasAccess: true, reason: 'premium' };
-
-  if (profile.guildId) {
-    const guildLicense = await checkGuildLicense(profile.guildId);
-    if (guildLicense && isLicenseActive(guildLicense)) {
-      return { hasAccess: true, reason: 'guild', providerId: guildLicense.purchasedBy };
-    }
-  }
-
-  if (profile.allianceId) {
-    const allianceLicense = await checkAllianceLicense(profile.allianceId);
-    if (allianceLicense) {
-      return { hasAccess: true, reason: 'alliance', providerId: allianceLicense.purchasedBy };
-    }
-  }
-
-  return { hasAccess: false, reason: 'none' };
+/**
+ * Check if user has access to features (now always returns true since app is free)
+ */
+export async function checkAccess(uid: string) {
+  // All features are now free!
+  return { hasAccess: true, reason: 'free' as const };
 }

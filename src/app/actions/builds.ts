@@ -40,7 +40,7 @@ export async function deleteBuildAction(buildId: string, userId: string) {
     }
 
     const buildData = buildDoc.data();
-    
+
     // Check if user is author or admin
     const isAuthor = buildData?.authorId === userId;
     const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -52,10 +52,10 @@ export async function deleteBuildAction(buildId: string, userId: string) {
 
     // Delete the build
     await buildRef.delete();
-    
+
     // Revalidate builds page
     revalidatePath('/builds');
-    revalidatePath(`/builds/${buildData?.category}/${buildId}`);
+    revalidatePath(`/builds/${buildId}`);
 
     return { success: true };
   } catch (error) {
@@ -79,7 +79,7 @@ export async function hideBuildAction(buildId: string, userId: string, hidden: b
     }
 
     const buildData = buildDoc.data();
-    
+
     // Check if user is author or admin
     const isAuthor = buildData?.authorId === userId;
     const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -94,10 +94,10 @@ export async function hideBuildAction(buildId: string, userId: string, hidden: b
       hidden,
       updatedAt: FieldValue.serverTimestamp()
     });
-    
+
     // Revalidate builds page
     revalidatePath('/builds');
-    revalidatePath(`/builds/${buildData?.category}/${buildId}`);
+    revalidatePath(`/builds/${buildId}`);
 
     return { success: true };
   } catch (error) {
@@ -121,7 +121,7 @@ export async function updateBuildAction(buildId: string, userId: string, updates
     }
 
     const buildData = buildDoc.data();
-    
+
     // Check if user is author or admin
     const isAuthor = buildData?.authorId === userId;
     const userDoc = await adminDb.collection('users').doc(userId).get();
@@ -136,10 +136,10 @@ export async function updateBuildAction(buildId: string, userId: string, updates
       ...updates,
       updatedAt: FieldValue.serverTimestamp()
     });
-    
+
     // Revalidate pages
     revalidatePath('/builds');
-    revalidatePath(`/builds/${buildData?.category}/${buildId}`);
+    revalidatePath(`/builds/${buildId}`);
 
     return { success: true };
   } catch (error) {

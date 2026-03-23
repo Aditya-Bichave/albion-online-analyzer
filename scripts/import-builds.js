@@ -38,10 +38,10 @@ const db = admin.firestore();
 
 // Configuration - UPDATE THESE VALUES
 const CONFIG = {
-  targetUserId: 'mD2GXXqV1HbGB9KYNKx33Lyes6a2',  // Cosmic O11y's UID
-  targetUserName: 'Cosmic O11y',                 // Display name for builds
-  dryRun: false,                                 // Set to true to test without saving
-  inputFile: path.join(__dirname, '..', 'builds-import-2026.json')
+  targetUserId: 'mD2GXXqV1HbGB9KYNKx33Lyes6a2', 
+  targetUserName: 'Hix5',                
+  dryRun: false,                             
+  inputFile: path.join(__dirname, '..', 'builds-import-albionfree-2026.json') 
 };
 
 // Interactive prompt for configuration
@@ -136,8 +136,9 @@ async function main() {
     rl.close();
     process.exit(1);
   }
-  
-  const builds = importData.builds || [];
+
+  // Handle both array format (albionfree) and object with builds property
+  const builds = Array.isArray(importData) ? importData : (importData.builds || []);
   console.log(`✅ Loaded ${builds.length} builds\n`);
   
   if (builds.length === 0) {

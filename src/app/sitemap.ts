@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllBuildsForSitemap, getAllThreadsForSitemap } from '@/lib/sitemap-service';
+import { getAllBuildsForSitemap } from '@/lib/sitemap-service';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://albionkit.com';
@@ -18,7 +18,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/profits/alchemy',
     '/profits/cooking',
     '/profits/farming',
-    '/profits/labour',
     '/profits/animal',
     '/profits/chopped-fish',
     '/profits/enchanting',
@@ -26,7 +25,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/privacy',
     '/terms',
     '/cookies',
-    '/refund',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -37,20 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Dynamic Routes (Builds) - Limited to top 100 by likes
   const builds = await getAllBuildsForSitemap();
   const buildRoutes = builds.map((build) => ({
-    url: `${baseUrl}/builds/${build.category}/${build.id}`,
+    url: `${baseUrl}/builds/${build.id}`,
     lastModified: build.updatedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
 
-  // 3. Dynamic Routes (Threads) - Limited to top 100 active threads
-  const threads = await getAllThreadsForSitemap();
-  const threadRoutes = threads.map((thread) => ({
-    url: `${baseUrl}/forum/thread/${thread.id}`,
-    lastModified: thread.updatedAt,
-    changeFrequency: 'daily' as const,
-    priority: 0.5,
-  }));
-
-  return [...routes, ...buildRoutes, ...threadRoutes];
+  return [...routes, ...buildRoutes];
 }

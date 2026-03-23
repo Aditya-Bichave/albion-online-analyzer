@@ -3,16 +3,15 @@
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { getUserProfile, updateUserProfile, UserProfile, UserPreferences, SocialLinks, GameplayPreferences, checkAccess, processPendingGuildLicense } from '@/lib/user-profile';
-import { searchAlbionCharacter, getUserInvoices, cancelUserSubscription, getSubscriptionManagementData, updateUserProfileAndBuildsAction } from './actions';
-import { 
-  Search, Shield, User as UserIcon, Save, CheckCircle, AlertCircle, 
-  Crown, Users, ArrowRight, CreditCard, Clock, Settings as SettingsIcon,
+import { getUserProfile, updateUserProfile, UserProfile, UserPreferences, SocialLinks, GameplayPreferences, calculateUserGamification, processPendingGuildLicense } from '@/lib/user-profile';
+import { searchAlbionCharacter, updateUserProfileAndBuildsAction } from './actions';
+import {
+  Search, Shield, User as UserIcon, Save, CheckCircle, AlertCircle,
+  Crown, Users, ArrowRight, CreditCard, Settings as SettingsIcon,
   LogOut, ExternalLink, Edit2, X, Loader2, Bell, Eye, Layout, Monitor, Lock,
   Gamepad2, MessageCircle, Twitter, Twitch, Youtube,
   MapPin, Coins, Zap, Globe, TrendingUp, ShieldCheck, Key, Mail, Smartphone, FileText,
-  Trophy,
-  Flame
+  Trophy, Flame, Heart
 } from 'lucide-react';
 import Link from 'next/link';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
@@ -25,13 +24,9 @@ import { auth } from '@/lib/firebase';
 import { useLoginModal } from '@/context/LoginModalContext';
 import { useTranslations } from 'next-intl';
 
-import { GuildLicenseDashboard } from '@/components/settings/GuildLicenseDashboard';
-import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
-
 function SettingsContent() {
   const t = useTranslations('Settings');
   const tc = useTranslations('Community');
-  const tp = useTranslations('Premium');
   const tl = useTranslations('Legal');
   const { user, profile: authProfile, loading: authLoading, refreshProfile } = useAuth();
   const searchParams = useSearchParams();
@@ -99,25 +94,10 @@ function SettingsContent() {
   });
   const [isSavingPreferences, setIsSavingPreferences] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'preferences' | 'profile' | 'security'>('overview');
-    const [access, setAccess] = useState<{ 
-        hasAccess: boolean; 
-        reason: 'none' | 'premium' | 'guild' | 'alliance' | 'pending_guild';
-        providerId?: string;
-    }>({ hasAccess: false, reason: 'none' });
-    const [providerName, setProviderName] = useState<string | null>(null);
-  
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [loadingInvoices, setLoadingInvoices] = useState(false);
-  const [subscriptionDetails, setSubscriptionDetails] = useState<any>(null);
-  const [allSubscriptions, setAllSubscriptions] = useState<any[]>([]);
-  const [loadingSubscription, setLoadingSubscription] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'preferences' | 'profile' | 'security'>('overview');
+
   const [isUnlinkDialogOpen, setIsUnlinkDialogOpen] = useState(false);
   const [isUnlinking, setIsUnlinking] = useState(false);
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [subscriptionModalPlan, setSubscriptionModalPlan] = useState<'personal' | 'guild'>('personal');
 
   const ROLE_OPTIONS = [
     'Tank', 'Healer', 'Melee DPS', 'Ranged DPS', 'Support', 'Gatherer', 'Crafter'
@@ -134,11 +114,6 @@ function SettingsContent() {
   const CITY_OPTIONS = [
     'Thetford', 'Fort Sterling', 'Lymhurst', 'Bridgewatch', 'Martlock', 'Caerleon', 'Brecilien'
   ].map(city => ({ value: city, label: t(`cities.${city}`) }));
-
-  const openSubscriptionModal = (plan: 'personal' | 'guild' = 'personal') => {
-      setSubscriptionModalPlan(plan);
-      setShowSubscriptionModal(true);
-  };
 
   const [securityForm, setSecurityForm] = useState({
       currentPassword: '',
@@ -183,30 +158,6 @@ function SettingsContent() {
   }, [profile, authProfile, user]);
 
   useEffect(() => {
-    if (activeTab === 'billing' && user) {
-        setLoadingInvoices(true);
-        setLoadingSubscription(true);
-        
-        getUserInvoices(user.uid).then(result => {
-            if (result.invoices) {
-                setInvoices(result.invoices);
-            }
-            setLoadingInvoices(false);
-        });
-        
-        getSubscriptionManagementData(user.uid).then(result => {
-            if (result.subscription) {
-                setSubscriptionDetails(result.subscription);
-            }
-            if (result.allSubscriptions) {
-                setAllSubscriptions(result.allSubscriptions);
-            }
-            setLoadingSubscription(false);
-        });
-    }
-  }, [activeTab, user]);
-
-  useEffect(() => {
     if (searchParams.get('success') === 'true') {
       setShowSuccess(true);
       router.replace('/settings');
@@ -214,7 +165,7 @@ function SettingsContent() {
     }
 
     const tab = searchParams.get('tab');
-    if (tab && ['overview', 'profile', 'billing', 'preferences', 'security'].includes(tab)) {
+    if (tab && ['overview', 'profile', 'preferences', 'security'].includes(tab)) {
         setActiveTab(tab as any);
     }
   }, [searchParams, router]);
@@ -223,56 +174,11 @@ function SettingsContent() {
     if (!user) return;
     const data = await getUserProfile(user.uid);
     setProfile(data);
-    
-    const accessStatus = await checkAccess(user.uid);
-          setAccess(accessStatus);
 
-          if (accessStatus.providerId) {
-            const provider = await getUserProfile(accessStatus.providerId);
-            if (provider) {
-                setProviderName(provider.characterName || provider.displayName || 'Anonymous Patron');
-            }
-          }
-
-          if (data?.characterName) {
+    if (data?.characterName) {
       setSearchName(data.characterName);
     }
     setLoading(false);
-  };
-
-  const handleCancelSubscription = () => {
-    setIsCancelModalOpen(true);
-  };
-
-  const confirmCancelSubscription = async () => {
-      setIsCancelling(true);
-      try {
-          if (!user) return;
-          const result = await cancelUserSubscription(user.uid);
-          if (result.success) {
-               setIsCancelModalOpen(false);
-               setTimeout(() => {
-                    toast.success(t('billing.cancelSuccess'));
-               }, 100);
-               loadProfile();
-               getSubscriptionManagementData(user.uid).then(res => {
-                   if (res.subscription) setSubscriptionDetails(res.subscription);
-               });
-          } else {
-               setIsCancelModalOpen(false);
-               setTimeout(() => {
-                    toast.error(result.error || t('billing.cancelError'));
-               }, 100);
-          }
-      } catch (error) {
-          console.error(error);
-          setIsCancelModalOpen(false);
-          setTimeout(() => {
-                toast.error(t('identity.unexpectedError'));
-          }, 100);
-      } finally {
-          setIsCancelling(false);
-      }
   };
 
   const handleSearchCharacter = async () => {
@@ -548,7 +454,6 @@ function SettingsContent() {
           options={[
             { value: 'overview', label: t('tabs.overview'), icon: <Layout className="h-4 w-4" /> },
             { value: 'profile', label: t('tabs.profile'), icon: <UserIcon className="h-4 w-4" /> },
-            { value: 'billing', label: t('tabs.billing'), icon: <CreditCard className="h-4 w-4" /> },
             { value: 'preferences', label: t('tabs.preferences'), icon: <SettingsIcon className="h-4 w-4" /> },
             { value: 'security', label: t('tabs.security'), icon: <ShieldCheck className="h-4 w-4" /> }
           ]}
@@ -560,7 +465,7 @@ function SettingsContent() {
 
       {/* Navigation Tabs - Desktop */}
       <div className="hidden md:flex gap-4 border-b border-border mb-8 overflow-x-auto">
-          <button 
+          <button
             onClick={() => setActiveTab('overview')}
             className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'overview' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -570,7 +475,7 @@ function SettingsContent() {
               </span>
               {activeTab === 'overview' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('profile')}
             className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'profile' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -580,31 +485,8 @@ function SettingsContent() {
               </span>
               {activeTab === 'profile' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
           </button>
-          <button 
-            onClick={() => setActiveTab('billing')}
-            className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'billing' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-              <span className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                {t('tabs.billing')}
-              </span>
-              {activeTab === 'billing' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
-          </button>
-          
-          {profile?.subscription?.planType === 'guild' && (
-             <button 
-                onClick={() => setActiveTab('guild_mgmt' as any)}
-                className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'guild_mgmt' as any ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-             >
-                  <span className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {t('tabs.guild')}
-                  </span>
-                  {activeTab === 'guild_mgmt' as any && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
-             </button>
-          )}
 
-          <button 
+          <button
             onClick={() => setActiveTab('preferences')}
             className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'preferences' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -614,8 +496,8 @@ function SettingsContent() {
               </span>
               {activeTab === 'preferences' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />}
           </button>
-          
-          <button 
+
+          <button
             onClick={() => setActiveTab('security')}
             className={`pb-4 px-2 text-sm font-bold transition-colors relative whitespace-nowrap ${activeTab === 'security' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -658,46 +540,6 @@ function SettingsContent() {
                              <UserIcon className="w-48 h-48 text-primary" />
                          </div>
                     </div>
-
-                    {/* Subscription Summary (if active) */}
-                    {access.hasAccess && (
-                        <div className="bg-card backdrop-blur rounded-xl border border-border p-6 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center">
-                                    <Crown className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <div className="font-bold text-foreground text-lg flex items-center gap-2">
-                                        {access.reason === 'guild' ? t('overview.guildActive') : t('overview.adeptActive')}
-                                        {access.reason === 'guild' && <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full border border-primary/30">Guild</span>}
-                                        {access.reason === 'alliance' && <span className="text-xs bg-info/20 text-info px-2 py-0.5 rounded-full border border-info/30">Alliance</span>}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                         {profile?.subscription?.renewsAt 
-                                            ? t('overview.nextBilling', { date: new Date(profile.subscription.renewsAt).toLocaleDateString() }) 
-                                            : profile?.subscription?.endsAt ? (
-                                                t('overview.accessExpires', { date: new Date(profile.subscription.endsAt).toLocaleDateString() })
-                                            ) : access.providerId ? (
-                                                 <span className="text-primary/80">
-                                                     {t('overview.providedBy')}{' '}
-                                                     <Link href={`/user/${access.providerId}`} className="hover:underline hover:text-primary transition-colors">
-                                                         {providerName || 'a guild member'}
-                                                     </Link>
-                                                 </span>
-                                             ) : t('overview.lifetimeAccess')}
-                                     </div>
-                                </div>
-                            </div>
-                            {access.reason === 'premium' && (
-                                <button 
-                                    onClick={() => setActiveTab('billing')}
-                                    className="text-sm font-bold text-muted-foreground bg-accent px-4 p-2 rounded-md hover:text-foreground transition-colors"
-                                >
-                                    {t('overview.manageSubscription')}
-                                </button>
-                            )}
-                        </div>
-                    )}
 
                     {/* Albion Identity Card */}
                     <div id="albion-identity" className="bg-card backdrop-blur rounded-xl border border-border p-6">
@@ -853,18 +695,6 @@ function SettingsContent() {
                                             {profile.guildName || <span className="text-muted-foreground italic">{t('identity.noGuild')}</span>}
                                         </div>
                                     </div>
-                                </div>
-                             </div>
-                        )}
-                        
-                        {access.reason === 'pending_guild' && (
-                             <div className="mt-6 p-4 bg-primary/20 border border-primary/50 rounded-lg flex items-start gap-3">
-                                <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 className="font-bold text-primary text-sm">{t('identity.actionRequired')}</h4>
-                                    <p className="text-primary/80 text-xs mt-1">
-                                        {t('identity.guildLicensePending')}
-                                    </p>
                                 </div>
                              </div>
                         )}
@@ -1102,289 +932,6 @@ function SettingsContent() {
                  </div>
             )}
 
-        {activeTab === 'guild_mgmt' as any && user && (
-            <div className="animate-in fade-in slide-in-from-bottom-4">
-                <GuildLicenseDashboard uid={user.uid} userProfile={profile} />
-            </div>
-        )}
-
-        {activeTab === 'billing' && (
-                <div className="space-y-6">
-                    <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
-                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Crown className="h-5 w-5 text-primary" />
-                            {t('billing.title')}
-                        </h2>
-
-                        {loadingSubscription ? (
-                            <div className="animate-pulse space-y-4">
-                                <div className="h-4 bg-muted rounded w-1/4"></div>
-                                <div className="h-10 bg-muted rounded"></div>
-                            </div>
-                        ) : subscriptionDetails ? (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                                        <div className="text-xs text-muted-foreground uppercase font-bold mb-1">{t('billing.currentPlan')}</div>
-                                        <div className="text-lg font-bold text-foreground mb-1">
-                                            {(subscriptionDetails.productName.toLowerCase().includes('personal') || subscriptionDetails.productName.toLowerCase().includes('adept')) ? 'Adept' : 
-                                             subscriptionDetails.productName.toLowerCase().includes('guild') ? 'Guild Master' : 
-                                             subscriptionDetails.productName} 
-                                            {' - '}
-                                            {(subscriptionDetails.variantName.toLowerCase().includes('year') || subscriptionDetails.productName.toLowerCase().includes('year')) ? t('billing.yearly') : t('billing.monthly')}
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
-                                                subscriptionDetails.status === 'active' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
-                                                subscriptionDetails.status === 'cancelled' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
-                                                'bg-secondary border-secondary text-muted-foreground'
-                                            }`}>
-                                                {subscriptionDetails.status.toUpperCase()}
-                                            </span>
-                                            {subscriptionDetails.amountFormatted && (
-                                                <span className="text-sm text-muted-foreground">
-                                                    {subscriptionDetails.amountFormatted} / {(subscriptionDetails.variantName.toLowerCase().includes('year') || subscriptionDetails.productName.toLowerCase().includes('year')) ? t('billing.yearly').toLowerCase() : t('billing.monthly').toLowerCase()}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                                        <div className="text-xs text-muted-foreground uppercase font-bold mb-1">{t('billing.paymentMethod')}</div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <CreditCard className="h-5 w-5 text-muted-foreground" />
-                                            <div className="text-foreground font-medium">
-                                                {subscriptionDetails.cardBrand} •••• {subscriptionDetails.cardLastFour}
-                                            </div>
-                                        </div>
-                                        {subscriptionDetails.renewsAt && subscriptionDetails.status === 'active' && (
-                                            <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                <Clock className="h-3 w-3" />
-                                                {t('overview.nextBilling', { date: new Date(subscriptionDetails.renewsAt).toLocaleDateString() })}
-                                            </div>
-                                        )}
-                                        {subscriptionDetails.endsAt && subscriptionDetails.status === 'cancelled' && (
-                                            <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                                <Clock className="h-3 w-3" />
-                                                {t('overview.accessExpires', { date: new Date(subscriptionDetails.endsAt).toLocaleDateString() })}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
-                                    {subscriptionDetails.updatePaymentMethodUrl && (
-                                        <a 
-                                            href={subscriptionDetails.updatePaymentMethodUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-bold text-sm transition-colors flex items-center gap-2"
-                                        >
-                                            <CreditCard className="h-4 w-4" />
-                                            {t('billing.updatePayment')}
-                                        </a>
-                                    )}
-                                    
-                                    {subscriptionDetails.customerPortalUrl && (
-                                        <a 
-                                            href={subscriptionDetails.customerPortalUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-bold text-sm transition-colors flex items-center gap-2"
-                                        >
-                                            <ExternalLink className="h-4 w-4" />
-                                            {t('billing.customerPortal')}
-                                        </a>
-                                    )}
-
-                                    {subscriptionDetails.status === 'active' && (
-                                        <button 
-                                            onClick={() => setIsCancelModalOpen(true)}
-                                            className="px-4 py-2 bg-red-900/20 hover:bg-red-900/40 text-red-400 border border-red-900/50 rounded-lg font-bold text-sm transition-colors flex items-center gap-2 ml-auto"
-                                        >
-                                            {t('billing.cancelSubscription')}
-                                        </button>
-                                    )}
-
-                                    <button 
-                                        onClick={() => openSubscriptionModal(subscriptionDetails.status === 'cancelled' ? 'personal' : 'guild')}
-                                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors flex items-center gap-2 ${
-                                            subscriptionDetails.status === 'cancelled' 
-                                            ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
-                                            : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
-                                        }`}
-                                    >
-                                        <Crown className="h-4 w-4" />
-                                        {subscriptionDetails.status === 'cancelled' ? t('billing.renewSubscription') : t('billing.viewPlans')}
-                                    </button>
-                                </div>
-                                
-                                {subscriptionDetails.status === 'active' && 
-                                 (subscriptionDetails.productName.toLowerCase().includes('personal') || subscriptionDetails.productName.toLowerCase().includes('adept')) && (
-                                    <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border border-blue-500/30 flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-                                                <Trophy className="h-5 w-5 text-blue-400" />
-                                            </div>
-                                            <div>
-                                                <div className="font-bold text-foreground">{t('billing.upgradeGuild')}</div>
-                                                <div className="text-sm text-muted-foreground">{t('billing.upgradeGuildDesc')}</div>
-                                            </div>
-                                        </div>
-                                        <button 
-                                            onClick={() => openSubscriptionModal('guild')}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold text-sm transition-colors whitespace-nowrap"
-                                        >
-                                            Upgrade
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8">
-                                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Crown className="h-8 w-8 text-muted-foreground" />
-                                </div>
-                                <h3 className="text-lg font-bold text-foreground mb-2">{t('billing.noSubscription')}</h3>
-                                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                                    {t('billing.upgradePrompt')}
-                                </p>
-                                <button 
-                                    onClick={() => openSubscriptionModal('personal')}
-                                    className="relative overflow-hidden inline-flex px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-bold transition-colors items-center justify-center gap-2"
-                                >
-                                    <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 skew-x-12" />
-                                    <span className="relative z-20 flex items-center gap-2">
-                                        {t('billing.viewPlans')}
-                                        <ArrowRight className="h-4 w-4" />
-                                    </span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {allSubscriptions && allSubscriptions.filter((sub: any) => sub.productName && sub.lemonSqueezySubscriptionId !== subscriptionDetails?.lemonSqueezySubscriptionId).length > 0 && (
-                        <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
-                            <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                                <SettingsIcon className="h-5 w-5 text-muted-foreground" />
-                                {t('billing.otherSubscriptions')}
-                            </h2>
-                            <div className="space-y-4">
-                                {allSubscriptions.filter((sub: any) => sub.productName && sub.lemonSqueezySubscriptionId !== subscriptionDetails?.lemonSqueezySubscriptionId).sort((a: any, b: any) => (a.status === 'active' ? -1 : 1)).map((sub: any) => (
-                                    <div key={sub.lemonSqueezySubscriptionId} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/30 rounded-lg border border-border gap-4">
-                                        <div>
-                                            <div className="font-bold text-foreground flex items-center gap-2">
-                                                {sub.productName} 
-                                                <span className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-0.5 rounded-full border border-border">
-                                                    {sub.variantName}
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-muted-foreground mt-1 flex items-center gap-3 flex-wrap">
-                                                <span className={`flex items-center gap-1.5 ${
-                                                    sub.status === 'active' ? 'text-green-400' : 
-                                                    sub.status === 'cancelled' ? 'text-red-400' : 'text-muted-foreground'
-                                                }`}>
-                                                    <div className={`h-1.5 w-1.5 rounded-full ${
-                                                        sub.status === 'active' ? 'bg-green-400' : 
-                                                        sub.status === 'cancelled' ? 'bg-red-400' : 'bg-muted-foreground'
-                                                    }`} />
-                                                    {sub.status.toUpperCase()}
-                                                </span>
-                                                {sub.endsAt && sub.status === 'cancelled' && (
-                                                    <span>Ends: {new Date(sub.endsAt).toLocaleDateString()}</span>
-                                                )}
-                                                {sub.renewsAt && sub.status === 'active' && (
-                                                    <span>Renews: {new Date(sub.renewsAt).toLocaleDateString()}</span>
-                                                )}
-                                                <span className="text-muted-foreground/50 text-xs">ID: {sub.lemonSqueezySubscriptionId}</span>
-                                            </div>
-                                        </div>
-                                        {sub.customerPortalUrl && (
-                                            <a 
-                                                href={sub.customerPortalUrl} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer" 
-                                                className="px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg font-bold text-sm transition-colors text-center whitespace-nowrap"
-                                            >
-                                                Manage Plan
-                                            </a>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
-                        <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-muted-foreground" />
-                            {t('billing.billingHistory')}
-                        </h2>
-                        
-                        <div className="overflow-hidden rounded-lg border border-border">
-                             <table className="w-full text-left text-sm text-muted-foreground">
-                                <thead className="bg-muted/50 text-xs uppercase font-medium text-muted-foreground">
-                                    <tr>
-                                        <th className="px-6 py-3">{t('billing.date')}</th>
-                                        <th className="px-6 py-3">{t('billing.description')}</th>
-                                        <th className="px-6 py-3">{t('billing.amount')}</th>
-                                        <th className="px-6 py-3">{t('billing.status')}</th>
-                                        <th className="px-6 py-3 text-right">{t('billing.invoice')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border bg-muted/20">
-                                    {loadingInvoices ? (
-                                        <tr>
-                                            <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
-                                                <div className="flex justify-center items-center gap-2">
-                                                    <div className="animate-spin h-4 w-4 border-2 border-muted-foreground border-t-foreground rounded-full" />
-                                                    {t('billing.loadingInvoices')}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ) : invoices.length > 0 ? (
-                                        invoices.map((invoice) => (
-                                            <tr key={invoice.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">{new Date(invoice.date).toLocaleDateString()}</td>
-                                                <td className="px-6 py-4">{t('billing.subscriptionRenewal')}</td>
-                                                <td className="px-6 py-4 font-mono text-foreground">{invoice.amount}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        invoice.status === 'paid' 
-                                                        ? 'bg-green-900/30 text-green-400' 
-                                                        : 'bg-secondary text-muted-foreground'
-                                                    }`}>
-                                                        {t(`billing.statusTypes.${invoice.status}`)}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    {invoice.receiptUrl && (
-                                                        <a 
-                                                            href={invoice.receiptUrl} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="text-primary hover:text-primary/80 text-xs font-bold flex items-center gap-1 justify-end ml-auto"
-                                                        >
-                                                            <ExternalLink className="h-3 w-3" /> {t('billing.pdf')}
-                                                        </a>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground italic">
-                                                {t('billing.noHistory')}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {activeTab === 'preferences' && (
                  <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
                     <div className="flex items-center justify-between mb-8">
@@ -1559,12 +1106,9 @@ function SettingsContent() {
                             <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
                                 <TrendingUp className="h-4 w-4" />
                                 {t('preferences.marketIntel')}
-          {!access.hasAccess && (
-            <span className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full border border-amber-500/20">{t('preferences.supportersOnly')}</span>
-          )}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className={`p-4 rounded-lg border flex items-center justify-between ${!access.hasAccess ? 'bg-muted/30 border-border/50 opacity-70' : 'bg-muted/50 border-border'}`}>
+                                <div className="p-4 rounded-lg border flex items-center justify-between bg-muted/50 border-border">
                                      <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-secondary text-green-400">
                                             <TrendingUp className="h-5 w-5" />
@@ -1574,16 +1118,15 @@ function SettingsContent() {
                                             <div className="text-xs text-muted-foreground">{t('preferences.marketAlertsDesc')}</div>
                                         </div>
                                      </div>
-                                     <button 
-                                        disabled={!access.hasAccess}
+                                     <button
                                         onClick={() => handleSavePreferences({ ...preferences, marketAlerts: !preferences.marketAlerts })}
-                                        className={`w-10 h-5 rounded-full relative transition-colors ${preferences.marketAlerts ? 'bg-primary' : 'bg-secondary'} ${!access.hasAccess ? 'cursor-not-allowed opacity-50' : ''}`}
+                                        className={`w-10 h-5 rounded-full relative transition-colors ${preferences.marketAlerts ? 'bg-primary' : 'bg-secondary'}`}
                                      >
-                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full  transition-all ${preferences.marketAlerts ? 'right-1' : 'left-1'}`} />
+                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${preferences.marketAlerts ? 'right-1' : 'left-1'}`} />
                                      </button>
                                 </div>
 
-                                <div className={`p-4 rounded-lg border flex items-center justify-between ${!access.hasAccess ? 'bg-muted/30 border-border/50 opacity-70' : 'bg-muted/50 border-border'}`}>
+                                <div className="p-4 rounded-lg border flex items-center justify-between bg-muted/50 border-border">
                                      <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-secondary text-yellow-400">
                                             <Coins className="h-5 w-5" />
@@ -1593,12 +1136,11 @@ function SettingsContent() {
                                             <div className="text-xs text-muted-foreground">{t('preferences.goldAlertsDesc')}</div>
                                         </div>
                                      </div>
-                                     <button 
-                                        disabled={!access.hasAccess}
+                                     <button
                                         onClick={() => handleSavePreferences({ ...preferences, goldAlerts: !preferences.goldAlerts })}
-                                        className={`w-10 h-5 rounded-full relative transition-colors ${preferences.goldAlerts ? 'bg-primary' : 'bg-secondary'} ${!access.hasAccess ? 'cursor-not-allowed opacity-50' : ''}`}
+                                        className={`w-10 h-5 rounded-full relative transition-colors ${preferences.goldAlerts ? 'bg-primary' : 'bg-secondary'}`}
                                     >
-                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full  transition-all ${preferences.goldAlerts ? 'right-1' : 'left-1'}`} />
+                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${preferences.goldAlerts ? 'right-1' : 'left-1'}`} />
                                      </button>
                                 </div>
                             </div>
@@ -1792,22 +1334,22 @@ function SettingsContent() {
         <div className="space-y-6">
             <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
                 <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">{t('sidebar.status')}</h3>
-                <div className="flex items-center gap-4 mb-6">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${access.hasAccess ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground'}`}>
-                        <Crown className="h-6 w-6" />
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                        <Trophy className="h-6 w-6" />
                     </div>
                     <div>
                         <div className="font-bold text-foreground text-lg">
-                            {access.hasAccess ? t('sidebar.supporter') : t('sidebar.free')}
+                            {t('ranks.Wanderer')}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                            {access.hasAccess ? t('sidebar.thankYou') : t('sidebar.upgradeToUnlock')}
+                            {t('sidebar.wandererDesc')}
                         </div>
                     </div>
                 </div>
 
                 {authProfile?.currentStreak && authProfile.currentStreak > 0 && (
-                    <div className="mb-6 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between">
+                    <div className="mt-4 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Flame className="h-5 w-5 text-orange-500 fill-orange-500" />
                             <div>
@@ -1821,28 +1363,6 @@ function SettingsContent() {
                         </div>
                     </div>
                 )}
-                {!access.hasAccess ? (
-                    <button 
-                        onClick={() => openSubscriptionModal('personal')}
-                        className="block w-full py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-center rounded-lg transition-colors text-sm"
-                    >
-                        {authProfile?.preferences?.hasUsedTrial ? tp('features.support') : tp('powerArmy')}
-                    </button>
-                ) : profile?.subscription?.status === 'cancelled' ? (
-                     <button 
-                        onClick={() => openSubscriptionModal('personal')}
-                        className="block w-full py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-center rounded-lg transition-colors text-sm"
-                    >
-                        {t('billing.renewSubscription')}
-                    </button>
-                ) : (access.reason === 'premium' && profile?.subscription?.planType !== 'guild') ? (
-                     <button 
-                        onClick={() => openSubscriptionModal('guild')}
-                        className="block w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-center rounded-lg transition-colors text-sm"
-                    >
-                        {t('billing.upgradeGuild')}
-                    </button>
-                ) : null}
             </div>
 
             <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
@@ -1879,18 +1399,6 @@ function SettingsContent() {
       </div>
     
       <ConfirmationDialog
-        isOpen={isCancelModalOpen}
-        onClose={() => !isCancelling && setIsCancelModalOpen(false)}
-        onConfirm={confirmCancelSubscription}
-        title={t('dialogs.cancelTitle')}
-        description={t('dialogs.cancelDesc')}
-        confirmText={t('dialogs.confirmCancel')}
-        cancelText={t('dialogs.keepSubscription')}
-        variant="danger"
-        loading={isCancelling}
-      />
-
-      <ConfirmationDialog
         isOpen={isUnlinkDialogOpen}
         onClose={() => setIsUnlinkDialogOpen(false)}
         onConfirm={confirmUnlink}
@@ -1899,12 +1407,6 @@ function SettingsContent() {
         confirmText={t('dialogs.unlinkConfirm')}
         variant="danger"
         loading={isUnlinking}
-      />
-
-      <SubscriptionModal
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-        initialPlan={subscriptionModalPlan}
       />
     </div>
   );

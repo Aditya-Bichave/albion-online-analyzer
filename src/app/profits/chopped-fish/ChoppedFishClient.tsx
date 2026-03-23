@@ -129,7 +129,7 @@ export default function ChoppedFishClient() {
   }, [fishTypes, locale]);
   
   // Controls state is initialized above
-  const [choppedFishRequired, setChoppedFishRequired] = useState<number>(5000);
+  const [choppedFishRequired, setChoppedFishRequired] = useState<number>(1);
   const [useBuyOrder, setUseBuyOrder] = useState(false);
   const [showPrices, setShowPrices] = useState(true);
 

@@ -19,7 +19,7 @@ try {
 }
 
 const CONFIG = {
-  inputFile: path.join(__dirname, '..', 'builds-import-2026.json'), // Default file
+  inputFile: path.join(__dirname, '..', 'builds-import-albionfree-2026.json'), // Default file
   itemsApiUrl: 'https://raw.githubusercontent.com/ao-data/ao-bin-dumps/master/formatted/items.json',
   cacheFile: path.join(__dirname, '..', '.item-cache.json'),
   cacheExpiryMs: 24 * 60 * 60 * 1000 // 24 hours
@@ -203,7 +203,7 @@ async function validateAllBuilds() {
     process.exit(1);
   }
   
-  const builds = importData.builds || [];
+  const builds = importData.builds || (Array.isArray(importData) ? importData : []);
   console.log(`✅ Loaded ${builds.length} builds\n`);
   
   if (builds.length === 0) {

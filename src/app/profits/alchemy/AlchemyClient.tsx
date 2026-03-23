@@ -5,9 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { PageShell } from '@/components/PageShell';
 import { InfoStrip, InfoBanner } from '@/components/InfoStrip';
 import { ItemIcon } from '@/components/ItemIcon';
-import { FeatureLock } from '@/components/subscription/FeatureLock';
-import { usePremiumAccess } from '@/hooks/usePremiumAccess';
-import { FlaskConical, RefreshCw, Scale, ChevronDown, ChevronUp, Settings, TrendingUp, DollarSign, Package, MapPin, Calculator, ShoppingCart, Info, Loader2, CircleHelp, Lock } from 'lucide-react';
+import { FlaskConical, RefreshCw, Scale, ChevronDown, ChevronUp, Settings, TrendingUp, DollarSign, Package, MapPin, Calculator, ShoppingCart, Info, Loader2, CircleHelp } from 'lucide-react';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { ServerSelector } from '@/components/ServerSelector';
 import { useServer } from '@/hooks/useServer';
@@ -63,7 +61,7 @@ export default function AlchemyClient() {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   
   // Filter States
-  const [quantity, setQuantity] = useState(50); // Default reasonable quantity for potions
+  const [quantity, setQuantity] = useState(1); // Default reasonable quantity for potions
   const [showEnchanted, setShowEnchanted] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false); // Collapsible state
   const [isPremium, setIsPremium] = useState(true);
@@ -623,11 +621,6 @@ export default function AlchemyClient() {
 
              {/* Advanced Configuration (Collapsible) */}
              {showAdvanced && (
-                <FeatureLock
-                    title={t('advancedLockTitle')}
-                    description={t('advancedLockDesc')}
-                    className="rounded-t-none border-t border-border"
-                >
                 <div className="p-6 border-t border-border bg-muted/30 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 rounded-b-xl">
                     {/* Market Strategy */}
                     <div className="bg-card/50 p-4 rounded-lg border border-border/50 space-y-4">
@@ -637,7 +630,7 @@ export default function AlchemyClient() {
                         </div>
                         <div className="space-y-4">
                             <div className="pb-2 border-b border-border/50">
-                                <Checkbox label={t('premiumStatus')} checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} />
+                                <Checkbox label={t('premiumTax')} checked={isPremium} onChange={(e) => setIsPremium(e.target.checked)} />
                             </div>
                             <div>
                                 <label className="text-xs text-muted-foreground font-medium block mb-1.5 uppercase tracking-wide">{t('buyMethod')}</label>
@@ -727,7 +720,6 @@ export default function AlchemyClient() {
                          </div>
                     </div>
                 </div>
-                </FeatureLock>
              )}
         </div>
 

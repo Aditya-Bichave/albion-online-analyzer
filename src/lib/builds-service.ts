@@ -1,34 +1,34 @@
 import { db } from './firebase';
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
-  doc, 
-  getDoc, 
-  updateDoc, 
-  increment, 
-  serverTimestamp, 
-  limit,
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  doc,
+  getDoc,
+  updateDoc,
+  increment,
+  serverTimestamp,
+  limit as limitQuery,
   DocumentData,
   QueryDocumentSnapshot,
   Timestamp,
   deleteDoc,
-  setDoc,
-  runTransaction,
-  startAfter
+  startAfter,
+  runTransaction
 } from 'firebase/firestore';
 import { submitToIndexNow } from './indexnow';
 import { checkAndNotifyRankUp } from './notification-service';
+import { getCachedBuilds, cacheBuilds } from './builds-cache';
 
 export type BuildCategory = 'solo' | 'small-scale' | 'pvp' | 'zvz' | 'large-scale' | 'group';
 
 export interface BuildItem {
   Type: string;
   Quality?: number;
-  Alternatives?: string[]; // List of alternative item Types
+  Alternatives?: string[];
 }
 
 export interface BuildEquipment {
@@ -47,21 +47,21 @@ export interface BuildEquipment {
 export interface Build {
   id?: string;
   title: string;
-  description: string; // Short description
-  longDescription?: string; // Rich text article
+  description: string;
+  longDescription?: string;
   category: BuildCategory;
   items: BuildEquipment;
   authorId: string;
   authorName: string;
-  rating: number; // Average rating (0-5)
+  rating: number;
   ratingCount: number;
-  likes: number; // Total number of likes
+  likes: number;
   views: number;
   createdAt: Timestamp | any;
   updatedAt: Timestamp | any;
   tags?: string[];
   youtubeLink?: string;
-  hidden?: boolean; // Whether the build is hidden from public view
+  hidden?: boolean;
 
   // Advanced Details
   strengths?: string[];
@@ -70,9 +70,30 @@ export interface Build {
   difficulty?: 'easy' | 'medium' | 'hard';
 }
 
-const COLLECTION = 'builds';
+// Pagination result type
+export interface PaginatedBuilds {
+  builds: Build[];
+  lastDoc: QueryDocumentSnapshot | null;
+  hasMore: boolean;
+  total?: number;
+  currentPage?: number;
+}
 
-// Helper to determine item slot from ID
+// Filter options type
+export interface BuildFilters {
+  sort?: 'recent' | 'popular' | 'rating' | 'likes';
+  tag?: string;
+  zone?: string;
+  activity?: string;
+  role?: string;
+  search?: string;
+  limit?: number;
+  page?: number; // Page number (1-based)
+}
+
+const COLLECTION = 'builds';
+const PAGE_SIZE = 24; // Optimal for grid layout (8x3, 6x4, 4x6)
+
 function getItemSlot(itemId: string): keyof BuildEquipment | null {
   if (itemId.includes('_HEAD_')) return 'Head';
   if (itemId.includes('_ARMOR_')) return 'Armor';
@@ -82,62 +103,143 @@ function getItemSlot(itemId: string): keyof BuildEquipment | null {
   if (itemId.includes('_MOUNT_')) return 'Mount';
   if (itemId.includes('_POTION_')) return 'Potion';
   if (itemId.includes('_MEAL_') || itemId.includes('_SANDWICH_') || itemId.includes('_SOUP_') || itemId.includes('_STEW_') || itemId.includes('_PIE_') || itemId.includes('_SALAD_') || itemId.includes('_ROAST_')) return 'Food';
-  if (itemId.includes('_OFF_')) return 'OffHand'; // Generic offhand
+  if (itemId.includes('_OFF_')) return 'OffHand';
   if (itemId.includes('_SHIELD_') || itemId.includes('_TORCH_') || itemId.includes('_BOOK_') || itemId.includes('_TOTEM_') || itemId.includes('_HORN_')) return 'OffHand';
   if (itemId.includes('_MAIN_') || itemId.includes('_2H_')) return 'MainHand';
-  
-  // Fallbacks for specific weapons that might not have _MAIN_ or _2H_ explicitly (though most do)
-  // Assuming if it's not any of the above and is a weapon, it's MainHand
-  return 'MainHand'; 
+  return 'MainHand';
 }
 
-export const searchBuildsService = async (queryText: string, itemIds: string[] = []): Promise<Build[]> => {
+/**
+ * Get paginated builds with server-side filtering and caching
+ * Efficient for large datasets with thousands of builds
+ */
+export const getPaginatedBuilds = async (
+  filters: BuildFilters = {},
+  lastDoc?: QueryDocumentSnapshot | null
+): Promise<PaginatedBuilds> => {
+  const {
+    sort = 'recent',
+    tag,
+    zone,
+    activity,
+    role,
+    search,
+    limit = PAGE_SIZE,
+    page
+  } = filters;
+
+  // Try to get from cache first (only for simple filter combinations)
+  const useCache = !search && !page; // Don't cache search results or specific pages
+  const cacheKey = { sort, tag, zone, activity, role, page };
+  
+  if (useCache) {
+    const cached = getCachedBuilds(cacheKey);
+    if (cached) {
+      console.log('💾 Cache HIT for builds');
+      return {
+        builds: cached.builds,
+        lastDoc: cached.lastDocId ? ({ id: cached.lastDocId } as QueryDocumentSnapshot) : null,
+        hasMore: cached.hasMore || false,
+        total: cached.total,
+        currentPage: page
+      };
+    }
+  }
+
   try {
     const buildsRef = collection(db, COLLECTION);
-    const results: Map<string, Build> = new Map();
+    const constraints: any[] = [];
 
-    // 1. Search by Title (prefix)
-    if (queryText.length >= 2) {
-      // Note: This is case-sensitive. For better search, we'd need a lowercase index or separate search service.
-      // We'll try to match exact case or Capitalized (standard for titles)
-      const qTitle = query(
-        buildsRef, 
-        where('title', '>=', queryText),
-        where('title', '<=', queryText + '\uf8ff'),
-        limit(5)
+    // Build query constraints based on filters
+    // Note: Firestore requires composite indexes for multiple where/orderBy clauses
+    // For complex filtering with multiple fields, we filter client-side after fetching
+
+    if (sort === 'popular') {
+      constraints.push(orderBy('views', 'desc'));
+    } else if (sort === 'rating') {
+      constraints.push(orderBy('rating', 'desc'));
+    } else if (sort === 'likes') {
+      constraints.push(orderBy('likes', 'desc'));
+    } else {
+      constraints.push(orderBy('createdAt', 'desc'));
+    }
+
+    if (lastDoc) {
+      constraints.push(startAfter(lastDoc));
+    }
+
+    constraints.push(limitQuery(limit));
+
+    let q = query(buildsRef, ...constraints);
+    const snapshot = await getDocs(q);
+
+    let builds = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as Build))
+      .filter(build => !build.hidden);
+
+    // Apply client-side filtering for tags
+    // This is more flexible than Firestore's array-contains for multiple values
+    if (tag && tag !== 'all') {
+      builds = builds.filter(b => b.tags?.includes(tag));
+    }
+    if (zone && zone !== 'all') {
+      builds = builds.filter(b => b.tags?.includes(zone));
+    }
+    if (activity && activity !== 'all') {
+      builds = builds.filter(b => b.tags?.includes(activity));
+    }
+    if (role && role !== 'all') {
+      builds = builds.filter(b => b.tags?.includes(role));
+    }
+    if (search && search.trim()) {
+      const term = search.toLowerCase();
+      builds = builds.filter(b => 
+        b.title.toLowerCase().includes(term) ||
+        b.authorName.toLowerCase().includes(term) ||
+        b.category.toLowerCase().includes(term) ||
+        b.tags?.some(t => t.toLowerCase().includes(term))
       );
-      const snapshot = await getDocs(qTitle);
-      snapshot.forEach(doc => results.set(doc.id, { id: doc.id, ...doc.data() } as Build));
     }
 
-    // 2. Search by Item Usage (if items found)
-    // We only take the first item to avoid too many queries
-    if (itemIds.length > 0) {
-      const targetItemId = itemIds[0];
-      const slot = getItemSlot(targetItemId);
-      
-      if (slot) {
-        const qItem = query(
-          buildsRef,
-          where(`items.${slot}.Type`, '==', targetItemId),
-          limit(5)
-        );
-        const snapshot = await getDocs(qItem);
-        snapshot.forEach(doc => results.set(doc.id, { id: doc.id, ...doc.data() } as Build));
-      }
+    const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+    const hasMore = snapshot.docs.length === limit;
+
+    const result: PaginatedBuilds = {
+      builds,
+      lastDoc: newLastDoc,
+      hasMore,
+      currentPage: page
+    };
+
+    // Cache the result
+    if (useCache && builds.length > 0) {
+      cacheBuilds(cacheKey, result);
     }
 
-    return Array.from(results.values());
+    return result;
   } catch (error) {
-    console.error("Error searching builds:", error);
-    return [];
+    console.error('Error fetching paginated builds:', error);
+    return { builds: [], lastDoc: null, hasMore: false, currentPage: page };
   }
 };
 
+/**
+ * Optimized version of getBuildsAll using pagination
+ */
+export const getBuildsAll = async (
+  sort: 'recent' | 'popular' | 'rating' | 'likes' = 'recent',
+  limitCount: number = PAGE_SIZE,
+  lastDoc?: QueryDocumentSnapshot | null
+): Promise<{ builds: Build[], lastDoc: QueryDocumentSnapshot | null }> => {
+  const result = await getPaginatedBuilds({ sort, limit: limitCount }, lastDoc);
+  return { builds: result.builds, lastDoc: result.lastDoc };
+};
+
+// Keep existing functions for backwards compatibility
 export const getBuilds = async (
   category: BuildCategory,
   sort: 'recent' | 'popular' | 'rating' | 'likes' = 'recent',
-  limitCount: number = 50,
+  limitCount: number = PAGE_SIZE,
   lastDoc?: QueryDocumentSnapshot | null
 ): Promise<{ builds: Build[], lastDoc: QueryDocumentSnapshot | null }> => {
   try {
@@ -158,10 +260,9 @@ export const getBuilds = async (
       q = query(q, startAfter(lastDoc));
     }
 
-    q = query(q, limit(limitCount));
+    q = query(q, limitQuery(limitCount));
 
     const snapshot = await getDocs(q);
-    // Filter out hidden builds (only visible to author/admin)
     const builds = snapshot.docs
       .map(doc => ({ id: doc.id, ...doc.data() } as Build))
       .filter(build => !build.hidden);
@@ -174,42 +275,41 @@ export const getBuilds = async (
   }
 };
 
-export const getBuildsAll = async (
-  sort: 'recent' | 'popular' | 'rating' | 'likes' = 'recent',
-  limitCount: number = 50,
-  lastDoc?: QueryDocumentSnapshot | null
-): Promise<{ builds: Build[], lastDoc: QueryDocumentSnapshot | null }> => {
+export const searchBuildsService = async (queryText: string, itemIds: string[] = []): Promise<Build[]> => {
   try {
     const buildsRef = collection(db, COLLECTION);
-    let q = query(buildsRef);
+    const results: Map<string, Build> = new Map();
 
-    if (sort === 'popular') {
-      q = query(q, orderBy('views', 'desc'));
-    } else if (sort === 'rating') {
-      q = query(q, orderBy('rating', 'desc'));
-    } else if (sort === 'likes') {
-      q = query(q, orderBy('likes', 'desc'));
-    } else {
-      q = query(q, orderBy('createdAt', 'desc'));
+    if (queryText.length >= 2) {
+      const qTitle = query(
+        buildsRef,
+        where('title', '>=', queryText),
+        where('title', '<=', queryText + '\uf8ff'),
+        limitQuery(5)
+      );
+      const snapshot = await getDocs(qTitle);
+      snapshot.forEach(doc => results.set(doc.id, { id: doc.id, ...doc.data() } as Build));
     }
 
-    if (lastDoc) {
-      q = query(q, startAfter(lastDoc));
+    if (itemIds.length > 0) {
+      const targetItemId = itemIds[0];
+      const slot = getItemSlot(targetItemId);
+
+      if (slot) {
+        const qItem = query(
+          buildsRef,
+          where(`items.${slot}.Type`, '==', targetItemId),
+          limitQuery(5)
+        );
+        const snapshot = await getDocs(qItem);
+        snapshot.forEach(doc => results.set(doc.id, { id: doc.id, ...doc.data() } as Build));
+      }
     }
 
-    q = query(q, limit(limitCount));
-
-    const snapshot = await getDocs(q);
-    // Filter out hidden builds (only visible to author/admin)
-    const builds = snapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() } as Build))
-      .filter(build => !build.hidden);
-    const newLastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
-
-    return { builds, lastDoc: newLastDoc };
+    return Array.from(results.values());
   } catch (error) {
-    console.error('Error fetching all builds:', error);
-    return { builds: [], lastDoc: null };
+    console.error("Error searching builds:", error);
+    return [];
   }
 };
 
@@ -220,23 +320,19 @@ export const getBuild = async (id: string, userId?: string): Promise<Build | nul
 
     if (docSnap.exists()) {
       const build = { id: docSnap.id, ...docSnap.data() } as Build;
-      
-      // If build is hidden, only show to author or admin
+
       if (build.hidden && userId) {
         const isAuthor = build.authorId === userId;
         if (isAuthor) return build;
-        
-        // Check if user is admin
+
         const userRef = doc(db, 'users', userId);
         const userSnap = await getDoc(userRef);
         const userData = userSnap.data();
         if (userData?.isAdmin) return build;
-        
-        // Hidden build, user is not author or admin
+
         return null;
       }
-      
-      // Build is not hidden, return it
+
       return build;
     }
     return null;
@@ -258,7 +354,6 @@ export const createBuild = async (build: Omit<Build, 'id' | 'createdAt' | 'updat
       updatedAt: serverTimestamp(),
     });
 
-    // Check for rank up (fire and forget)
     getUserBuilds(build.authorId).then(({ builds }) => {
       checkAndNotifyRankUp(build.authorId, builds);
     }).catch(err => console.error('Error checking rank up:', err));
@@ -280,15 +375,19 @@ export const createBuild = async (build: Omit<Build, 'id' | 'createdAt' | 'updat
   }
 };
 
-export const getUserBuilds = async (userId: string, limitCount: number = 20, lastDoc?: QueryDocumentSnapshot | null): Promise<{ builds: Build[], lastDoc: QueryDocumentSnapshot | null }> => {
+export const getUserBuilds = async (
+  userId: string,
+  limitCount: number = 20,
+  lastDoc?: QueryDocumentSnapshot | null
+): Promise<{ builds: Build[], lastDoc: QueryDocumentSnapshot | null }> => {
   try {
     let q = query(collection(db, COLLECTION), where('authorId', '==', userId), orderBy('createdAt', 'desc'));
-    
+
     if (lastDoc) {
       q = query(q, startAfter(lastDoc));
     }
 
-    q = query(q, limit(limitCount));
+    q = query(q, limitQuery(limitCount));
 
     const snapshot = await getDocs(q);
     const builds = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Build));
@@ -301,9 +400,62 @@ export const getUserBuilds = async (userId: string, limitCount: number = 20, las
   }
 };
 
+/**
+ * Get paginated user builds with caching
+ */
+export const getUserBuildsPaginated = async (
+  userId: string,
+  page: number = 1,
+  limit: number = 12
+): Promise<{ builds: Build[], hasMore: boolean, total: number }> => {
+  try {
+    const buildsRef = collection(db, COLLECTION);
+    const q = query(
+      buildsRef,
+      where('authorId', '==', userId),
+      orderBy('createdAt', 'desc'),
+      limitQuery(limit)
+    );
+
+    // For page > 1, we need to fetch all previous docs to get the last one
+    // This is a limitation of Firestore cursor-based pagination
+    // For better performance with many pages, consider using a subcollection or denormalization
+    let lastDoc: QueryDocumentSnapshot | null = null;
+    if (page > 1) {
+      // Fetch previous pages to get the cursor
+      const prevDocsCount = (page - 1) * limit;
+      const prevQuery = query(
+        buildsRef,
+        where('authorId', '==', userId),
+        orderBy('createdAt', 'desc'),
+        limitQuery(prevDocsCount)
+      );
+      const prevSnapshot = await getDocs(prevQuery);
+      lastDoc = prevSnapshot.docs[prevSnapshot.docs.length - 1] || null;
+    }
+
+    const qWithCursor = lastDoc
+      ? query(buildsRef, where('authorId', '==', userId), orderBy('createdAt', 'desc'), startAfter(lastDoc), limitQuery(limit))
+      : q;
+
+    const snapshot = await getDocs(qWithCursor);
+    const builds = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Build));
+    const hasMore = snapshot.docs.length === limit;
+
+    // Get total count (this requires a separate query or denormalized count)
+    // For now, we'll estimate based on page and hasMore
+    const total = hasMore ? -1 : ((page - 1) * limit) + builds.length;
+
+    return { builds, hasMore, total };
+  } catch (error) {
+    console.error('Error fetching paginated user builds:', error);
+    return { builds: [], hasMore: false, total: 0 };
+  }
+};
+
 export const toggleBuildLike = async (buildId: string, userId: string): Promise<boolean> => {
   if (!userId || !buildId) return false;
-  
+
   const buildRef = doc(db, COLLECTION, buildId);
   const likeRef = doc(db, COLLECTION, buildId, 'likes', userId);
 
@@ -358,34 +510,19 @@ export const rateBuild = async (buildId: string, userId: string, rating: number)
       const currentTotalScore = currentAverage * currentRatingCount;
 
       if (ratingDoc.exists()) {
-        // User is updating their rating
         const oldRating = ratingDoc.data().value;
         const newTotalScore = currentTotalScore - oldRating + rating;
         const newAverage = newTotalScore / currentRatingCount;
 
-        transaction.update(ratingRef, { 
-          value: rating, 
-          updatedAt: serverTimestamp() 
-        });
-        
-        transaction.update(buildRef, { 
-          rating: newAverage 
-        });
+        transaction.update(ratingRef, { value: rating, updatedAt: serverTimestamp() });
+        transaction.update(buildRef, { rating: newAverage });
       } else {
-        // User is rating for the first time
         const newTotalScore = currentTotalScore + rating;
         const newRatingCount = currentRatingCount + 1;
         const newAverage = newTotalScore / newRatingCount;
 
-        transaction.set(ratingRef, { 
-          value: rating, 
-          createdAt: serverTimestamp() 
-        });
-
-        transaction.update(buildRef, { 
-          rating: newAverage,
-          ratingCount: increment(1)
-        });
+        transaction.set(ratingRef, { value: rating, createdAt: serverTimestamp() });
+        transaction.update(buildRef, { rating: newAverage, ratingCount: increment(1) });
       }
     });
   } catch (error) {
@@ -418,10 +555,8 @@ export const updateBuild = async (buildId: string, updates: Partial<Build>, auth
     }
 
     const buildData = buildSnap.data() as Build;
-    
-    // Check if user is authorized (author or admin)
+
     if (buildData.authorId !== authorId) {
-      // Check if user is admin
       const userRef = doc(db, 'users', authorId);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
@@ -452,10 +587,8 @@ export const deleteBuild = async (buildId: string, authorId: string) => {
     }
 
     const buildData = buildSnap.data() as Build;
-    
-    // Check if user is authorized (author or admin)
+
     if (buildData.authorId !== authorId) {
-      // Check if user is admin
       const userRef = doc(db, 'users', authorId);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
@@ -464,9 +597,7 @@ export const deleteBuild = async (buildId: string, authorId: string) => {
       }
     }
 
-    // Delete the build document (subcollections will be automatically deleted)
     await deleteDoc(buildRef);
-
     return true;
   } catch (error) {
     console.error('Error deleting build:', error);
@@ -484,10 +615,8 @@ export const hideBuild = async (buildId: string, authorId: string, hidden: boole
     }
 
     const buildData = buildSnap.data() as Build;
-    
-    // Check if user is authorized (author or admin)
+
     if (buildData.authorId !== authorId) {
-      // Check if user is admin
       const userRef = doc(db, 'users', authorId);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();

@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import { useServer } from '@/hooks/useServer';
 import { fetchRecentEvents, fetchEventDetails, searchPlayerAction, getPlayerStatsAction, resolveItemNameAction, getEventMetadataAction } from './actions';
 import { PageShell } from '@/components/PageShell';
-import { FeatureLock } from '@/components/subscription/FeatureLock';
 import { InfoStrip } from '@/components/InfoStrip';
 import { Input } from '@/components/ui/Input';
 import { ItemIcon } from '@/components/ItemIcon';
@@ -339,19 +338,7 @@ export default function KillFeedPage() {
 
         {/* History View Content */}
         {!selectedPlayer && view === 'history' && (
-          <FeatureLock
-            title={t('historicalTrends')}
-            description={t('historicalTrendsDesc')}
-            lockedContent={<div className="h-[250px] sm:h-[300px] md:h-[400px] w-full bg-muted/20 rounded-xl flex items-center justify-center border border-border">
-              <div className="text-center p-4 sm:p-6">
-                <TrendingUp className="h-8 w-8 sm:h-10 md:h-12 sm:w-8 md:w-10 lg:h-12 lg:w-12 text-muted-foreground mx-auto mb-2 sm:mb-4" />
-                <h3 className="text-sm sm:text-base md:text-lg font-bold text-muted-foreground">{t('historicalDataLocked')}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 max-w-xs sm:max-w-md">{t('upgradeSupporter')}</p>
-              </div>
-            </div>}
-          >
             <HistoryView server={server} />
-          </FeatureLock>
         )}
 
         {/* Main Content */}
@@ -669,13 +656,7 @@ function HistoryView({ server }: { server: string }) {
   const fakeStats = useMemo(() => calculateStats(fakeData), [fakeData]);
 
   return (
-    <FeatureLock
-      title={t('supporterOnlyHistory')}
-      description={t('joinSupporters')}
-      lockedContent={<HistoryContent data={fakeData} stats={fakeStats} range={range} setRange={setRange} />}
-    >
       <HistoryContent data={realData} stats={realStats} range={range} setRange={setRange} />
-    </FeatureLock>
   );
 }
 

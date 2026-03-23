@@ -33,16 +33,16 @@ const Markdown = dynamic(
 
 interface BuildViewProps {
     id: string;
-    category: string;
 }
 
-export function BuildView({ id, category }: BuildViewProps) {
+export function BuildView({ id }: BuildViewProps) {
     const t = useTranslations('BuildView');
     const tCommon = useTranslations('Common');
     const tBuilds = useTranslations('Builds');
     const { user, profile } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const [build, setBuild] = useState<Build | null>(null);
 
     const getCategoryLabel = (cat: string) => {
         switch (cat.toLowerCase()) {
@@ -55,7 +55,6 @@ export function BuildView({ id, category }: BuildViewProps) {
             default: return cat.replace('-', ' ');
         }
     };
-    const [build, setBuild] = useState<Build | null>(null);
     const [loading, setLoading] = useState(true);
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
@@ -136,7 +135,7 @@ export function BuildView({ id, category }: BuildViewProps) {
                     content: `This thread is for discussing the build: ${build!.title}`,
                     category: 'Builds',
                     server: 'All',
-                    tags: [category],
+                    tags: [build?.category || 'solo'],
                     relatedBuildId: build!.id
                 });
                 if (res.success && res.threadId) {
@@ -377,9 +376,9 @@ export function BuildView({ id, category }: BuildViewProps) {
                 title={t('notFound')}
                 backgroundImage={`/background/ao-builds.jpg`}
                 description="">
-                <div className="text-center py-20">
+                <div className="text-center py-20 flex flex-col items-center">
                     <h2 className="text-xl text-muted-foreground">{t('notFoundDesc')}</h2>
-                    <Link href="/builds/solo" className="text-amber-500 hover:underline mt-4 block">
+                    <Link href="/builds" className="text-amber-500 w-fit hover:underline mt-4 block">
                         {t('browseBuilds')}
                     </Link>
                 </div>
@@ -419,8 +418,8 @@ export function BuildView({ id, category }: BuildViewProps) {
         >
             <div className=" mx-auto">
                 <div className="mb-6 flex items-center justify-between">
-                    <Link href={`/builds/${build.category}`} className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
-                        <ArrowLeft className="h-4 w-4 mr-1" /> {t('backToCategory', { category: getCategoryLabel(build.category) })}
+                    <Link href={`/builds`} className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
+                        <ArrowLeft className="h-4 w-4 mr-1" /> {t('backToBuilds')}
                     </Link>
                 </div>
 

@@ -4,9 +4,10 @@ import { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { PageShell } from '@/components/PageShell';
 import { BuildCard } from '@/components/BuildCard';
-import { getUserBuilds, Build } from '@/lib/builds-service';
+import { getUserBuildsPaginated, Build } from '@/lib/builds-service';
 import { getUserProfile, updateUserProfile, UserProfile, calculateUserGamification } from '@/lib/user-profile';
 import { useAuth } from '@/context/AuthContext';
+import { Pagination } from '@/components/ui/Pagination';
 import { User, Calendar, Swords, Edit2, Shield, Eye, Camera, Loader2, Image as ImageIcon, Move, Check, X, Crown, Hammer, Zap, Heart, Star, Flame, Globe, Gamepad2, Twitter, Youtube, Twitch, MessageCircle, Pickaxe, Crosshair, Lock, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,11 +31,11 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  
+
   // Pagination State
-  const [lastDoc, setLastDoc] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
   
   // Banner Repositioning State
   const [isRepositioning, setIsRepositioning] = useState(false);
@@ -52,17 +53,19 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [profileData, { builds: buildsData, lastDoc: last }] = await Promise.all([
+        const [profileData, buildsResult] = await Promise.all([
           getUserProfile(userId),
-          getUserBuilds(userId, 20)
+          getUserBuildsPaginated(userId, 1, 12) // Load first page with 12 builds
         ]);
         setProfile(profileData);
         if (profileData?.bannerPositionY !== undefined) {
             setBannerY(profileData.bannerPositionY);
         }
-        setBuilds(buildsData);
-        setLastDoc(last);
-        setHasMore(!!last && buildsData.length >= 20);
+        setBuilds(buildsResult.builds);
+        // Estimate total pages (API returns -1 for total if hasMore)
+        const estimatedTotal = buildsResult.total > 0 ? buildsResult.total : 100; // Assume 100 if unknown
+        const estimatedPages = Math.ceil(estimatedTotal / 12);
+        setTotalPages(buildsResult.hasMore ? estimatedPages : Math.ceil(buildsResult.total / 12));
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
@@ -73,18 +76,26 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     fetchData();
   }, [userId]);
 
-  const handleLoadMore = async () => {
-    if (!lastDoc || loadingMore) return;
+  // Handle page change
+  const handlePageChange = async (page: number) => {
     setLoadingMore(true);
     try {
-      const { builds: newBuilds, lastDoc: newLast } = await getUserBuilds(userId, 20, lastDoc);
-      setBuilds(prev => [...prev, ...newBuilds]);
-      setLastDoc(newLast);
-      setHasMore(!!newLast && newBuilds.length >= 20);
+      const result = await getUserBuildsPaginated(userId, page, 12);
+      setBuilds(result.builds);
+      setCurrentPage(page);
+      
+      // Update total pages estimate
+      if (result.total > 0) {
+        setTotalPages(Math.ceil(result.total / 12));
+      } else if (!result.hasMore) {
+        setTotalPages(page);
+      }
     } catch (error) {
-      console.error('Error loading more builds:', error);
+      console.error('Error loading page:', error);
     } finally {
       setLoadingMore(false);
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -563,16 +574,15 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
 
-                    {hasMore && (
-                        <div className="flex justify-center pt-8">
-                            <button
-                                onClick={handleLoadMore}
-                                disabled={loadingMore}
-                                className="px-6 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
-                            >
-                                {loadingMore ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-                                {loadingMore ? ts('preferences.saving') : t('loadMore')}
-                            </button>
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center pt-8 pb-4">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={handlePageChange}
+                                isLoading={loadingMore}
+                            />
                         </div>
                     )}
                 </>

@@ -4,6 +4,12 @@ const INDEXNOW_HOST = 'albionkit.com';
 const INDEXNOW_KEY_LOCATION = `https://albionkit.com/${INDEXNOW_KEY}.txt`;
 
 export async function submitToIndexNow(urls: string[]) {
+  // Skip IndexNow submission in development mode
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[IndexNow] Skipping submission in development mode');
+    return;
+  }
+
   if (!urls || urls.length === 0) return;
 
   const uniqueUrls = Array.from(new Set(urls));
@@ -16,13 +22,19 @@ export async function submitToIndexNow(urls: string[]) {
   };
 
   try {
-    await fetch(INDEXNOW_ENDPOINT, {
+    const response = await fetch(INDEXNOW_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+      console.error(`IndexNow submission failed with status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('IndexNow error response:', errorText);
+    }
   } catch (e) {
     console.error('IndexNow submission failed', e);
   }

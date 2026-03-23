@@ -20,7 +20,7 @@ export function BuildCard({ build, compactMode = false }: BuildCardProps) {
   if (!build) return null;
 
   const categoryKey = build.category ? build.category.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) : 'solo';
-  const buildLink = `/builds/${build.category || 'solo'}/${build.id}`;
+  const buildLink = `/builds/${build.id}`;
   const authorLink = `/user/${build.authorId}`;
 
   const handleCardClick = (e: React.MouseEvent) => {

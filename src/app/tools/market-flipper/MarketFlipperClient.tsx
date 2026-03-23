@@ -1,17 +1,14 @@
 'use client';
 
 import { useState, useEffect, Fragment, Suspense } from 'react';
-import { RefreshCw, TrendingUp, ArrowRight, Info, ChevronDown, ChevronUp, Star, Plus, Trash2, Filter, Tag, Search as SearchIcon, Layers, DollarSign, Percent, Sparkles, CircleHelp, Lock, Loader2 } from 'lucide-react';
+import { RefreshCw, TrendingUp, ArrowRight, Info, ChevronDown, ChevronUp, Star, Plus, Trash2, Filter, Tag, Search as SearchIcon, Layers, DollarSign, Percent, Sparkles, CircleHelp, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
-import { FeatureLock } from '@/components/subscription/FeatureLock';
 import { getUserPreferences, saveUserPreferences } from '@/lib/user-preferences';
 import { getMarketData, triggerWatchlistAlerts, searchAlbionItems } from './actions';
+import { fetchMarketPrices, fetchMarketVolume, fetchItemsList, MarketStat, MarketHistory } from '@/lib/albion-api-client';
 import MarketHistoryChart from './MarketHistoryChart';
-import { usePremiumAccess } from '@/hooks/usePremiumAccess';
-import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 import { InfoStrip, InfoBanner } from '@/components/InfoStrip';
 
 import { ITEM_CATEGORIES, CATEGORY_LABEL_IDS } from './item-categories';
@@ -27,26 +24,22 @@ import { ItemIcon } from '@/components/ItemIcon';
 
 function MarketFlipperContent() {
   const t = useTranslations('MarketFlipper');
-  const locale = useLocale(); // Get the current locale
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const [flips, setFlips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Helper to format item name from ID if real name is missing
   const formatItemName = (itemId: string) => {
-    // Remove T#_ prefix
     let name = itemId.replace(/^T\d+_/, '');
-    // Remove @# suffix
     name = name.split('@')[0];
-    // Replace underscores with spaces
     name = name.replace(/_/g, ' ');
-    // Title Case
     return name.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
   };
 
-  // Helper to get friendly Tier label
   const getTierLabel = (itemId: string) => {
     const match = itemId.match(/^T(\d+)/);
     if (match) return t('tierN', { n: match[1] });
@@ -63,7 +56,6 @@ function MarketFlipperContent() {
   const [isPremiumTax, setIsPremiumTax] = useState(true);
   const [watchlistSummary, setWatchlistSummary] = useState({ count: 0, profitable: 0, topPick: null as any | null });
 
-  // Compute profit and ROI for all flips
   const computedFlips = flips.map(flip => {
     const taxRate = isPremiumTax ? 0.04 : 0.08;
     const setupFee = 0.025;
@@ -87,9 +79,8 @@ function MarketFlipperContent() {
     } else {
       setWatchlistSummary({ count: watchlist.length, profitable: 0, topPick: null });
     }
-  }, [watchlist, flips, isPremiumTax, travelCost]); // Recalculate if tax or travel cost changes
+  }, [watchlist, flips, isPremiumTax, travelCost]);
 
-  // Filters
   const [minProfit, setMinProfit] = useState(2500);
   const [minMargin, setMinMargin] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,14 +92,8 @@ function MarketFlipperContent() {
   const [searchOptions, setSearchOptions] = useState<{ value: string; label: string; icon?: React.ReactNode }[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // Premium Access
-  const { hasAccess } = usePremiumAccess();
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-
-  // Sorting
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'profit', direction: 'desc' });
 
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -120,10 +105,8 @@ function MarketFlipperContent() {
     localStorage.setItem('albion_travel_cost', String(travelCost));
   }, [isPremiumTax, travelCost]);
 
-  // Load persisted data
   useEffect(() => {
     const loadPreferences = async () => {
-      // Always check localStorage first for immediate feedback/offline support
       const savedWatchlist = localStorage.getItem('albion_watchlist');
       const savedCustomItems = localStorage.getItem('albion_custom_items');
 
@@ -137,11 +120,9 @@ function MarketFlipperContent() {
       let initialCustomItems = savedCustomItems ? JSON.parse(savedCustomItems) : [];
 
       if (user) {
-        // If logged in, fetch from Firestore
         try {
           const prefs = await getUserPreferences(user.uid);
           if (prefs) {
-            // Use DB data if available
             if (prefs.watchlist) initialWatchlist = prefs.watchlist;
             if (prefs.customItems) initialCustomItems = prefs.customItems;
             if (prefs.premium !== undefined) setIsPremiumTax(prefs.premium);
@@ -151,17 +132,13 @@ function MarketFlipperContent() {
           console.error("Failed to load prefs", err);
         }
       }
-      
-      // Handle URL param item injection
+
       const itemParam = searchParams.get('item');
       if (itemParam) {
-        // If item param exists, add to custom items if not present
         if (!initialCustomItems.includes(itemParam)) {
           initialCustomItems = [itemParam, ...initialCustomItems];
         }
-        // Force unique item mode to focus on this item
         setUniqueItemMode(true);
-        // Clean URL without reloading
         router.replace('/tools/market-flipper');
       }
 
@@ -171,10 +148,8 @@ function MarketFlipperContent() {
     };
 
     loadPreferences();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // Save persisted data
   useEffect(() => {
     if (!preferencesLoaded) return;
 
@@ -205,7 +180,6 @@ function MarketFlipperContent() {
     }
   }, [customItems, user, preferencesLoaded]);
 
-  // Reset sync status after a delay
   useEffect(() => {
     if (syncStatus === 'saved' || syncStatus === 'error') {
       const timer = setTimeout(() => setSyncStatus('idle'), 3000);
@@ -213,28 +187,46 @@ function MarketFlipperContent() {
     }
   }, [syncStatus]);
 
+  /**
+   * Load market data using server actions
+   * Server actions handle CORS internally
+   */
   const loadData = async () => {
     setLoading(true);
-    // Get items for the selected category
-    const baseCategoryItems = ITEM_CATEGORIES[selectedCategory as keyof typeof ITEM_CATEGORIES] || [];
+    setFetchError(null);
 
-    // Apply Enchantment suffix if needed
-    const categoryItems = selectedEnchantment === 0
-      ? baseCategoryItems
-      : baseCategoryItems.map((id: string) => `${id}@${selectedEnchantment}`);
+    try {
+      const baseCategoryItems = ITEM_CATEGORIES[selectedCategory as keyof typeof ITEM_CATEGORIES] || [];
 
-    const { flips, error } = await getMarketData(region, customItems, categoryItems, locale);
-    if (flips) {
-      setFlips(flips);
+      const categoryItems = selectedEnchantment === 0
+        ? baseCategoryItems
+        : baseCategoryItems.map((id: string) => `${id}@${selectedEnchantment}`);
+
+      const allItems = Array.from(new Set([...categoryItems, ...customItems]));
+
+      if (allItems.length === 0) {
+        setFlips([]);
+        setLoading(false);
+        return;
+      }
+
+      // Use server action (handles CORS, minimal CPU with caching)
+      const { flips, error } = await getMarketData(region, customItems, categoryItems, locale);
+
+      if (error) {
+        setFetchError(error);
+        setFlips([]);
+      } else {
+        setFlips(flips || []);
+      }
+      
       setLastUpdated(new Date());
 
-      // Watchlist Alerts Check: If user has watchlist items, check if any are currently profitable
-      // and trigger a notification if they haven't been notified recently.
+      // Watchlist Alerts Check
       if (user && watchlist.length > 0) {
         const lastAlertTime = localStorage.getItem('last_watchlist_alert');
         const now = Date.now();
 
-        // Only trigger alert check once every 4 hours to avoid spamming
         if (!lastAlertTime || now - Number(lastAlertTime) > 4 * 60 * 60 * 1000) {
           triggerWatchlistAlerts(user.uid, region, watchlist, locale).then(result => {
             if (result && 'success' in result && result.success) {
@@ -243,35 +235,108 @@ function MarketFlipperContent() {
           });
         }
       }
+    } catch (error) {
+      console.error('Failed to load market data:', error);
+      setFetchError(t('fetchError') || 'Failed to fetch market data. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  /**
+   * Client-side market data processing
+   * Mirrors the server action logic
+   */
+  const processMarketDataClient = (
+    data: MarketStat[],
+    customItems: string[] = [],
+    volumeMap: Map<string, number> = new Map(),
+    nameMap: Map<string, string> = new Map()
+  ) => {
+    const flips: any[] = [];
+    const groupedByItem = new Map<string, MarketStat[]>();
+    const customItemSet = new Set(customItems);
+
+    data.forEach(stat => {
+      if (!groupedByItem.has(stat.item_id)) {
+        groupedByItem.set(stat.item_id, []);
+      }
+      groupedByItem.get(stat.item_id)?.push(stat);
+    });
+
+    groupedByItem.forEach((stats, itemId) => {
+      const blackMarket = stats.find(s => s.city === 'Black Market');
+
+      if (customItemSet.has(itemId) && (!blackMarket || blackMarket.buy_price_max <= 0)) {
+        return;
+      }
+
+      if (!blackMarket || blackMarket.buy_price_max <= 0) return;
+
+      const bmPrice = blackMarket.buy_price_max;
+
+      stats.forEach(cityStat => {
+        if (cityStat.city === 'Black Market' || cityStat.sell_price_min <= 0) return;
+
+        const cost = cityStat.sell_price_min;
+        const profit = bmPrice - cost;
+        const profitMargin = (profit / cost) * 100;
+
+        if (customItemSet.has(itemId) || (profit > 1000 && profitMargin > 10)) {
+          const lookupId = itemId.split('@')[0];
+          const itemName = nameMap.get(lookupId);
+          flips.push({
+            itemId: itemId,
+            buyCity: cityStat.city,
+            buyPrice: cost,
+            sellCity: 'Black Market',
+            sellPrice: bmPrice,
+            profit: profit,
+            margin: Math.round(profitMargin),
+            dailyVolume: volumeMap.get(itemId) || 0,
+            updatedAt: cityStat.sell_price_min_date,
+            name: itemName || itemId
+          });
+        }
+      });
+    });
+
+    const flippedItemIds = new Set(flips.map(f => f.itemId));
+
+    customItems.forEach(itemId => {
+      if (!flippedItemIds.has(itemId)) {
+        flips.push({
+          itemId: itemId,
+          buyCity: 'N/A',
+          buyPrice: 0,
+          sellCity: 'Black Market',
+          sellPrice: 0,
+          profit: 0,
+          margin: 0,
+          dailyVolume: volumeMap.get(itemId) || 0,
+          updatedAt: new Date().toISOString(),
+          name: nameMap.get(itemId.split('@')[0]) || itemId,
+          noData: true
+        });
+      }
+    });
+
+    return flips.sort((a, b) => b.profit - a.profit);
   };
 
   useEffect(() => {
     loadData();
-  }, [region, customItems, selectedCategory, selectedEnchantment, locale]); // Reload when category or locale changes
+  }, [region, customItems, selectedCategory, selectedEnchantment, locale]);
 
   const toggleWatchlist = (itemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (watchlist.includes(itemId)) {
       setWatchlist(watchlist.filter(id => id !== itemId));
     } else {
-      // LIMIT CHECK: Free users capped at 5 items
-      if (!hasAccess && watchlist.length >= 5) {
-          toast.error("Free Plan Limit Reached", {
-              description: "Upgrade to Adept or Guild Master for unlimited watchlist items.",
-              action: {
-                  label: "Upgrade",
-                  onClick: () => setShowSubscriptionModal(true)
-              }
-          });
-          return;
-      }
       setWatchlist([...watchlist, itemId]);
     }
   };
 
-  // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, minProfit, minMargin, region, selectedTier, sortConfig, showWatchlistOnly, selectedCategory, uniqueItemMode]);
@@ -304,7 +369,6 @@ function MarketFlipperContent() {
     return 0;
   });
 
-  // Correct Unique Logic
   let finalFlips = filteredFlips;
   if (uniqueItemMode) {
     const seen = new Set();
@@ -327,7 +391,6 @@ function MarketFlipperContent() {
     return sortConfig.direction === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
   };
 
-  // Pagination logic
   const totalPages = Math.ceil(finalFlips.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = finalFlips.slice(startIndex, startIndex + itemsPerPage);
@@ -348,7 +411,7 @@ function MarketFlipperContent() {
           <button
             onClick={loadData}
             disabled={loading}
-            className="p-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors   disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -356,10 +419,9 @@ function MarketFlipperContent() {
       }
     >
 
-      {/* Watchlist Quick Access */}
       {watchlist.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div 
+          <div
             onClick={() => setShowWatchlistOnly(!showWatchlistOnly)}
             className={`cursor-pointer group relative overflow-hidden bg-card border rounded-2xl p-4 transition-all hover: ${showWatchlistOnly ? 'border-primary ring-1 ring-primary/50 ' : 'border-border'}`}
           >
@@ -415,7 +477,7 @@ function MarketFlipperContent() {
               const totalProfit = flips
                 .filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`) && f.netProfit > 0)
                 .reduce((sum, f) => sum + f.netProfit, 0);
-              
+
               return (
                 <div className="flex items-baseline gap-2">
                   <div className="text-2xl font-black text-foreground">{Math.round(totalProfit).toLocaleString()}</div>
@@ -428,10 +490,8 @@ function MarketFlipperContent() {
       )}
 
       <div className="space-y-6">
-        {/* Filters */}
         <div className="bg-card border border-border rounded-xl p-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              {/* Universal Search - Full width on mobile, 1 col on desktop */}
               <div className="col-span-2 md:col-span-1">
                 <label className="text-xs text-muted-foreground block mb-2 font-medium flex items-center gap-1 uppercase tracking-wider">
                   <SearchIcon className="h-3 w-3" /> {t('search')}
@@ -574,7 +634,7 @@ function MarketFlipperContent() {
                   onChange={(val) => setTravelCost(Math.max(0, val))}
                   min={0}
                />
-               
+
                <div className="flex flex-col gap-2 pt-1">
                   <Checkbox
                     label={t('premiumTax')}
@@ -582,20 +642,9 @@ function MarketFlipperContent() {
                     onChange={(e) => setIsPremiumTax(e.target.checked)}
                   />
                   <Checkbox
-                    label={
-                      <div className="flex items-center gap-1">
-                        {t('uniqueOnly')}
-                        {!hasAccess && <Lock className="h-3 w-3 text-amber-500" />}
-                      </div>
-                    }
+                    label={t('uniqueOnly')}
                     checked={uniqueItemMode}
-                    onChange={(e) => {
-                      if (!hasAccess && e.target.checked) {
-                        setShowSubscriptionModal(true);
-                      } else {
-                        setUniqueItemMode(e.target.checked);
-                      }
-                    }}
+                    onChange={(e) => setUniqueItemMode(e.target.checked)}
                   />
                   <Checkbox
                     label={t('watchlistOnly')}
@@ -612,8 +661,23 @@ function MarketFlipperContent() {
                       <span className="px-2 py-1 bg-info/10 text-info border border-info/20 rounded text-xs font-bold">
                         {t('itemsActive', { count: customItems.length })}
                       </span>
-                      <button 
-                        onClick={() => setCustomItems([])} 
+                      {customItems.map((itemId) => (
+                        <div
+                          key={itemId}
+                          className="flex items-center gap-1 px-2 py-1 bg-secondary border border-border rounded text-xs"
+                        >
+                          <ItemIcon itemId={itemId} className="w-4 h-4 object-contain rounded-sm" />
+                          <span className="font-medium">{formatItemName(itemId)}</span>
+                          <button
+                            onClick={() => setCustomItems(customItems.filter(id => id !== itemId))}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        onClick={() => setCustomItems([])}
                         className="flex items-center gap-1 px-2 py-1 bg-destructive/10 text-destructive border border-destructive/20 rounded text-xs hover:bg-destructive/20 transition-colors"
                       >
                         <Trash2 className="h-3 w-3" /> {t('clearAll')}
@@ -623,7 +687,15 @@ function MarketFlipperContent() {
             )}
         </div>
 
-        {/* Table / Mobile Cards */}
+        {fetchError && (
+          <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-destructive">
+            <div className="flex items-center gap-2">
+              <Info className="h-5 w-5" />
+              <span className="font-medium">{fetchError}</span>
+            </div>
+          </div>
+        )}
+
         {loading && flips.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-warning" />
@@ -631,7 +703,6 @@ function MarketFlipperContent() {
           </div>
         ) : (
             <div className="bg-card/50 rounded-xl border border-border overflow-hidden">
-                {/* Mobile Card View */}
                 <div className="md:hidden divide-y divide-border">
                   {currentItems.length === 0 ? (
                     <div className="p-8 text-center text-muted-foreground">
@@ -643,12 +714,11 @@ function MarketFlipperContent() {
                       const isExpanded = expandedItem === uniqueId;
 
                       return (
-                         <div 
-                           key={`mobile-${uniqueId}-${index}`} 
+                         <div
+                           key={`mobile-${uniqueId}-${index}`}
                            className={`p-4 transition-colors ${isExpanded ? 'bg-muted' : 'hover:bg-muted/50'} ${flip.noData ? 'opacity-70' : ''}`}
                            onClick={() => !flip.noData && setExpandedItem(isExpanded ? null : uniqueId)}
                          >
-                            {/* Header: Icon + Name + Profit */}
                             <div className="flex items-center gap-3 mb-3">
                                <button
                                   onClick={(e) => toggleWatchlist(uniqueId, e)}
@@ -677,8 +747,7 @@ function MarketFlipperContent() {
                                   </div>
                                </div>
                             </div>
-                            
-                            {/* Details Grid */}
+
                             <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
                                <div className="flex justify-between">
                                   <span className="text-xs text-muted-foreground">{t('colBuyFrom')}</span>
@@ -698,7 +767,6 @@ function MarketFlipperContent() {
                                </div>
                             </div>
 
-                            {/* Expanded Content */}
                             {isExpanded && !flip.noData && (
                                 <div className="mt-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex items-center justify-between mb-4">
@@ -707,7 +775,7 @@ function MarketFlipperContent() {
                                             {t('marketAnalysis')}
                                         </h4>
                                         <div className="flex gap-2">
-                                            <button 
+                                            <button
                                                 className="px-4 py-2 text-sm bg-primary/10 text-primary hover:bg-primary/20 rounded-full transition-colors active:scale-95"
                                                 onClick={() => window.open(`https://albiononline2d.com/en/item/id/${flip.itemId}`, '_blank')}
                                             >
@@ -717,13 +785,7 @@ function MarketFlipperContent() {
                                     </div>
                                     <div className="w-full mt-2">
                                         <Suspense fallback={<div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-lg border border-border"><Loader2 className="animate-spin text-muted-foreground" /></div>}>
-                                            <FeatureLock
-                                                title={t('marketHistoryLocked')}
-                                                description={t('marketHistoryLockedDesc')}
-                                                lockedContent={<div className="h-[240px] sm:h-[280px] md:h-[320px] flex items-center justify-center bg-muted/50 rounded-lg text-muted-foreground text-sm sm:text-base">{t('upgradeToView')}</div>}
-                                            >
-                                                <MarketHistoryChart itemId={flip.itemId} buyCity={flip.buyCity} region={region} />
-                                            </FeatureLock>
+                                            <MarketHistoryChart itemId={flip.itemId} buyCity={flip.buyCity} region={region} />
                                         </Suspense>
                                     </div>
                                 </div>
@@ -734,7 +796,6 @@ function MarketFlipperContent() {
                   )}
                 </div>
 
-                {/* Desktop Table View */}
                 <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -813,7 +874,7 @@ function MarketFlipperContent() {
 
                                     return (
                                         <Fragment key={`${uniqueId}-${index}`}>
-                                            <tr 
+                                            <tr
                                                 onClick={() => !flip.noData && setExpandedItem(isExpanded ? null : uniqueId)}
                                                 className={`group cursor-pointer transition-colors border-b border-border ${
                                                     isExpanded ? 'bg-muted' : 'hover:bg-muted/50'
@@ -867,17 +928,11 @@ function MarketFlipperContent() {
                                                     <td colSpan={6} className="p-0 bg-muted/30">
                                                         <div className="p-4 border-b border-border animate-in slide-in-from-top-2 duration-200">
                                                            <div className="grid md:grid-cols-2 gap-6">
-                                                              <FeatureLock
-                                                                  title={t('marketHistoryLocked')}
-                                                                  description={t('marketHistoryLockedDesc')}
-                                                                  lockedContent={<div className="h-[240px] sm:h-[280px] md:h-[320px] flex items-center justify-center bg-muted/50 rounded-lg text-muted-foreground text-sm sm:text-base">{t('upgradeToView')}</div>}
-                                                              >
-                                                                  <MarketHistoryChart
+                                                              <MarketHistoryChart
                                                                     itemId={flip.itemId}
                                                                     buyCity={flip.buyCity}
                                                                     region={region}
                                                                   />
-                                                              </FeatureLock>
                                                                 <div className="space-y-4">
                                                                    <div>
                                                                         <h4 className="text-sm font-medium text-foreground mb-2">{t('profitBreakdown')}</h4>
@@ -906,7 +961,8 @@ function MarketFlipperContent() {
                                                                                     <div className="flex justify-between text-xs">
                                                                                         <span className="text-muted-foreground">{t('marketTaxes', { rate: Math.round((taxRate + setupFee) * 1000) / 10 })}</span>
                                                                                         <span className="font-mono text-destructive/70">-{totalTax.toLocaleString()}</span>
-                                                                                    </div>                                                                                    <div className="flex justify-between text-xs">
+                                                                                    </div>
+                                                                                    <div className="flex justify-between text-xs">
                                                                                         <span className="text-muted-foreground">{t('estTravelCost')}</span>
                                                                                         <span className="font-mono text-destructive/70">-{Math.round(travelCost).toLocaleString()}</span>
                                                                                     </div>
@@ -921,7 +977,7 @@ function MarketFlipperContent() {
                                                                            })(isPremiumTax)}
                                                                         </div>
                                                                    </div>
-                                                                   
+
                                                                    <div className="text-xs text-muted-foreground">
                                                                       <p className="mb-1">{t('lastUpdated', { time: new Date(flip.updatedAt).toLocaleString() })}</p>
                                                                       <p>{t('verifyDisclaimer')}</p>
@@ -939,8 +995,7 @@ function MarketFlipperContent() {
                         </tbody>
                     </table>
                 </div>
-            
-            {/* Pagination Controls */}
+
             {filteredFlips.length > 0 && (
               <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-t border-border bg-muted/30 gap-4">
                 <div className="text-sm text-muted-foreground text-center sm:text-left">
@@ -970,12 +1025,6 @@ function MarketFlipperContent() {
             </div>
         )}
       </div>
-      
-      {/* Subscription Modal */}
-      <SubscriptionModal 
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}   
-      />
 
       <InfoStrip currentPage="market-flipper">
         <InfoBanner icon={<TrendingUp className="w-4 h-4" />} color="text-green-400" title={t('communityMarketData')}>

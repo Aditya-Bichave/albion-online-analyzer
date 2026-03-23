@@ -1,0 +1,13 @@
+# Enforce UTF-8 encoding for text files
+*.json text working-tree-encoding=UTF-8
+*.js text working-tree-encoding=UTF-8
+*.ts text working-tree-encoding=UTF-8
+*.tsx text working-tree-encoding=UTF-8
+*.md text working-tree-encoding=UTF-8
+*.ps1 text working-tree-encoding=UTF-8
+*.html text working-tree-encoding=UTF-8
+*.css text working-tree-encoding=UTF-8
+*.scss text working-tree-encoding=UTF-8
+
+# Auto-detect line endings
+* text=auto

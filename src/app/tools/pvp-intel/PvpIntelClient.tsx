@@ -5,9 +5,8 @@ import { Search, Shield, Sword, Swords, Skull, Crosshair, Lock, Users, Crown, Ch
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, Bar, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { searchPlayer, getPlayerStats, getPlayerEvents, getPlayerWeaponMastery, getGuildEvents, getGuildInfo, getGuildMembers, getAllianceInfo, getEventMetadataAction, resolveItemNameAction } from './actions';
 import { useAuth } from '@/context/AuthContext';
-import { getUserProfile, checkAccess } from '@/lib/user-profile';
+import { getUserProfile } from '@/lib/user-profile';
 import { getItems, getItemNameService } from '@/lib/item-service';
-import { generateFakeCombatEvents } from '@/lib/fake-data';
 import Link from 'next/link';
 import AdvancedAnalytics from '@/components/pvp/AdvancedAnalytics';
 import { OptionSelector } from '@/components/ui/OptionSelector';
@@ -17,10 +16,7 @@ import { ItemIcon } from '@/components/ItemIcon';
 import { Select } from '@/components/ui/Select';
 import { ServerSelector } from '@/components/ServerSelector';
 import { useServer } from '@/hooks/useServer';
-import { usePremiumAccess } from '@/hooks/usePremiumAccess';
 import { Tooltip } from '@/components/ui/Tooltip';
-import { FeatureLock } from '@/components/subscription/FeatureLock';
-import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 import { InfoStrip, InfoBanner } from '@/components/InfoStrip';
 import { useTranslations, useLocale } from 'next-intl';
 
@@ -227,78 +223,62 @@ function WeaponMasteryTable({
                     </div>
                   </div>
 
-                  <FeatureLock
-                    title={t('advancedWeaponAnalysis')}
-                    description={t('advancedWeaponAnalysisDesc')}
-                    lockedContent={
-                      <div className="p-8 flex flex-col items-center justify-center text-center bg-muted/10">
-                        <div className="bg-primary/10 p-3 rounded-full mb-3">
-                          <Activity className="h-6 w-6 text-primary" />
+                  <div className="p-4 animate-in fade-in slide-in-from-top-2">
+                    <div className="space-y-6">
+                      {/* Radar Chart */}
+                      <div className="bg-card/50 rounded-xl border border-border p-3">
+                        <h4 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2">
+                          <Activity className="h-3 w-3" /> {t('weaponProfile')}
+                        </h4>
+                        <div className="h-56 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={getWeaponAnalysis(mastery.id).map(d => ({ ...d, subject: t(`attributes.${d.subject}`) }))}>
+                              <PolarGrid stroke="var(--border)" />
+                              <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} />
+                              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                              <Radar name={t('metrics')} dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.4} />
+                            </RadarChart>
+                          </ResponsiveContainer>
                         </div>
-                        <h3 className="text-sm font-bold mb-1">{t('analyticsLocked')}</h3>
-                        <p className="text-xs text-muted-foreground">
-                          {t('tryFree')}
-                        </p>
                       </div>
-                    }
-                  >
-                    <div className="p-4 animate-in fade-in slide-in-from-top-2">
-                      <div className="space-y-6">
-                        {/* Radar Chart */}
-                        <div className="bg-card/50 rounded-xl border border-border p-3">
-                          <h4 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2">
-                            <Activity className="h-3 w-3" /> {t('weaponProfile')}
-                          </h4>
-                          <div className="h-56 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={getWeaponAnalysis(mastery.id).map(d => ({ ...d, subject: t(`attributes.${d.subject}`) }))}>
-                                <PolarGrid stroke="var(--border)" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} />
-                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                <Radar name={t('metrics')} dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.4} />
-                              </RadarChart>
-                            </ResponsiveContainer>
+
+                      {/* Advanced Stats */}
+                      <div className="space-y-3">
+                        <h4 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2">
+                          <BarChart2 className="h-3 w-3" /> {t('metrics')}
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-card/50 p-3 rounded-lg border border-border">
+                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t('famePerMatch')}</div>
+                            <div className="text-lg font-mono text-success">
+                              {formatNumber(Math.round(mastery.fame / mastery.count))}
+                            </div>
+                          </div>
+                          <div className="bg-card/50 p-3 rounded-lg border border-border">
+                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t('survival')}</div>
+                            <div className="text-lg font-mono text-info">
+                              {Math.round((mastery.kills / (mastery.kills + mastery.deaths || 1)) * 100)}%
+                            </div>
                           </div>
                         </div>
 
-                        {/* Advanced Stats */}
-                        <div className="space-y-3">
-                          <h4 className="text-xs font-bold text-muted-foreground mb-3 flex items-center gap-2">
-                            <BarChart2 className="h-3 w-3" /> {t('metrics')}
-                          </h4>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-card/50 p-3 rounded-lg border border-border">
-                              <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t('famePerMatch')}</div>
-                              <div className="text-lg font-mono text-success">
-                                {formatNumber(Math.round(mastery.fame / mastery.count))}
-                              </div>
-                            </div>
-                            <div className="bg-card/50 p-3 rounded-lg border border-border">
-                              <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">{t('survival')}</div>
-                              <div className="text-lg font-mono text-info">
-                                {Math.round((mastery.kills / (mastery.kills + mastery.deaths || 1)) * 100)}%
-                              </div>
-                            </div>
+                        <div className="bg-card/50 p-3 rounded-lg border border-border mt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Zap className="h-3 w-3 text-warning" />
+                            <span className="text-sm font-bold text-foreground">{t('insight')}</span>
                           </div>
-
-                          <div className="bg-card/50 p-3 rounded-lg border border-border mt-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Zap className="h-3 w-3 text-warning" />
-                              <span className="text-sm font-bold text-foreground">{t('insight')}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
-                              {t('winRateTrend', { trend: mastery.winRate >= 50 ? t('positive') : t('negative') })}
-                              {mastery.kills > mastery.deaths * 1.5
-                                ? t('highlyEffectiveYou')
-                                : (mastery.deaths > mastery.kills
-                                  ? t('struggleYou')
-                                  : t('performanceBalanced'))}
-                            </p>
-                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {t('winRateTrend', { trend: mastery.winRate >= 50 ? t('positive') : t('negative') })}
+                            {mastery.kills > mastery.deaths * 1.5
+                              ? t('highlyEffectiveYou')
+                              : (mastery.deaths > mastery.kills
+                                ? t('struggleYou')
+                                : t('performanceBalanced'))}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  </FeatureLock>
+                  </div>
                 </div>
               )}
             </div>
@@ -376,103 +356,87 @@ function WeaponMasteryTable({
                 {expandedWeaponId === mastery.id && (
                   <tr className="bg-muted/30">
                     <td colSpan={5} className="p-0 border-b border-border">
-                      <FeatureLock
-                        title={t('advancedWeaponAnalysis')}
-                        description={t('advancedWeaponAnalysisDesc')}
-                        lockedContent={
-                          <div className="p-12 flex flex-col items-center justify-center text-center bg-muted/10">
-                            <div className="bg-primary/10 p-4 rounded-full mb-4">
-                              <Activity className="h-8 w-8 text-primary" />
+                      <div className="p-6 animate-in fade-in slide-in-from-top-2">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                          {/* Left: Radar Chart */}
+                          <div className="bg-card/50 rounded-xl border border-border p-4">
+                            <h4 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
+                              <Activity className="h-4 w-4" /> {t('weaponProfile')}
+                            </h4>
+                            <div className="h-64 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={getWeaponAnalysis(mastery.id).map(d => ({ ...d, subject: t(`attributes.${d.subject}`) }))}>
+                                  <PolarGrid stroke="var(--border)" />
+                                  <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} />
+                                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                  <Radar name={t('metrics')} dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.4} />
+                                </RadarChart>
+                              </ResponsiveContainer>
                             </div>
-                            <h3 className="text-lg font-bold mb-2">{t('weaponAnalyticsLocked')}</h3>
-                            <p className="text-muted-foreground max-w-md">
-                              {t('weaponAnalyticsLockedDesc')}
-                            </p>
                           </div>
-                        }
-                      >
-                        <div className="p-6 animate-in fade-in slide-in-from-top-2">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Left: Radar Chart */}
-                            <div className="bg-card/50 rounded-xl border border-border p-4">
-                              <h4 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
-                                <Activity className="h-4 w-4" /> {t('weaponProfile')}
-                              </h4>
-                              <div className="h-64 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={getWeaponAnalysis(mastery.id).map(d => ({ ...d, subject: t(`attributes.${d.subject}`) }))}>
-                                    <PolarGrid stroke="var(--border)" />
-                                    <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }} />
-                                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                    <Radar name={t('metrics')} dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.4} />
-                                  </RadarChart>
-                                </ResponsiveContainer>
+
+                          {/* Right: Advanced Stats */}
+                          <div className="space-y-4">
+                            <h4 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
+                              <BarChart2 className="h-4 w-4" /> {t('performanceMetrics')}
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-card/50 p-4 rounded-lg border border-border">
+                                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('famePerMatch')}</div>
+                                <div className="text-xl font-mono text-success">
+                                  {formatNumber(Math.round(mastery.fame / mastery.count))}
+                                </div>
+                              </div>
+                              <div className="bg-card/50 p-4 rounded-lg border border-border">
+                                <Tooltip content={t('survivalRateTooltip')}>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 w-fit">
+                                    {t('survivalRate')} <AlertCircle className="h-3 w-3" />
+                                  </div>
+                                </Tooltip>
+                                <div className="text-xl font-mono text-info">
+                                  {Math.round((mastery.kills / (mastery.kills + mastery.deaths || 1)) * 100)}%
+                                </div>
+                              </div>
+                              <div className="bg-card/50 p-4 rounded-lg border border-border">
+                                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{tk('totalFame')}</div>
+                                <div className="text-xl font-mono text-warning">
+                                  {formatNumber(mastery.fame)}
+                                </div>
+                              </div>
+                              <div className="bg-card/50 p-4 rounded-lg border border-border">
+                                <Tooltip content={t('efficiencyScoreTooltip')}>
+                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 w-fit">
+                                    {t('efficiencyScore')} <AlertCircle className="h-3 w-3" />
+                                  </div>
+                                </Tooltip>
+                                <div className="text-xl font-mono text-purple-400">
+                                  {Math.round((mastery.fame / (mastery.totalIp / mastery.count)) * 10)}
+                                </div>
                               </div>
                             </div>
 
-                            {/* Right: Advanced Stats */}
-                            <div className="space-y-4">
-                              <h4 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
-                                <BarChart2 className="h-4 w-4" /> {t('performanceMetrics')}
-                              </h4>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-card/50 p-4 rounded-lg border border-border">
-                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('famePerMatch')}</div>
-                                  <div className="text-xl font-mono text-success">
-                                    {formatNumber(Math.round(mastery.fame / mastery.count))}
-                                  </div>
-                                </div>
-                                <div className="bg-card/50 p-4 rounded-lg border border-border">
-                                  <Tooltip content={t('survivalRateTooltip')}>
-                                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 w-fit">
-                                      {t('survivalRate')} <AlertCircle className="h-3 w-3" />
-                                    </div>
-                                  </Tooltip>
-                                  <div className="text-xl font-mono text-info">
-                                    {Math.round((mastery.kills / (mastery.kills + mastery.deaths || 1)) * 100)}%
-                                  </div>
-                                </div>
-                                <div className="bg-card/50 p-4 rounded-lg border border-border">
-                                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{tk('totalFame')}</div>
-                                  <div className="text-xl font-mono text-warning">
-                                    {formatNumber(mastery.fame)}
-                                  </div>
-                                </div>
-                                <div className="bg-card/50 p-4 rounded-lg border border-border">
-                                  <Tooltip content={t('efficiencyScoreTooltip')}>
-                                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 w-fit">
-                                      {t('efficiencyScore')} <AlertCircle className="h-3 w-3" />
-                                    </div>
-                                  </Tooltip>
-                                  <div className="text-xl font-mono text-purple-400">
-                                    {Math.round((mastery.fame / (mastery.totalIp / mastery.count)) * 10)}
-                                  </div>
-                                </div>
+                            <div className="bg-card/50 p-4 rounded-lg border border-border mt-4">
+                              <div className="flex items-center gap-3 mb-2">
+                                <Zap className="h-4 w-4 text-warning" />
+                                <span className="font-bold text-foreground">{t('weaponInsight')}</span>
                               </div>
-
-                              <div className="bg-card/50 p-4 rounded-lg border border-border mt-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <Zap className="h-4 w-4 text-warning" />
-                                  <span className="font-bold text-foreground">{t('weaponInsight')}</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                  {t('winRateTrend', { trend: mastery.winRate >= 50 ? t('positive') : t('negative') })}
-                                  {' '}{t('avgIpLabel')} <span className="text-foreground">{Math.round(mastery.avgIp)}</span>.
-                                  {mastery.kills > mastery.deaths * 1.5
+                              <p className="text-sm text-muted-foreground leading-relaxed">
+                                {t('winRateTrend', { trend: mastery.winRate >= 50 ? t('positive') : t('negative') })}
+                                {' '}{t('avgIpLabel')} <span className="text-foreground">{Math.round(mastery.avgIp)}</span>.
+                                {mastery.kills > mastery.deaths * 1.5
+                                  ? (userProfile?.characterName === selectedPlayer.Name
+                                    ? t('highlyEffectiveYou')
+                                    : t('highlyEffectivePlayer', { name: selectedPlayer.Name }))
+                                  : (mastery.deaths > mastery.kills
                                     ? (userProfile?.characterName === selectedPlayer.Name
-                                      ? t('highlyEffectiveYou')
-                                      : t('highlyEffectivePlayer', { name: selectedPlayer.Name }))
-                                    : (mastery.deaths > mastery.kills
-                                      ? (userProfile?.characterName === selectedPlayer.Name
-                                        ? t('struggleYou')
-                                        : t('strugglePlayer', { name: selectedPlayer.Name }))
-                                      : t('performanceBalanced'))}
-                                </p>
-                              </div>
+                                      ? t('struggleYou')
+                                      : t('strugglePlayer', { name: selectedPlayer.Name }))
+                                    : t('performanceBalanced'))}
+                              </p>
                             </div>
                           </div>
                         </div>
-                      </FeatureLock>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -661,44 +625,6 @@ function PlayerDetailView({ player, stats, recentKills, recentDeaths, onBack, on
         </div>
       </div>
 
-      {/* Player Header */}
-      <div className="bg-card border border-border rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
-        <div className="h-20 w-20 bg-accent rounded-full flex items-center justify-center border-4 border-background">
-          <span className="text-2xl font-bold text-primary">{player.Name[0]}</span>
-        </div>
-        <div className="text-center md:text-left space-y-1">
-          <h2 className="text-3xl font-black uppercase tracking-tight">{player.Name}</h2>
-          <div className="flex items-center justify-center md:justify-start gap-2 text-muted-foreground">
-            <span>{player.GuildName || tk('noGuild')}</span>
-            {player.AllianceName && (
-              <>
-                <span>•</span>
-                <span>[{player.AllianceName}]</span>
-              </>
-            )}
-          </div>
-        </div>
-
-        {stats && (
-          <div className="ml-auto grid grid-cols-3 gap-4 text-center">
-            <div className="bg-background/50 p-3 rounded-lg border border-border">
-              <div className="text-xs text-muted-foreground uppercase font-bold">{tk('kills')}</div>
-              <div className="text-xl font-mono text-green-500">{stats.KillFame > 0 ? (stats.KillFame / 1000000).toFixed(2) + 'm' : '0'}</div>
-            </div>
-            <div className="bg-background/50 p-3 rounded-lg border border-border">
-              <div className="text-xs text-muted-foreground uppercase font-bold">{tk('deaths')}</div>
-              <div className="text-xl font-mono text-red-500">{stats.DeathFame > 0 ? (stats.DeathFame / 1000000).toFixed(2) + 'm' : '0'}</div>
-            </div>
-            <div className="bg-background/50 p-3 rounded-lg border border-border">
-              <div className="text-xs text-muted-foreground uppercase font-bold">{tk('ratio')}</div>
-              <div className="text-xl font-mono text-amber-500">
-                {stats.DeathFame > 0 ? (stats.KillFame / stats.DeathFame).toFixed(2) : '∞'}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Enhanced Metrics & Charts */}
       {metrics && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -826,8 +752,7 @@ export default function PvpIntelPage() {
   const tk = useTranslations('KillFeed');
   const locale = useLocale();
   const { user, profile } = useAuth();
-  const { hasAccess } = usePremiumAccess();
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showDonateModal, setShowDonateModal] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -855,13 +780,6 @@ export default function PvpIntelPage() {
 
   // Alliance Data
   const [allianceData, setAllianceData] = useState<any[]>([]);
-
-  // Access State
-  const [access, setAccess] = useState<{ hasAccess: boolean, reason: 'none' | 'premium' | 'guild' | 'pending_guild' | 'alliance' }>({ hasAccess: false, reason: 'none' });
-
-  // Fake Data for Locked View
-  const fakeKills = useMemo(() => generateFakeCombatEvents(50, 'kill'), []);
-  const fakeDeaths = useMemo(() => generateFakeCombatEvents(50, 'death'), []);
 
   // Item Names Mapping
   const [itemNames, setItemNames] = useState<Record<string, string>>({});
@@ -929,9 +847,6 @@ export default function PvpIntelPage() {
     if (!user) return;
     const profile = await getUserProfile(user.uid);
     setUserProfile(profile);
-
-    const accessResult = await checkAccess(user.uid);
-    setAccess(accessResult);
 
     if (profile?.characterId && !selectedPlayer && !query) {
       handleSelectPlayer(profile.characterId);
@@ -1133,8 +1048,6 @@ export default function PvpIntelPage() {
     return calculateMastery(recentKills, recentDeaths);
   }, [weaponMasteryData, recentKills, recentDeaths]);
 
-  const fakeWeaponMastery = useMemo(() => calculateMastery(fakeKills, fakeDeaths), [fakeKills, fakeDeaths]);
-
   const renderItemSlot = (item: any) => (
     <div className="bg-card rounded border border-border p-1 w-20 h-20 relative group/item shrink-0">
       {item && (
@@ -1152,7 +1065,7 @@ export default function PvpIntelPage() {
       description={t('description')}
       icon={<Sword className="h-6 w-6" />}
       headerActions={
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4 w-full">
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative group flex-1 md:flex-none">
               <form onSubmit={handleSearch} className="relative w-full">
@@ -1192,11 +1105,6 @@ export default function PvpIntelPage() {
         </div>
       }
     >
-
-      <SubscriptionModal
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-      />
 
       {/* Search Results */}
       {results.length > 0 && (
@@ -1349,48 +1257,21 @@ export default function PvpIntelPage() {
               </h3>
             </div>
 
-            <FeatureLock
-              title={t('weaponMasteryAnalysis')}
-              description={t('weaponMasteryAnalysisDesc')}
-              lockedContent={
-                <WeaponMasteryTable
-                  masteryData={fakeWeaponMastery}
-                  expandedWeaponId={expandedWeaponId}
-                  setExpandedWeaponId={setExpandedWeaponId}
-                  formatItemName={formatItemName}
-                  userProfile={userProfile}
-                  selectedPlayer={selectedPlayer}
-                />
-              }
-            >
-              <WeaponMasteryTable
-                masteryData={weaponMastery}
-                expandedWeaponId={expandedWeaponId}
-                setExpandedWeaponId={setExpandedWeaponId}
-                formatItemName={formatItemName}
-                userProfile={userProfile}
-                selectedPlayer={selectedPlayer}
-              />
-            </FeatureLock>
+            <WeaponMasteryTable
+              masteryData={weaponMastery}
+              expandedWeaponId={expandedWeaponId}
+              setExpandedWeaponId={setExpandedWeaponId}
+              formatItemName={formatItemName}
+              userProfile={userProfile}
+              selectedPlayer={selectedPlayer}
+            />
           </div>
 
-          <FeatureLock
-            title={t('combatAnalytics')}
-            description={t('combatAnalyticsDesc')}
-            lockedContent={
-              <AdvancedAnalytics
-                kills={fakeKills}
-                deaths={fakeDeaths}
-                playerId={selectedPlayer.Id}
-              />
-            }
-          >
-            <AdvancedAnalytics
-              kills={recentKills}
-              deaths={recentDeaths}
-              playerId={selectedPlayer.Id}
-            />
-          </FeatureLock>
+          <AdvancedAnalytics
+            kills={recentKills}
+            deaths={recentDeaths}
+            playerId={selectedPlayer.Id}
+          />
 
           <div className="bg-card border border-border rounded-xl p-1 mt-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 pt-3 mb-4 gap-3 sm:gap-0">

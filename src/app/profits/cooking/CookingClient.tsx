@@ -17,7 +17,6 @@ import { getItemNameService } from '@/lib/item-service';
 import { RECIPES, FoodRecipe, Ingredient, FISH_SAUCES } from './constants';
 import { NumberInput } from '@/components/ui/NumberInput';
 import { Select } from '@/components/ui/Select';
-import { FeatureLock } from '@/components/subscription/FeatureLock';
 import { useAuth } from '@/context/AuthContext';
 
 // Interfaces for enhanced data structure
@@ -64,7 +63,7 @@ export default function CookingClient() {
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
     // Filter States
-    const [quantity, setQuantity] = useState(150);
+    const [quantity, setQuantity] = useState(1);
     const [showEnchanted, setShowEnchanted] = useState(false);
     const [showAdvanced, setShowAdvanced] = useState(false); // Collapsible state
 
@@ -473,11 +472,7 @@ export default function CookingClient() {
 
                     {/* Advanced Configuration (Collapsible) */}
                     {showAdvanced && (
-                        <FeatureLock
-                            title={tAlchemy('advancedLockTitle')}
-                            description={tAlchemy('advancedLockDesc')}
-                        >
-                            <div className="p-6 border-t border-border bg-muted/30 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 rounded-b-xl">
+                        <div className="p-6 border-t border-border bg-muted/30 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 rounded-b-xl">
                                 {/* Market Strategy */}
                                 <div className="bg-card/50 p-4 rounded-lg border border-border/50 space-y-4">
                                     <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
@@ -573,9 +568,8 @@ export default function CookingClient() {
                                     </div>
                                 </div>
                             </div>
-                        </FeatureLock>
-                    )}
-                </div>
+                        )}
+                    </div>
 
                 {!selectedRecipeId && (
                     <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed border-border">

@@ -38,11 +38,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useLoginModal } from '@/context/LoginModalContext';
-import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { useCommandMenu } from '@/context/CommandMenuContext';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { Coffee } from 'lucide-react';
 
 interface NavItem {
   id: string;
@@ -115,7 +115,6 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileGroups, setExpandedMobileGroups] = useState<string[]>([t('calculators'), t('tools')]);
   const { openLoginModal } = useLoginModal();
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -358,16 +357,15 @@ export function Navbar() {
 
               <div className="h-6 w-px bg-border mx-2 hidden sm:block"></div>
 
-              {!profile?.isPremium && (
-                <button
-                  onClick={() => setShowSubscriptionModal(true)}
-                  className="relative overflow-hidden hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white rounded-full text-xs font-bold transition-all"
-                >
-                  <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 skew-x-12" />
-                  <Crown className="h-3 w-3 relative z-20" />
-                  <span className="hidden lg:inline relative z-20">{t('supportUs')}</span>
-                </button>
-              )}
+              <a
+                href="https://buymeacoffee.com/cosmic_fi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-600 hover:to-amber-500 text-white rounded-full text-xs font-bold transition-all border border-amber-500/30"
+              >
+                <Coffee className="h-3 w-3" />
+                <span className="hidden lg:inline">Donate</span>
+              </a>
 
               {user ? (
                 <div className="relative" ref={profileDropdownRef}>
@@ -553,19 +551,16 @@ export function Navbar() {
                 {t('search')}
               </button>
 
-              {/* Mobile Support Us */}
-              {!profile?.isPremium && (
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setShowSubscriptionModal(true);
-                  }}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors mt-1"
-                >
-                  <Crown className="h-4 w-4" />
-                  {t('supportUs')}
-                </button>
-              )}
+              {/* Mobile Donate Button */}
+              <a
+                href="https://buymeacoffee.com/cosmic_fi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors mt-1"
+              >
+                <Coffee className="h-4 w-4" />
+                Donate
+              </a>
 
               <div className="h-px bg-border my-2"></div>
 
@@ -620,11 +615,6 @@ export function Navbar() {
           </div>
         </div>
       )}
-
-      <SubscriptionModal
-        isOpen={showSubscriptionModal}
-        onClose={() => setShowSubscriptionModal(false)}
-      />
     </>
   );
 }

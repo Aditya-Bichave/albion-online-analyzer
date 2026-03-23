@@ -36,6 +36,13 @@ export function Footer() {
               >
                 <Mail className="h-5 w-5" />
               </Link>
+              <Link
+                href="https://github.com/cosmic-fi/albionkit"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Email"
+              >
+                <Github className="h-5 w-5" />
+              </Link>
             </div>
           </div>
 
@@ -137,11 +144,6 @@ export function Footer() {
               <li>
                 <Link href="/cookies" className="text-muted-foreground hover:text-foreground transition-colors">
                   {t('cookies')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/refund" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t('refund')}
                 </Link>
               </li>
             </ul>

@@ -4,7 +4,7 @@ import { BuildView } from './BuildView';
 import { getTranslations } from 'next-intl/server';
 
 interface PageProps {
-    params: Promise<{ category: string; id: string }>;
+    params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         }
     }
 
-    const description = build.description || t('checkoutBuild', { category: build.category, author: build.authorName });
+    const description = build.description || t('checkoutBuild', { author: build.authorName });
 
     return {
         title: `${build.title} | AlbionKit`,
@@ -65,7 +65,7 @@ export default async function BuildPage({ params }: PageProps) {
         name: build.authorName
       },
       datePublished: build.createdAt?.toDate?.().toISOString() || new Date().toISOString(),
-      image: 'https://albionkit.com/og-image.jpg', // ideally dynamic if builds have images
+      image: 'https://albionkit.com/og-image.jpg',
       publisher: {
         '@type': 'Organization',
         name: 'AlbionKit',
@@ -84,7 +84,7 @@ export default async function BuildPage({ params }: PageProps) {
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
                 />
             )}
-            <BuildView id={resolvedParams.id} category={resolvedParams.category} />
+            <BuildView id={resolvedParams.id} />
         </>
     );
 }

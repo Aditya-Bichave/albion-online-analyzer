@@ -103,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         locale: locale,
-        isPremium: false,
         preferences: {
           emailNotifications: true,
           publicProfile: true,
