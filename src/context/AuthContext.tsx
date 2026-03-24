@@ -115,22 +115,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Pass email explicitly to ensure it sends even if DB read is delayed
       notifyUser(user.uid, 'welcome', undefined, email || undefined).catch(console.error);
     } else {
-      // Update existing profile if fields are missing/empty
+      // Update existing profile ONLY for missing fields
+      // IMPORTANT: Do NOT overwrite custom displayName or photoURL with provider data
       const data = docSnap.data();
       const updates: any = {};
       let needsUpdate = false;
 
-      // Only fill if missing in Firestore AND available from Provider/Defaults
+      // Only update photoURL if:
+      // 1. It's missing in Firestore AND
+      // 2. User doesn't have a custom one (check if it's a ui-avatars URL from previous default)
       if (!data.photoURL && defaultPhotoURL) {
         updates.photoURL = defaultPhotoURL;
         needsUpdate = true;
       }
 
-      if ((!data.displayName || data.displayName === 'Anonymous') && defaultDisplayName) {
-        if (!data.displayName) {
-             updates.displayName = defaultDisplayName;
-             needsUpdate = true;
-        }
+      // Only update displayName if:
+      // 1. It's missing/empty in Firestore AND
+      // 2. We have a default from provider
+      // NEVER overwrite a custom displayName that the user set
+      if (!data.displayName && defaultDisplayName) {
+        updates.displayName = defaultDisplayName;
+        needsUpdate = true;
       }
 
       // Backfill email if missing in Firestore but available now

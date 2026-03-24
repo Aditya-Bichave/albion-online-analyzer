@@ -339,6 +339,10 @@ function SettingsContent() {
       const url = await uploadImage(file);
       if (url) {
           setEditForm(prev => ({ ...prev, [field]: url }));
+          // Immediately update profile in database and refresh auth context
+          await updateUserProfile(user!.uid, { [field]: url });
+          await refreshProfile();
+          toast.success(field === 'photoURL' ? t('profile.avatarUpdated') : t('profile.bannerUpdated'));
       }
   };
 

@@ -1764,7 +1764,9 @@
       "youtubePlaceholder": "channel",
       "save": "Save Changes",
       "success": "Profile updated successfully",
-      "error": "Failed to update profile"
+      "error": "Failed to update profile",
+      "avatarUpdated": "Profile picture updated successfully",
+      "bannerUpdated": "Banner updated successfully"
     },
     "billing": {
       "title": "Subscription Management",
