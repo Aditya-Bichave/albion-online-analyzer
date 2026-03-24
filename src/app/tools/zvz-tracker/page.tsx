@@ -4,20 +4,28 @@ import ZvzTrackerClient from './ZvzTrackerClient';
 import { getBattles } from './actions';
 import { Loader2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'zvz-tracker',
+  'ZvZ Tracker - Albion Online Battle Tracker | AlbionKit',
+  'Track massive ZvZ and GvG battles in Albion Online. Live battle statistics, guild warfare analysis, and participant tracking.'
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.zvzTracker');
   let title = t('title');
   let description = t('description');
-  
+
   try {
     // Default to Americas for metadata snapshot
     const { battles } = await getBattles('west', 10);
-    
+
     if (battles && battles.length > 0) {
       // Filter for "live" battles (last 20 mins)
       const liveBattles = battles.filter((b: any) => new Date(b.startTime).getTime() > Date.now() - 20 * 60 * 1000);
-      
+
       if (liveBattles.length > 0) {
         title = t('liveTitle', { count: liveBattles.length });
         description = t('liveDescription', { count: liveBattles.length, region: 'Americas', kills: liveBattles[0].totalKills });
@@ -31,21 +39,21 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
+    ...baseMetadata,
     title,
     description,
     openGraph: {
+      ...baseMetadata.openGraph,
       title,
       description,
-      type: 'website',
-      images: ['https://albionkit.com/og-image.jpg'], // Fallback or specific image
+      url: 'https://albionkit.com/tools/zvz-tracker',
+      images: baseMetadata.openGraph?.images,
     },
     twitter: {
-      card: 'summary_large_image',
+      ...baseMetadata.twitter,
       title,
       description,
-    },
-    alternates: {
-      canonical: 'https://albionkit.com/tools/zvz-tracker'
+      images: baseMetadata.twitter?.images,
     }
   };
 }

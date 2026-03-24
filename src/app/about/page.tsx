@@ -1,15 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import { 
-  Github, 
-  Twitter, 
-  Sword, 
-  Coins, 
-  Hammer, 
-  Users, 
-  BarChart3, 
-  Shield, 
-  Globe, 
+import {
+  Github,
+  Twitter,
+  Sword,
+  Coins,
+  Hammer,
+  Users,
+  BarChart3,
+  Shield,
+  Globe,
   Heart,
   Code2,
   Database,
@@ -21,12 +21,35 @@ import {
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'about',
+  'About AlbionKit - Built by Players, for Players',
+  'Learn about AlbionKit - the ultimate Albion Online companion tool built by the community.'
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.about');
+  
   return {
+    ...baseMetadata,
     title: t('title'),
     description: t('description'),
+    openGraph: {
+      ...baseMetadata.openGraph,
+      title: t('title'),
+      description: t('description'),
+      url: 'https://albionkit.com/about',
+      images: baseMetadata.openGraph?.images,
+    },
+    twitter: {
+      ...baseMetadata.twitter,
+      title: t('title'),
+      description: t('description'),
+      images: baseMetadata.twitter?.images,
+    }
   };
 }
 

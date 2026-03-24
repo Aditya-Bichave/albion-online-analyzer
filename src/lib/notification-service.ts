@@ -234,12 +234,13 @@ export async function notifyUser(userId: string, type: NotificationType, data?: 
   }
 }
 
-export async function checkAndNotifyRankUp(userId: string, builds: any[]) {
+export async function checkAndNotifyRankUp(userId: string, builds: any[], totalBuildsCount?: number) {
   try {
     const profile = await getUserProfile(userId);
     if (!profile) return;
 
-    const { rank: currentRank } = calculateUserGamification(profile, builds);
+    // Use total count if provided for accurate rank calculation
+    const { rank: currentRank } = calculateUserGamification(profile, builds, totalBuildsCount);
     const lastRank = profile.preferences?.lastNotifiedRank as UserRank | undefined;
 
     // Rank hierarchy

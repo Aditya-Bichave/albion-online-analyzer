@@ -1,32 +1,40 @@
 import { Metadata } from 'next';
 import KillFeedClient from './KillFeedClient';
 import { getTranslations } from 'next-intl/server';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
 
 export const revalidate = 30; // Revalidate every 30 seconds
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'kill-feed',
+  'Live Kill Feed - Albion Online PvP Tracker | AlbionKit',
+  'Track real-time PvP battles in Albion Online. Live kill feed with player statistics, fame tracking, and battle analysis across all servers.'
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.killFeed');
   const title = t('title');
-  
+
   // Use static description - avoids live API call on every page request
   const description = t('description');
 
   return {
+    ...baseMetadata,
+    title,
     description,
-    keywords: ['Albion Online Kill Feed', 'Live PvP', 'High Value Kills', 'Albion PvP Tracker', 'Real-time Killboard'],
     openGraph: {
+      ...baseMetadata.openGraph,
       title,
       description,
-      type: 'website',
-      images: ['https://albionkit.com/og-image.jpg'],
+      url: 'https://albionkit.com/tools/kill-feed',
+      images: baseMetadata.openGraph?.images,
     },
     twitter: {
-      card: 'summary_large_image',
+      ...baseMetadata.twitter,
       title,
       description,
-    },
-    alternates: {
-      canonical: 'https://albionkit.com/tools/kill-feed'
+      images: baseMetadata.twitter?.images,
     }
   };
 }

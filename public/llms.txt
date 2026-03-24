@@ -34,6 +34,7 @@ AlbionKit is a comprehensive toolkit for Albion Online players, providing builds
 
 # Contact & Social
 - Twitter: https://twitter.com/Albion_Kit
+- Github: https://github.com/cosmic-fi/albionkit
 - Email: support@albionkit.com
 
 # Last Updated

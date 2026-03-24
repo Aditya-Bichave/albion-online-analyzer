@@ -1483,7 +1483,8 @@
     "ip": "IP",
     "showingTop50": "Showing top 50 players by Fame",
     "failedToLoad": "Failed to load details.",
-    "recentHistory": "Recent History"
+    "recentHistory": "Recent History",
+    "page": "Page {n}"
   },
   "Community": {
     "title": "Community Hub",

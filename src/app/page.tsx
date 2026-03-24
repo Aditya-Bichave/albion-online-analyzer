@@ -35,14 +35,34 @@ import { SocialShare } from "@/components/SocialShare";
 import { useTranslations } from 'next-intl';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'homepage',
+  'AlbionKit - The Ultimate Albion Online Companion',
+  'Your all-in-one Albion Online companion. Market flipper, build database, PvP tracker, profit calculators, and more.'
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.home');
+
   return {
+    ...baseMetadata,
     title: t('title'),
     description: t('description'),
-    alternates: {
-      canonical: 'https://albionkit.com/'
+    openGraph: {
+      ...baseMetadata.openGraph,
+      title: t('title'),
+      description: t('description'),
+      url: 'https://albionkit.com/',
+      images: baseMetadata.openGraph?.images, // Explicitly include screenshot
+    },
+    twitter: {
+      ...baseMetadata.twitter,
+      title: t('title'),
+      description: t('description'),
+      images: baseMetadata.twitter?.images, // Explicitly include screenshot
     }
   };
 }

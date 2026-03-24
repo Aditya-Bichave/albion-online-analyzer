@@ -2,10 +2,18 @@ import { Metadata } from 'next';
 import MarketFlipperClient from './MarketFlipperClient';
 import { getItemNameService } from '@/lib/item-service';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'market-flipper',
+  'Albion Online Market Flipper - Real-Time Profit Calculator | AlbionKit',
+  'Find profitable market flips in Albion Online. Track prices across all cities, set watchlist alerts, and maximize profits with real-time market data. Free tool with premium features.'
+);
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const t = await getTranslations('Pages.marketFlipper');
@@ -26,32 +34,25 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     } catch (e) {
       console.error('Failed to fetch Market Flipper metadata', e);
     }
-  } else {
-    // Enhanced default metadata
-    title = 'Albion Online Market Flipper - Real-Time Profit Calculator | AlbionKit';
-    description = 'Find profitable market flips in Albion Online. Track prices across all cities, set watchlist alerts, and maximize profits with real-time market data. Free tool with premium features.';
   }
 
+  // Merge base metadata with dynamic content
   return {
+    ...baseMetadata,
     title,
     description,
-    keywords: ['Albion Online market', 'market flipper', 'profit calculator', 'Albion trading', 'price tracker', 'arbitrage', 'Black Market', 'real-time prices'],
     openGraph: {
+      ...baseMetadata.openGraph,
       title,
       description,
-      type: 'website',
       url: 'https://albionkit.com/tools/market-flipper',
-      images: ['https://albionkit.com/og-market-flipper.jpg'],
-      siteName: 'AlbionKit',
+      images: baseMetadata.openGraph?.images, // Explicitly include screenshot
     },
     twitter: {
-      card: 'summary_large_image',
+      ...baseMetadata.twitter,
       title,
       description,
-      creator: '@Albion_Kit',
-    },
-    alternates: {
-      canonical: 'https://albionkit.com/tools/market-flipper'
+      images: baseMetadata.twitter?.images, // Explicitly include screenshot
     }
   };
 }

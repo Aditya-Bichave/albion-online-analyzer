@@ -213,7 +213,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     );
   }
 
-  const { rank, badges } = profile ? calculateUserGamification(profile, builds) : { rank: 'Wanderer', badges: [] };
+  const { rank, badges } = profile ? calculateUserGamification(profile, builds, totalBuilds) : { rank: 'Wanderer', badges: [] };
 
   const getRankColor = (r: string) => {
       switch(r) {

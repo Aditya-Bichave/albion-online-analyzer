@@ -1,6 +1,14 @@
 import { Metadata } from 'next';
 import PvpIntelClient from './PvpIntelClient';
 import { getPlayerStats, searchPlayer } from './actions';
+import { createPageMetadata } from '@/lib/screenshot-metadata';
+
+// Base metadata with screenshot
+const baseMetadata = createPageMetadata(
+  'pvp-intel',
+  'PvP Intel - Albion Online Player & Guild Stats | AlbionKit',
+  'Analyze Albion Online PvP stats with precision. Search players, guilds, and battles to view kill fame, K/D ratios, and recent combat history.'
+);
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -9,27 +17,19 @@ type Props = {
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   let title = 'Albion Online PvP Intel - Player & Guild Stats | AlbionKit';
   let description = 'Analyze Albion Online PvP stats with precision. Search players, guilds, and battles to view kill fame, K/D ratios, and recent combat history.';
-  
+
   const resolvedSearchParams = await searchParams;
   const playerQuery = resolvedSearchParams?.player;
   const region = (resolvedSearchParams?.region as 'west' | 'east' | 'europe') || 'west';
 
   if (typeof playerQuery === 'string' && playerQuery) {
     try {
-      // If it looks like an ID (UUID format usually, but Albion IDs are strings)
-      // We might need to search first if it's a name
-      let playerId = playerQuery;
-      let playerName = playerQuery;
-
-      // Try to fetch stats directly assuming it might be an ID or Name
-      // Ideally we would search first if we don't have ID
-      // For metadata, let's assume the URL might contain ID or we do a quick search
       const searchResults = await searchPlayer(playerQuery, region);
       if (searchResults && searchResults.results && searchResults.results.length > 0) {
          const player = searchResults.results[0];
-         playerId = player.Id;
-         playerName = player.Name;
-         
+         const playerId = player.Id;
+         const playerName = player.Name;
+
          const { stats } = await getPlayerStats(playerId, region);
          if (stats) {
             title = `${playerName} - PvP Stats & Analysis | AlbionKit`;
@@ -42,19 +42,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 
   return {
+    ...baseMetadata,
     title,
     description,
-    keywords: ['Albion Online PvP', 'Albion Killboard', 'Player Stats', 'Guild Stats', 'Albion ZvZ', 'PvP Analysis'],
     openGraph: {
+      ...baseMetadata.openGraph,
       title,
       description,
-      type: 'website',
-      images: ['https://albionkit.com/og-image.jpg'],
+      url: 'https://albionkit.com/tools/pvp-intel',
+      images: baseMetadata.openGraph?.images,
     },
     twitter: {
-      card: 'summary_large_image',
+      ...baseMetadata.twitter,
       title,
       description,
+      images: baseMetadata.twitter?.images,
     }
   };
 }

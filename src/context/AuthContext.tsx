@@ -116,7 +116,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       notifyUser(user.uid, 'welcome', undefined, email || undefined).catch(console.error);
     } else {
       // Update existing profile ONLY for missing fields
-      // IMPORTANT: Do NOT overwrite custom displayName or photoURL with provider data
+      // CRITICAL: NEVER overwrite these protected fields:
+      // - createdAt (join date)
+      // - displayName (user's chosen name)
+      // - photoURL (user's chosen avatar)
+      // - characterName, characterId (Albion character linkage)
+      // - guildName, guildId (guild affiliation)
       const data = docSnap.data();
       const updates: any = {};
       let needsUpdate = false;
@@ -144,8 +149,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         needsUpdate = true;
       }
 
+      // Update lastLoginAt (but NEVER createdAt!)
+      updates.lastLoginAt = new Date().toISOString();
+      needsUpdate = true;
+
+      // Update locale if missing
+      if (!data.locale && locale) {
+        updates.locale = locale;
+        needsUpdate = true;
+      }
+
       if (needsUpdate) {
-        await setDoc(docRef, updates, { merge: true });
+        // CRITICAL: Explicitly exclude protected fields from updates
+        const safeUpdates: any = {};
+        const protectedFields = ['createdAt', 'characterName', 'characterId', 'guildName', 'guildId', 'allianceName', 'allianceId'];
+        
+        for (const [key, value] of Object.entries(updates)) {
+          if (!protectedFields.includes(key)) {
+            safeUpdates[key] = value;
+          }
+        }
+        
+        await setDoc(docRef, safeUpdates, { merge: true });
       }
     }
   };
@@ -162,12 +187,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
-        await ensureProfileExists(firebaseUser);
-        const userProfile = await getUserProfile(firebaseUser.uid);
+        // Don't block navigation on profile load
+        ensureProfileExists(firebaseUser).catch(console.error);
         
-        if (isMounted.current) {
-          setProfile(userProfile);
-        }
+        // Fetch profile in background
+        getUserProfile(firebaseUser.uid)
+          .then(userProfile => {
+            if (isMounted.current) {
+              setProfile(userProfile);
+            }
+          })
+          .catch(console.error);
 
         // Update Login Streak - Only if it's a fresh login or a new day
         updateLoginStreakAction(firebaseUser.uid).then(result => {

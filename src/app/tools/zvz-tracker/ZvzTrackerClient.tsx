@@ -191,12 +191,12 @@ export default function ZvzTrackerClient() {
 
     // Main List Pagination
     const [battlesPage, setBattlesPage] = useState(1);
-    const BATTLES_PER_PAGE = 10;
+    const BATTLES_PER_PAGE = 15;
 
     const loadBattles = async (isBackground = false) => {
         if (!isBackground) setLoading(true);
         // Fetch more battles to allow for local pagination
-        const { battles, error } = await getBattles(region, 50);
+        const { battles, error } = await getBattles(region, 100); // Increased from 50 to 100
         if (battles) {
             // Sort by time descending (newest first)
             const sortedBattles = battles.sort((a: any, b: any) =>
@@ -475,6 +475,13 @@ export default function ZvzTrackerClient() {
 
     const liveBattles = filteredBattles.filter(b => isLiveBattle(b.startTime));
     const pastBattles = filteredBattles.filter(b => !isLiveBattle(b.startTime));
+
+    // Paginate past battles
+    const paginatedPastBattles = pastBattles.slice(
+        (battlesPage - 1) * BATTLES_PER_PAGE,
+        battlesPage * BATTLES_PER_PAGE
+    );
+    const totalBattlesPages = Math.ceil(pastBattles.length / BATTLES_PER_PAGE);
 
     const topKills = useMemo(() => {
         if (liveBattles.length === 0) return 0;
@@ -1069,7 +1076,7 @@ export default function ZvzTrackerClient() {
                      <h2 className="text-lg font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                          <Clock className="h-4 w-4" /> {t('recentHistory')}
                      </h2>
-                    {pastBattles.map(battle => (
+                    {paginatedPastBattles.map(battle => (
                          <div key={battle.id} id={`battle-${battle.id}`} className={`bg-card/50 border ${expandedBattleId === battle.id ? 'border-primary ring-1 ring-primary' : 'border-border'} rounded-xl overflow-hidden transition-all duration-300 hover:border-border/80`}>
                                 {/* Battle Header */}
                                 <div 
@@ -1493,6 +1500,35 @@ export default function ZvzTrackerClient() {
                                 )}
                              </div>
                         ))}
+                        
+                        {/* Pagination Controls */}
+                        {totalBattlesPages > 1 && (
+                            <div className="flex justify-center items-center gap-4 mt-6 pt-4 border-t border-border">
+                                <button
+                                    onClick={() => {
+                                        setBattlesPage(p => Math.max(1, p - 1));
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                    disabled={battlesPage === 1}
+                                    className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeft className="h-5 w-5" />
+                                </button>
+                                <span className="text-sm font-medium text-muted-foreground">
+                                    {t('page', { n: battlesPage })} / {totalBattlesPages}
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        setBattlesPage(p => Math.min(totalBattlesPages, p + 1));
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                    disabled={battlesPage === totalBattlesPages}
+                                    className="p-2 rounded-lg border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRight className="h-5 w-5" />
+                                </button>
+                            </div>
+                        )}
                 </div>
             
                 <InfoStrip currentPage="zvz-tracker" />

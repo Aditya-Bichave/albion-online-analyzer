@@ -29,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : route === '/builds' || route === '/forum' ? 0.9 : 0.8,
+    priority: route === '' ? 1 : route === '/builds' ? 0.9 : 0.9,
   }));
 
   // 2. Dynamic Routes (Builds) - Limited to top 100 by likes
@@ -38,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}/builds/${build.id}`,
     lastModified: build.updatedAt,
     changeFrequency: 'weekly' as const,
-    priority: 0.6,
+    priority: 0.8,
   }));
 
   return [...routes, ...buildRoutes];

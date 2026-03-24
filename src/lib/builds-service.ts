@@ -368,8 +368,11 @@ export const createBuild = async (build: Omit<Build, 'id' | 'createdAt' | 'updat
       updatedAt: serverTimestamp(),
     });
 
+    // Get user's builds and total count for accurate rank calculation
     getUserBuilds(build.authorId).then(({ builds }) => {
-      checkAndNotifyRankUp(build.authorId, builds);
+      getUserBuildCount(build.authorId).then((totalCount) => {
+        checkAndNotifyRankUp(build.authorId, builds, totalCount);
+      }).catch(err => console.error('Error getting build count:', err));
     }).catch(err => console.error('Error checking rank up:', err));
 
     try {

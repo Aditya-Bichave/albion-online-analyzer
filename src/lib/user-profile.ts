@@ -79,8 +79,10 @@ export interface UserProfile {
   gameplay?: GameplayPreferences;
 }
 
-export function calculateUserGamification(profile: UserProfile, builds: any[]) {
-  const buildCount = builds.length;
+export function calculateUserGamification(profile: UserProfile, builds: any[], totalBuildsOverride?: number) {
+  // Use override if provided (for accurate count when builds array is paginated)
+  const buildCount = totalBuildsOverride !== undefined ? totalBuildsOverride : builds.length;
+  
   // Calculate total views safely
   const totalViews = builds.reduce((acc, build) => acc + (build.views || 0), 0);
 

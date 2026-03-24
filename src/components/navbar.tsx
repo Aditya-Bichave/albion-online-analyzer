@@ -35,7 +35,7 @@ import {
   Store
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useTransition, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { useLoginModal } from '@/context/LoginModalContext';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
@@ -43,6 +43,7 @@ import { useCommandMenu } from '@/context/CommandMenuContext';
 import { useTranslations } from 'next-intl';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Coffee } from 'lucide-react';
+import React from 'react';
 
 interface NavItem {
   id: string;
@@ -104,7 +105,7 @@ const NAV_ITEMS: NavItem[] = [
     },
   ];
 
-export function Navbar() {
+function Navbar() {
   const t = useTranslations('Navbar');
   const { user, profile, logout } = useAuth();
   const { setIsOpen } = useCommandMenu();
@@ -114,7 +115,35 @@ export function Navbar() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileGroups, setExpandedMobileGroups] = useState<string[]>([t('calculators'), t('tools')]);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { openLoginModal } = useLoginModal();
+
+  // Memoize computed values to prevent unnecessary re-renders
+  const displayName = useMemo(() => 
+    profile?.displayName || user?.displayName || 'User',
+    [profile?.displayName, user?.displayName]
+  );
+
+  const photoURL = useMemo(() => 
+    profile?.photoURL || user?.photoURL,
+    [profile?.photoURL, user?.photoURL]
+  );
+
+  const email = useMemo(() => 
+    profile?.email || user?.email,
+    [profile?.email, user?.email]
+  );
+
+  // Optimized navigation handler with transition
+  const handleNavigation = useCallback((href: string) => {
+    setIsNavigating(true);
+    startTransition(() => {
+      window.location.href = href;
+    });
+    // Reset navigating state after transition
+    setTimeout(() => setIsNavigating(false), 300);
+  }, []);
 
   const navItems: NavItem[] = [
     {
@@ -172,11 +201,6 @@ export function Navbar() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Use profile data if available, fallback to auth user data
-  const displayName = profile?.displayName || user?.displayName || 'User';
-  const photoURL = profile?.photoURL || user?.photoURL;
-  const email = profile?.email || user?.email;
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -618,3 +642,7 @@ export function Navbar() {
     </>
   );
 }
+
+// Memoize the entire Navbar component to prevent unnecessary re-renders
+const MemoizedNavbar = React.memo(Navbar);
+export { MemoizedNavbar as Navbar };

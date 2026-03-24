@@ -10,6 +10,7 @@ import { CommandMenu } from './CommandMenu';
 import { useAuth } from '@/context/AuthContext';
 import { VerificationBanner } from './VerificationBanner';
 import { CommandMenuProvider, useCommandMenu } from '@/context/CommandMenuContext';
+import { NavigationProgress } from './NavigationProgress';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
@@ -28,6 +29,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
+      <NavigationProgress />
       <ServerStatusBanner />
       <VerificationBanner />
       <Navbar />
