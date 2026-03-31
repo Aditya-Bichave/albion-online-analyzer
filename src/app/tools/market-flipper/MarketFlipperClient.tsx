@@ -1,38 +1,159 @@
 'use client';
 
-import { useState, useEffect, Fragment, Suspense } from 'react';
-import { RefreshCw, TrendingUp, ArrowRight, Info, ChevronDown, ChevronUp, Star, Plus, Trash2, Filter, Tag, Search as SearchIcon, Layers, DollarSign, Percent, Sparkles, CircleHelp, Loader2 } from 'lucide-react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { RefreshCw, TrendingUp, Star, DollarSign, Search, Filter, ChevronDown, ChevronUp, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { getUserPreferences, saveUserPreferences } from '@/lib/user-preferences';
-import { getMarketData, triggerWatchlistAlerts, searchAlbionItems } from './actions';
-import { fetchMarketPrices, fetchMarketVolume, fetchItemsList, MarketStat, MarketHistory } from '@/lib/albion-api-client';
+import { getMarketData, searchAlbionItems } from './actions';
 import MarketHistoryChart from './MarketHistoryChart';
-import { InfoStrip, InfoBanner } from '@/components/InfoStrip';
-
-import { ITEM_CATEGORIES, CATEGORY_LABEL_IDS } from './item-categories';
+import { InfoStrip } from '@/components/InfoStrip';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
-import { ServerSelector, ServerRegion } from '@/components/ServerSelector';
-import { useServer } from '@/hooks/useServer';
 import { Checkbox } from '@/components/ui/Checkbox';
+import { Tooltip } from '@/components/ui/Tooltip';
+import { ServerSelector } from '@/components/ServerSelector';
+import { useServer } from '@/hooks/useServer';
 import { NumberInput } from '@/components/ui/NumberInput';
 import { PageShell } from '@/components/PageShell';
-import { Tooltip } from '@/components/ui/Tooltip';
 import { ItemIcon } from '@/components/ItemIcon';
+import { Button } from '@/components/ui/Button';
+import { ITEM_CATEGORIES, CATEGORY_LABEL_IDS } from './item-categories';
 
-function MarketFlipperContent() {
+interface Flip {
+  itemId: string;
+  name: string;
+  buyCity: string;
+  buyPrice: number;
+  sellPrice: number;
+  profit: number;
+  margin: number;
+  volume: number;
+  netProfit: number;
+  roi: number;
+}
+
+export default function MarketFlipperClient() {
   const t = useTranslations('MarketFlipper');
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  const [flips, setFlips] = useState<any[]>([]);
+  const { server: region, setServer: setRegion } = useServer();
+
+  const [flips, setFlips] = useState<Flip[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  // Helper to format item name from ID if real name is missing
+  // Filters
+  const [minProfit, setMinProfit] = useState(2500);
+  const [minMargin, setMinMargin] = useState(5);
+  const [selectedCategory, setSelectedCategory] = useState('Popular');
+  const [selectedTier, setSelectedTier] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Settings
+  const [travelCost, setTravelCost] = useState(0);
+  const [isPremiumTax, setIsPremiumTax] = useState(true);
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
+  const [customItems, setCustomItems] = useState<string[]>([]);
+
+  // Computed flips with tax/profit calculations
+  const computedFlips = Array.isArray(flips) ? flips.map(flip => {
+    const taxRate = isPremiumTax ? 0.04 : 0.08;
+    const setupFee = 0.025;
+    const totalTax = flip.sellPrice * (taxRate + setupFee);
+    const netProfit = (flip.sellPrice - flip.buyPrice) - totalTax - travelCost;
+    const roi = flip.buyPrice > 0 ? (netProfit / flip.buyPrice) * 100 : 0;
+    return { ...flip, netProfit, roi };
+  }) : [];
+
+  // Filtered flips
+  const filteredFlips = computedFlips.filter(flip => {
+    if (showWatchlistOnly && !watchlist.includes(`${flip.itemId}-${flip.buyCity}`)) return false;
+    if (flip.netProfit < minProfit) return false;
+    if (flip.margin < minMargin) return false;
+    if (searchTerm && !flip.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredFlips.length, minProfit, minMargin, selectedCategory, selectedTier, searchTerm, showWatchlistOnly]);
+
+  const totalPages = Math.ceil(filteredFlips.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentFlips = filteredFlips.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const nextPage = () => goToPage(currentPage + 1);
+  const prevPage = () => goToPage(currentPage - 1);
+
+  // Watchlist summary - calculated directly to avoid infinite loop
+  const watchlistSummary = (() => {
+    if (watchlist.length === 0 || computedFlips.length === 0) {
+      return { count: watchlist.length, profitable: 0, topPick: null as any | null };
+    }
+    const watchedFlips = computedFlips.filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`));
+    const profitable = watchedFlips.filter(f => f.netProfit > 5000 && f.roi > 10).length;
+    const topPick = watchedFlips.length > 0 ? watchedFlips.sort((a, b) => b.roi - a.roi)[0] : null;
+    return { count: watchlist.length, profitable, topPick };
+  })();
+
+  // Load data
+  const loadData = async () => {
+    setLoading(true);
+    setFetchError(null);
+
+    try {
+      const baseCategoryItems = ITEM_CATEGORIES[selectedCategory as keyof typeof ITEM_CATEGORIES] || [];
+      const itemsToFetch = [...new Set([...baseCategoryItems, ...customItems])];
+
+      if (itemsToFetch.length === 0) {
+        setFlips([]);
+        setLoading(false);
+        setLastUpdated(new Date());
+        return;
+      }
+
+      const data = await getMarketData(region, [], itemsToFetch, selectedTier === 'All' ? null : selectedTier);
+
+      console.log('[MarketFlipperClient] getMarketData returned:', data);
+
+      // Ensure data is an array
+      const flipsData = Array.isArray(data) ? data : [];
+      console.log('[MarketFlipperClient] Setting flips to:', flipsData);
+      setFlips(flipsData as Flip[]);
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error('Failed to load market data:', err);
+      setFetchError('Failed to load market data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [region, selectedCategory, selectedTier, customItems]);
+
+  const toggleWatchlist = (itemId: string, buyCity: string) => {
+    const key = `${itemId}-${buyCity}`;
+    setWatchlist(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
+  };
+
   const formatItemName = (itemId: string) => {
     let name = itemId.replace(/^T\d+_/, '');
     name = name.split('@')[0];
@@ -42,1019 +163,530 @@ function MarketFlipperContent() {
 
   const getTierLabel = (itemId: string) => {
     const match = itemId.match(/^T(\d+)/);
-    if (match) return t('tierN', { n: match[1] });
+    if (match) return `T${match[1]}`;
     return '';
   };
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const { server: region, setServer: setRegion } = useServer();
 
-  const [customItems, setCustomItems] = useState<string[]>([]);
-  const [watchlist, setWatchlist] = useState<string[]>([]);
-  const [showWatchlistOnly, setShowWatchlistOnly] = useState(false);
-  const [travelCost, setTravelCost] = useState(0);
-  const [isPremiumTax, setIsPremiumTax] = useState(true);
-  const [watchlistSummary, setWatchlistSummary] = useState({ count: 0, profitable: 0, topPick: null as any | null });
+  // Calculate stats for display
+  const totalFlips = filteredFlips.length;
+  const avgProfit = filteredFlips.length > 0 ? Math.round(filteredFlips.reduce((sum, f) => sum + f.netProfit, 0) / filteredFlips.length) : 0;
+  const bestRoi = filteredFlips.length > 0 ? filteredFlips.reduce((max, f) => f.roi > max.roi ? f : max, filteredFlips[0]) : null;
 
-  const computedFlips = flips.map(flip => {
-    const taxRate = isPremiumTax ? 0.04 : 0.08;
-    const setupFee = 0.025;
-    const totalTax = flip.sellPrice * (taxRate + setupFee);
-    const netProfit = (flip.sellPrice - flip.buyPrice) - totalTax - travelCost;
-    const roi = flip.buyPrice > 0 ? (netProfit / flip.buyPrice) * 100 : 0;
-
-    return {
-      ...flip,
-      netProfit,
-      roi
-    };
-  });
-
-  useEffect(() => {
-    if (watchlist.length > 0 && computedFlips.length > 0) {
-      const watchedFlips = computedFlips.filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`));
-      const profitable = watchedFlips.filter(f => f.netProfit > 5000 && f.roi > 10).length;
-      const topPick = watchedFlips.sort((a, b) => b.roi - a.roi)[0] || null;
-      setWatchlistSummary({ count: watchlist.length, profitable, topPick });
-    } else {
-      setWatchlistSummary({ count: watchlist.length, profitable: 0, topPick: null });
+  const pageStats = [
+    {
+      label: t('totalFlips'),
+      value: loading ? '...' : totalFlips.toString(),
+      icon: <TrendingUp className="h-5 w-5 text-primary" />,
+      trend: loading ? undefined : 'up' as const
+    },
+    {
+      label: t('avgProfit'),
+      value: loading ? '...' : avgProfit.toLocaleString(),
+      icon: <DollarSign className="h-5 w-5 text-success" />
+    },
+    {
+      label: t('bestROI'),
+      value: loading ? '...' : bestRoi ? `+${bestRoi.roi.toFixed(1)}%` : 'N/A',
+      icon: <Sparkles className="h-5 w-5 text-info" />
+    },
+    {
+      label: t('marketStatus'),
+      value: loading ? '...' : t('active'),
+      icon: <AlertCircle className="h-5 w-5 text-warning" />
     }
-  }, [watchlist, flips, isPremiumTax, travelCost]);
-
-  const [minProfit, setMinProfit] = useState(2500);
-  const [minMargin, setMinMargin] = useState(5);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTier, setSelectedTier] = useState('All');
-  const [selectedEnchantment, setSelectedEnchantment] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('Popular');
-  const [uniqueItemMode, setUniqueItemMode] = useState(false);
-  const [searchSelectValue, setSearchSelectValue] = useState<string | ''>('');
-  const [searchOptions, setSearchOptions] = useState<{ value: string; label: string; icon?: React.ReactNode }[]>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'profit', direction: 'desc' });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-
-  useEffect(() => {
-    localStorage.setItem('albion_premium', String(isPremiumTax));
-    localStorage.setItem('albion_travel_cost', String(travelCost));
-  }, [isPremiumTax, travelCost]);
-
-  useEffect(() => {
-    const loadPreferences = async () => {
-      const savedWatchlist = localStorage.getItem('albion_watchlist');
-      const savedCustomItems = localStorage.getItem('albion_custom_items');
-
-      const savedPremium = localStorage.getItem('albion_premium');
-      if (savedPremium) setIsPremiumTax(savedPremium === 'true');
-
-      const savedTravel = localStorage.getItem('albion_travel_cost');
-      if (savedTravel) setTravelCost(Number(savedTravel));
-
-      let initialWatchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
-      let initialCustomItems = savedCustomItems ? JSON.parse(savedCustomItems) : [];
-
-      if (user) {
-        try {
-          const prefs = await getUserPreferences(user.uid);
-          if (prefs) {
-            if (prefs.watchlist) initialWatchlist = prefs.watchlist;
-            if (prefs.customItems) initialCustomItems = prefs.customItems;
-            if (prefs.premium !== undefined) setIsPremiumTax(prefs.premium);
-            if (prefs.travelCost !== undefined) setTravelCost(prefs.travelCost);
-          }
-        } catch (err) {
-          console.error("Failed to load prefs", err);
-        }
-      }
-
-      const itemParam = searchParams.get('item');
-      if (itemParam) {
-        if (!initialCustomItems.includes(itemParam)) {
-          initialCustomItems = [itemParam, ...initialCustomItems];
-        }
-        setUniqueItemMode(true);
-        router.replace('/tools/market-flipper');
-      }
-
-      setWatchlist(initialWatchlist);
-      setCustomItems(initialCustomItems);
-      setPreferencesLoaded(true);
-    };
-
-    loadPreferences();
-  }, [user]);
-
-  useEffect(() => {
-    if (!preferencesLoaded) return;
-
-    localStorage.setItem('albion_watchlist', JSON.stringify(watchlist));
-    if (user) {
-      setSyncStatus('saving');
-      saveUserPreferences(user.uid, { watchlist })
-        .then(() => setSyncStatus('saved'))
-        .catch((err) => {
-          console.error('Watchlist save failed:', err);
-          setSyncStatus('error');
-        });
-    }
-  }, [watchlist, user, preferencesLoaded]);
-
-  useEffect(() => {
-    if (!preferencesLoaded) return;
-
-    localStorage.setItem('albion_custom_items', JSON.stringify(customItems));
-    if (user) {
-      setSyncStatus('saving');
-      saveUserPreferences(user.uid, { customItems })
-        .then(() => setSyncStatus('saved'))
-        .catch((err) => {
-          console.error('Custom items save failed:', err);
-          setSyncStatus('error');
-        });
-    }
-  }, [customItems, user, preferencesLoaded]);
-
-  useEffect(() => {
-    if (syncStatus === 'saved' || syncStatus === 'error') {
-      const timer = setTimeout(() => setSyncStatus('idle'), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [syncStatus]);
-
-  /**
-   * Load market data using server actions
-   * Server actions handle CORS internally
-   */
-  const loadData = async () => {
-    setLoading(true);
-    setFetchError(null);
-
-    try {
-      const baseCategoryItems = ITEM_CATEGORIES[selectedCategory as keyof typeof ITEM_CATEGORIES] || [];
-
-      const categoryItems = selectedEnchantment === 0
-        ? baseCategoryItems
-        : baseCategoryItems.map((id: string) => `${id}@${selectedEnchantment}`);
-
-      const allItems = Array.from(new Set([...categoryItems, ...customItems]));
-
-      if (allItems.length === 0) {
-        setFlips([]);
-        setLoading(false);
-        return;
-      }
-
-      // Use server action (handles CORS, minimal CPU with caching)
-      const { flips, error } = await getMarketData(region, customItems, categoryItems, locale);
-
-      if (error) {
-        setFetchError(error);
-        setFlips([]);
-      } else {
-        setFlips(flips || []);
-      }
-      
-      setLastUpdated(new Date());
-
-      // Watchlist Alerts Check
-      if (user && watchlist.length > 0) {
-        const lastAlertTime = localStorage.getItem('last_watchlist_alert');
-        const now = Date.now();
-
-        if (!lastAlertTime || now - Number(lastAlertTime) > 4 * 60 * 60 * 1000) {
-          triggerWatchlistAlerts(user.uid, region, watchlist, locale).then(result => {
-            if (result && 'success' in result && result.success) {
-              localStorage.setItem('last_watchlist_alert', String(now));
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load market data:', error);
-      setFetchError(t('fetchError') || 'Failed to fetch market data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Client-side market data processing
-   * Mirrors the server action logic
-   */
-  const processMarketDataClient = (
-    data: MarketStat[],
-    customItems: string[] = [],
-    volumeMap: Map<string, number> = new Map(),
-    nameMap: Map<string, string> = new Map()
-  ) => {
-    const flips: any[] = [];
-    const groupedByItem = new Map<string, MarketStat[]>();
-    const customItemSet = new Set(customItems);
-
-    data.forEach(stat => {
-      if (!groupedByItem.has(stat.item_id)) {
-        groupedByItem.set(stat.item_id, []);
-      }
-      groupedByItem.get(stat.item_id)?.push(stat);
-    });
-
-    groupedByItem.forEach((stats, itemId) => {
-      const blackMarket = stats.find(s => s.city === 'Black Market');
-
-      if (customItemSet.has(itemId) && (!blackMarket || blackMarket.buy_price_max <= 0)) {
-        return;
-      }
-
-      if (!blackMarket || blackMarket.buy_price_max <= 0) return;
-
-      const bmPrice = blackMarket.buy_price_max;
-
-      stats.forEach(cityStat => {
-        if (cityStat.city === 'Black Market' || cityStat.sell_price_min <= 0) return;
-
-        const cost = cityStat.sell_price_min;
-        const profit = bmPrice - cost;
-        const profitMargin = (profit / cost) * 100;
-
-        if (customItemSet.has(itemId) || (profit > 1000 && profitMargin > 10)) {
-          const lookupId = itemId.split('@')[0];
-          const itemName = nameMap.get(lookupId);
-          flips.push({
-            itemId: itemId,
-            buyCity: cityStat.city,
-            buyPrice: cost,
-            sellCity: 'Black Market',
-            sellPrice: bmPrice,
-            profit: profit,
-            margin: Math.round(profitMargin),
-            dailyVolume: volumeMap.get(itemId) || 0,
-            updatedAt: cityStat.sell_price_min_date,
-            name: itemName || itemId
-          });
-        }
-      });
-    });
-
-    const flippedItemIds = new Set(flips.map(f => f.itemId));
-
-    customItems.forEach(itemId => {
-      if (!flippedItemIds.has(itemId)) {
-        flips.push({
-          itemId: itemId,
-          buyCity: 'N/A',
-          buyPrice: 0,
-          sellCity: 'Black Market',
-          sellPrice: 0,
-          profit: 0,
-          margin: 0,
-          dailyVolume: volumeMap.get(itemId) || 0,
-          updatedAt: new Date().toISOString(),
-          name: nameMap.get(itemId.split('@')[0]) || itemId,
-          noData: true
-        });
-      }
-    });
-
-    return flips.sort((a, b) => b.profit - a.profit);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, [region, customItems, selectedCategory, selectedEnchantment, locale]);
-
-  const toggleWatchlist = (itemId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (watchlist.includes(itemId)) {
-      setWatchlist(watchlist.filter(id => id !== itemId));
-    } else {
-      setWatchlist([...watchlist, itemId]);
-    }
-  };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, minProfit, minMargin, region, selectedTier, sortConfig, showWatchlistOnly, selectedCategory, uniqueItemMode]);
-
-  const filteredFlips = computedFlips.filter(flip => {
-    const isCustom = customItems.includes(flip.itemId);
-    const matchesSearch = flip.itemId.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesProfit = isCustom || flip.netProfit >= minProfit;
-    const matchesMargin = isCustom || flip.roi >= minMargin;
-    const matchesTier = selectedTier === 'All' || flip.itemId.startsWith(selectedTier);
-    const matchesWatchlist = !showWatchlistOnly || watchlist.includes(`${flip.itemId}-${flip.buyCity}`);
-    return matchesSearch && matchesProfit && matchesMargin && matchesTier && matchesWatchlist;
-  }).sort((a, b) => {
-    if (sortConfig.key === 'profit') {
-      return sortConfig.direction === 'asc' ? a.netProfit - b.netProfit : b.netProfit - a.netProfit;
-    }
-    if (sortConfig.key === 'margin') {
-      return sortConfig.direction === 'asc' ? a.roi - b.roi : b.roi - a.roi;
-    }
-    if (sortConfig.key === 'volume') {
-      return sortConfig.direction === 'asc' ? (a.dailyVolume || 0) - (b.dailyVolume || 0) : (b.dailyVolume || 0) - (a.dailyVolume || 0);
-    }
-    if (sortConfig.key === 'buyPrice') {
-      return sortConfig.direction === 'asc' ? a.buyPrice - b.buyPrice : b.buyPrice - a.buyPrice;
-    }
-    if (sortConfig.key === 'sellPrice') {
-      return sortConfig.direction === 'asc' ? a.sellPrice - b.sellPrice : b.sellPrice - a.sellPrice;
-    }
-    return 0;
-  });
-
-  let finalFlips = filteredFlips;
-  if (uniqueItemMode) {
-    const seen = new Set();
-    finalFlips = filteredFlips.filter(item => {
-      if (seen.has(item.itemId)) return false;
-      seen.add(item.itemId);
-      return true;
-    });
-  }
-
-  const handleSort = (key: string) => {
-    setSortConfig(current => ({
-      key,
-      direction: current.key === key && current.direction === 'desc' ? 'asc' : 'desc'
-    }));
-  };
-
-  const SortIcon = ({ colKey }: { colKey: string }) => {
-    if (sortConfig.key !== colKey) return <div className="w-4" />;
-    return sortConfig.direction === 'asc' ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />;
-  };
-
-  const totalPages = Math.ceil(finalFlips.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = finalFlips.slice(startIndex, startIndex + itemsPerPage);
+  ];
 
   return (
     <PageShell
       title={t('title')}
-      backgroundImage='/background/ao-market.jpg'
+      backgroundImage="/background/ao-market.jpg"
       description={t('description')}
-      icon={<TrendingUp className="h-6 w-6" />}
+      stats={pageStats}
       headerActions={
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-3">
           <ServerSelector
             selectedServer={region}
             onServerChange={setRegion}
           />
-
-          <button
+          <Button
+            variant="default"
+            size="sm"
             onClick={loadData}
             disabled={loading}
-            className="p-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="gap-2"
           >
-            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{loading ? t('loading') : t('refresh')}</span>
+          </Button>
         </div>
       }
     >
-
-      {watchlist.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div
-            onClick={() => setShowWatchlistOnly(!showWatchlistOnly)}
-            className={`cursor-pointer group relative overflow-hidden bg-card border rounded-2xl p-4 transition-all hover: ${showWatchlistOnly ? 'border-primary ring-1 ring-primary/50 ' : 'border-border'}`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className={`p-2 rounded-xl ${showWatchlistOnly ? 'bg-primary text-primary-foreground' : 'bg-secondary text-amber-500'}`}>
-                <Star className={`h-5 w-5 ${showWatchlistOnly ? 'fill-current' : ''}`} />
-              </div>
-              {watchlistSummary.profitable > 0 && (
-                <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-success/10 text-success px-2 py-0.5 rounded-full border border-success/20 animate-pulse">
-                  {watchlistSummary.profitable} {t('hot')}
-                </span>
-              )}
-            </div>
-            <h3 className="text-sm font-bold text-foreground">{t('myWatchlist')}</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              {t('watchlistInfo', { count: watchlist.length, filterStatus: showWatchlistOnly ? t('filterActive') : t('clickToFilter') })}
-            </p>
-            {showWatchlistOnly && (
-              <div className="absolute top-2 right-2">
-                <div className="h-2 w-2 bg-primary rounded-full animate-ping" />
-              </div>
-            )}
-          </div>
-
-          <div className="bg-card border border-border rounded-2xl p-4 flex flex-col justify-center">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">
-              <TrendingUp className="h-3 w-3 text-success" /> {t('bestROI')}
-            </div>
-            {watchlistSummary.topPick ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <ItemIcon itemId={watchlistSummary.topPick.itemId} className="w-8 h-8 rounded-lg bg-secondary shrink-0" />
-                  <div className="truncate">
-                    <div className="text-sm font-bold text-foreground truncate">{watchlistSummary.topPick.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{watchlistSummary.topPick.buyCity} → BM</div>
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-sm font-bold text-success">+{watchlistSummary.topPick.roi.toFixed(1)}%</div>
-                  <div className="text-[10px] text-muted-foreground">{t('roi')}</div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm font-medium text-muted-foreground italic">{t('noData')}</div>
-            )}
-          </div>
-
-          <div className="bg-card border border-border rounded-2xl p-4 flex flex-col justify-center">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium uppercase tracking-wider mb-2">
-              <DollarSign className="h-3 w-3 text-primary" /> {t('totalPotentialProfit')}
-            </div>
-            {(() => {
-              const totalProfit = flips
-                .filter(f => watchlist.includes(`${f.itemId}-${f.buyCity}`) && f.netProfit > 0)
-                .reduce((sum, f) => sum + f.netProfit, 0);
-
-              return (
-                <div className="flex items-baseline gap-2">
-                  <div className="text-2xl font-black text-foreground">{Math.round(totalProfit).toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground font-bold italic">{t('silver')}</div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-
       <div className="space-y-6">
-        <div className="bg-card border border-border rounded-xl p-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="col-span-2 md:col-span-1">
-                <label className="text-xs text-muted-foreground block mb-2 font-medium flex items-center gap-1 uppercase tracking-wider">
-                  <SearchIcon className="h-3 w-3" /> {t('search')}
-                </label>
-                <Select
-                  value={searchSelectValue}
-                  onChange={(value) => {
-                    const id = value;
-                    setSearchSelectValue('');
-                    if (!customItems.includes(id)) {
-                      setCustomItems([...customItems, id]);
-                    }
-                  }}
-                  options={searchOptions}
-                  searchable={true}
-                  placeholder={searchLoading ? t('searching') : t('searchPlaceholder')}
-                  onSearchTermChange={async (term) => {
-                    if (term.length < 2) {
-                      setSearchOptions([]);
-                      return;
-                    }
-                    setSearchLoading(true);
-                    try {
-                      const items: any[] = await searchAlbionItems(term, locale);
-                      setSearchOptions(items.map((it: any) => ({
-                        value: it.id,
-                        label: it.name,
-                        icon: <ItemIcon itemId={it.id} className="w-5 h-5 object-contain rounded-sm" />
-                      })));
-                    } catch (err) {
-                      setSearchOptions([]);
-                    } finally {
-                      setSearchLoading(false);
-                    }
-                  }}
-                />
-              </div>
-
-              <Select
-                className="col-span-2 md:col-span-1"
-                label={
-                  <>
-                    <Tag className="h-3 w-3" /> {t('category')}
-                    <Tooltip content={t('tooltips.category')}>
-                      <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                    </Tooltip>
-                  </>
-                }
-                value={selectedCategory}
-                onChange={(value) => setSelectedCategory(value)}
-                options={Object.keys(ITEM_CATEGORIES).map(cat => ({
-                  label: t(`categoryLabels.${CATEGORY_LABEL_IDS[cat] as any}`),
-                  value: cat
-                }))}
-              />
-
-              <Select
-                className="col-span-1"
-                label={
-                  <>
-                    <Layers className="h-3 w-3" /> {t('tier')}
-                    <Tooltip content={t('tooltips.tier')}>
-                      <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                    </Tooltip>
-                  </>
-                }
-                value={selectedTier}
-                onChange={(value) => setSelectedTier(value)}
-                options={[
-                  { label: t('allTiers'), value: 'All' },
-                  { label: t('tierN', { n: 4 }), value: 'T4' },
-                  { label: t('tierN', { n: 5 }), value: 'T5' },
-                  { label: t('tierN', { n: 6 }), value: 'T6' },
-                  { label: t('tierN', { n: 7 }), value: 'T7' },
-                  { label: t('tierN', { n: 8 }), value: 'T8' },
-                ]}
-              />
-
-              <Select
-                className="col-span-1"
-                label={
-                  <>
-                    <Sparkles className="h-3 w-3" /> {t('enchant')}
-                    <Tooltip content={t('tooltips.enchant')}>
-                      <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                    </Tooltip>
-                  </>
-                }
-                value={selectedEnchantment}
-                onChange={(value) => setSelectedEnchantment(Number(value))}
-                options={[
-                  { label: t('flat'), value: 0 },
-                  { label: '.1', value: 1 },
-                  { label: '.2', value: 2 },
-                  { label: '.3', value: 3 },
-                  { label: '.4', value: 4 },
-                ]}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
-               <NumberInput
-                  label={
-                    <>
-                      <DollarSign className="h-3 w-3" /> {t('minProfit')}
-                      <Tooltip content={t('tooltips.minProfit')}>
-                        <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                      </Tooltip>
-                    </>
-                  }
-                  value={minProfit}
-                  onChange={setMinProfit}
-                  min={0}
-                  step={1000}
-               />
-               <NumberInput
-                  label={
-                    <>
-                      <Percent className="h-3 w-3" /> {t('minMargin')}
-                      <Tooltip content={t('tooltips.minMargin')}>
-                        <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                      </Tooltip>
-                    </>
-                  }
-                  value={minMargin}
-                  onChange={setMinMargin}
-                  min={0}
-                  max={100}
-               />
-               <NumberInput
-                  label={
-                    <>
-                      <ArrowRight className="h-3 w-3" /> {t('estTravelCost')}
-                      <Tooltip content={t('tooltips.travelCost')}>
-                        <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                      </Tooltip>
-                    </>
-                  }
-                  value={travelCost}
-                  onChange={(val) => setTravelCost(Math.max(0, val))}
-                  min={0}
-               />
-
-               <div className="flex flex-col gap-2 pt-1">
-                  <Checkbox
-                    label={t('premiumTax')}
-                    checked={isPremiumTax}
-                    onChange={(e) => setIsPremiumTax(e.target.checked)}
-                  />
-                  <Checkbox
-                    label={t('uniqueOnly')}
-                    checked={uniqueItemMode}
-                    onChange={(e) => setUniqueItemMode(e.target.checked)}
-                  />
-                  <Checkbox
-                    label={t('watchlistOnly')}
-                    checked={showWatchlistOnly}
-                    onChange={(e) => setShowWatchlistOnly(e.target.checked)}
-                  />
-               </div>
-            </div>
-
-            {customItems.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-border flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t('customItems')}</span>
-                  <div className="flex flex-wrap gap-2">
-                      <span className="px-2 py-1 bg-info/10 text-info border border-info/20 rounded text-xs font-bold">
-                        {t('itemsActive', { count: customItems.length })}
-                      </span>
-                      {customItems.map((itemId) => (
-                        <div
-                          key={itemId}
-                          className="flex items-center gap-1 px-2 py-1 bg-secondary border border-border rounded text-xs"
-                        >
-                          <ItemIcon itemId={itemId} className="w-4 h-4 object-contain rounded-sm" />
-                          <span className="font-medium">{formatItemName(itemId)}</span>
-                          <button
-                            onClick={() => setCustomItems(customItems.filter(id => id !== itemId))}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                      <button
-                        onClick={() => setCustomItems([])}
-                        className="flex items-center gap-1 px-2 py-1 bg-destructive/10 text-destructive border border-destructive/20 rounded text-xs hover:bg-destructive/20 transition-colors"
-                      >
-                        <Trash2 className="h-3 w-3" /> {t('clearAll')}
-                      </button>
-                  </div>
-                </div>
-            )}
-        </div>
-
-        {fetchError && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-destructive">
-            <div className="flex items-center gap-2">
-              <Info className="h-5 w-5" />
-              <span className="font-medium">{fetchError}</span>
-            </div>
-          </div>
+        
+        {/* Watchlist Summary */}
+        {watchlist.length > 0 && (
+          <WatchlistSummary 
+            summary={watchlistSummary}
+            showWatchlistOnly={showWatchlistOnly}
+            onToggle={() => setShowWatchlistOnly(!showWatchlistOnly)}
+          />
         )}
-
-        {loading && flips.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-warning" />
-            <p>{t('scanningMarkets')}</p>
-          </div>
-        ) : (
-            <div className="bg-card/50 rounded-xl border border-border overflow-hidden">
-                <div className="md:hidden divide-y divide-border">
-                  {currentItems.length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">
-                      {t('noResults')}
-                    </div>
-                  ) : (
-                    currentItems.map((flip, index) => {
-                      const uniqueId = `${flip.itemId}-${flip.buyCity}`;
-                      const isExpanded = expandedItem === uniqueId;
-
-                      return (
-                         <div
-                           key={`mobile-${uniqueId}-${index}`}
-                           className={`p-4 transition-colors ${isExpanded ? 'bg-muted' : 'hover:bg-muted/50'} ${flip.noData ? 'opacity-70' : ''}`}
-                           onClick={() => !flip.noData && setExpandedItem(isExpanded ? null : uniqueId)}
-                         >
-                            <div className="flex items-center gap-3 mb-3">
-                               <button
-                                  onClick={(e) => toggleWatchlist(uniqueId, e)}
-                                  className="text-muted-foreground hover:text-primary transition-colors -ml-1"
-                               >
-                                  <Star className={`h-5 w-5 ${watchlist.includes(uniqueId) ? 'fill-primary text-primary' : ''}`} />
-                               </button>
-                               <div className="h-12 w-12 bg-muted/50 rounded p-0.5 relative flex-shrink-0">
-                                  <ItemIcon itemId={flip.itemId} className="w-full h-full object-contain" />
-                               </div>
-                               <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-foreground truncate text-sm">
-                                     {(flip.name && !flip.name.includes('_') && !flip.name.startsWith('T')) ? flip.name : formatItemName(flip.itemId)}
-                                  </div>
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                     <span>{getTierLabel(flip.itemId)}</span>
-                                     {flip.itemId.includes('@') && <span className="text-primary">.{flip.itemId.split('@')[1]}</span>}
-                                  </div>
-                               </div>
-                               <div className="text-right">
-                                  <div className={`font-mono font-bold ${flip.netProfit > 0 ? 'text-success' : 'text-destructive'}`}>
-                                     {flip.netProfit > 1000 ? `${(flip.netProfit/1000).toFixed(1)}k` : flip.netProfit}
-                                  </div>
-                                  <div className={`text-xs ${flip.roi > 20 ? 'text-success' : 'text-muted-foreground'}`}>
-                                     {flip.roi.toFixed(0)}% {t('roi')}
-                                  </div>
-                               </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
-                               <div className="flex justify-between">
-                                  <span className="text-xs text-muted-foreground">{t('colBuyFrom')}</span>
-                                  <span className="font-medium text-right">{flip.buyCity}</span>
-                               </div>
-                               <div className="flex justify-between">
-                                  <span className="text-xs text-muted-foreground">{t('colVol')}</span>
-                                  <span className="font-medium text-right">{flip.dailyVolume > 0 ? flip.dailyVolume.toLocaleString() : '-'}</span>
-                               </div>
-                               <div className="flex justify-between">
-                                  <span className="text-xs text-muted-foreground">{t('colBuyPrice')}</span>
-                                  <span className="font-medium text-right">{flip.buyPrice.toLocaleString()}</span>
-                               </div>
-                               <div className="flex justify-between">
-                                  <span className="text-xs text-muted-foreground">{t('colSellPrice')}</span>
-                                  <span className="font-medium text-right">{flip.sellPrice.toLocaleString()}</span>
-                               </div>
-                            </div>
-
-                            {isExpanded && !flip.noData && (
-                                <div className="mt-4 pt-4 border-t border-border" onClick={(e) => e.stopPropagation()}>
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                                            <TrendingUp className="h-4 w-4 text-primary" />
-                                            {t('marketAnalysis')}
-                                        </h4>
-                                        <div className="flex gap-2">
-                                            <button
-                                                className="px-4 py-2 text-sm bg-primary/10 text-primary hover:bg-primary/20 rounded-full transition-colors active:scale-95"
-                                                onClick={() => window.open(`https://albiononline2d.com/en/item/id/${flip.itemId}`, '_blank')}
-                                            >
-                                                {t('viewOn2D')}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="w-full mt-2">
-                                        <Suspense fallback={<div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-lg border border-border"><Loader2 className="animate-spin text-muted-foreground" /></div>}>
-                                            <MarketHistoryChart itemId={flip.itemId} buyCity={flip.buyCity} region={region} />
-                                        </Suspense>
-                                    </div>
-                                </div>
-                            )}
-                         </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                <div className="hidden md:block overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-muted text-muted-foreground text-xs uppercase tracking-wider border-b border-border">
-                                <th className="p-4 font-medium pl-6 cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('item')}>
-                                    <div className="flex items-center gap-1">
-                                        {t('colItem')} <SortIcon colKey="item" />
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip content={t('tooltips.colItem')}>
-                                                <CircleHelp className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground" />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th className="p-4 font-medium whitespace-nowrap">
-                                    <div className="flex items-center gap-1">
-                                        {t('colBuyFrom')}
-                                        <Tooltip content={t('tooltips.colBuyFrom')}>
-                                            <CircleHelp className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                        </Tooltip>
-                                    </div>
-                                </th>
-                                <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('volume')}>
-                                    <div className="flex items-center justify-end gap-1">
-                                        {t('colVol')} <SortIcon colKey="volume" />
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip content={t('tooltips.colVol')}>
-                                                <CircleHelp className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('buyPrice')}>
-                                    <div className="flex items-center justify-end gap-1">
-                                        {t('colBuyPrice')} <SortIcon colKey="buyPrice" />
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip content={t('tooltips.colBuyPrice')}>
-                                                <CircleHelp className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('sellPrice')}>
-                                    <div className="flex items-center justify-end gap-1">
-                                        {t('colSellPrice')} <SortIcon colKey="sellPrice" />
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip content={t('tooltips.colSellPrice')}>
-                                                <CircleHelp className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('profit')}>
-                                    <div className="flex items-center justify-end gap-1">
-                                        {t('colNetProfit')} <SortIcon colKey="profit" />
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Tooltip content={t('tooltips.colNetProfit')}>
-                                                <CircleHelp className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border text-sm">
-                            {currentItems.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                                        {t('noResults')}
-                                    </td>
-                                </tr>
-                            ) : (
-                                currentItems.map((flip, index) => {
-                                    const uniqueId = `${flip.itemId}-${flip.buyCity}`;
-                                    const isExpanded = expandedItem === uniqueId;
-
-                                    return (
-                                        <Fragment key={`${uniqueId}-${index}`}>
-                                            <tr
-                                                onClick={() => !flip.noData && setExpandedItem(isExpanded ? null : uniqueId)}
-                                                className={`group cursor-pointer transition-colors border-b border-border ${
-                                                    isExpanded ? 'bg-muted' : 'hover:bg-muted/50'
-                                                } ${flip.noData ? 'opacity-70 cursor-default' : ''}`}
-                                            >
-                                               <td className="p-4 pl-6">
-                                                  <div className="flex items-center gap-3">
-                                                      <button
-                                                        onClick={(e) => toggleWatchlist(uniqueId, e)}
-                                                        className="text-muted-foreground hover:text-primary transition-colors"
-                                                      >
-                                                        <Star className={`h-4 w-4 ${watchlist.includes(uniqueId) ? 'fill-primary text-primary' : ''}`} />
-                                                      </button>
-                                                      <div className="h-10 w-10 bg-muted/50 rounded p-0.5 relative">
-                                                        <ItemIcon itemId={flip.itemId} className="w-full h-full object-contain" />
-                                                      </div>
-                                                      <div>
-                                                        <div className="font-medium text-foreground">
-                                                            {(flip.name && !flip.name.includes('_') && !flip.name.startsWith('T')) ? flip.name : formatItemName(flip.itemId)}
-                                                            {flip.itemId.includes('@') && <span className="text-primary ml-1">.{flip.itemId.split('@')[1]}</span>}
-                                                        </div>
-                                                        <div className="text-xs text-muted-foreground">{getTierLabel(flip.itemId)}</div>
-                                                      </div>
-                                                  </div>
-                                               </td>
-                                               <td className="p-4">
-                                                  <div className="font-medium text-foreground">{flip.buyCity}</div>
-                                                  <div className="text-xs text-muted-foreground">{new Date(flip.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                                               </td>
-                                               <td className="p-4 text-right">
-                                                   <div className="font-mono text-muted-foreground">{flip.dailyVolume > 0 ? flip.dailyVolume.toLocaleString() : '-'}</div>
-                                               </td>
-                                               <td className="p-4 text-right">
-                                                   <div className="font-mono text-foreground">{flip.buyPrice.toLocaleString()}</div>
-                                               </td>
-                                               <td className="p-4 text-right">
-                                                   <div className="font-mono text-foreground">{flip.sellPrice.toLocaleString()}</div>
-                                                   <div className="text-xs text-muted-foreground">{t('blackMarket')}</div>
-                                               </td>
-                                               <td className="p-4 text-right">
-                                                   <div className={`font-mono font-bold ${flip.netProfit > 0 ? 'text-success' : 'text-destructive'}`}>
-                                                      {flip.netProfit.toLocaleString()}
-                                                   </div>
-                                                   <div className={`text-xs ${flip.roi > 20 ? 'text-success' : 'text-muted-foreground'}`}>
-                                                      {flip.roi.toFixed(1)}% {t('roi')}
-                                                   </div>
-                                               </td>
-                                            </tr>
-                                            {isExpanded && !flip.noData && (
-                                                <tr>
-                                                    <td colSpan={6} className="p-0 bg-muted/30">
-                                                        <div className="p-4 border-b border-border animate-in slide-in-from-top-2 duration-200">
-                                                           <div className="grid md:grid-cols-2 gap-6">
-                                                              <MarketHistoryChart
-                                                                    itemId={flip.itemId}
-                                                                    buyCity={flip.buyCity}
-                                                                    region={region}
-                                                                  />
-                                                                <div className="space-y-4">
-                                                                   <div>
-                                                                        <h4 className="text-sm font-medium text-foreground mb-2">{t('profitBreakdown')}</h4>
-                                                                        <div className="bg-muted p-4 rounded-lg border border-border space-y-2 text-sm">
-                                                                           {((isPremiumTax) => {
-                                                                                const taxRate = isPremiumTax ? 0.04 : 0.08;
-                                                                                const setupFee = 0.025;
-                                                                                const grossProfit = flip.sellPrice - flip.buyPrice;
-                                                                                const totalTax = Math.round(flip.sellPrice * (taxRate + setupFee));
-
-                                                                                return (
-                                                                                  <>
-                                                                                    <div className="flex justify-between">
-                                                                                        <span className="text-muted-foreground">{t('buyPriceAt', { city: flip.buyCity })}</span>
-                                                                                        <span className="font-mono text-foreground">{flip.buyPrice.toLocaleString()}</span>
-                                                                                    </div>
-                                                                                    <div className="flex justify-between">
-                                                                                        <span className="text-muted-foreground">{t('sellPriceAt', { city: t('blackMarket') })}</span>
-                                                                                        <span className="font-mono text-foreground">{flip.sellPrice.toLocaleString()}</span>
-                                                                                    </div>
-                                                                                    <div className="border-t border-border my-2"></div>
-                                                                                    <div className="flex justify-between">
-                                                                                        <span className="text-muted-foreground">{t('grossProfit')}</span>
-                                                                                        <span className="font-mono text-success/70">+{grossProfit.toLocaleString()}</span>
-                                                                                    </div>
-                                                                                    <div className="flex justify-between text-xs">
-                                                                                        <span className="text-muted-foreground">{t('marketTaxes', { rate: Math.round((taxRate + setupFee) * 1000) / 10 })}</span>
-                                                                                        <span className="font-mono text-destructive/70">-{totalTax.toLocaleString()}</span>
-                                                                                    </div>
-                                                                                    <div className="flex justify-between text-xs">
-                                                                                        <span className="text-muted-foreground">{t('estTravelCost')}</span>
-                                                                                        <span className="font-mono text-destructive/70">-{Math.round(travelCost).toLocaleString()}</span>
-                                                                                    </div>
-                                                                                    <div className="border-t border-border pt-2 flex justify-between font-bold text-base">
-                                                                                        <span className="text-foreground">{t('colNetProfit')}</span>
-                                                                                        <span className={`font-mono ${flip.netProfit > 0 ? 'text-success' : 'text-destructive'}`}>
-                                                                                            {flip.netProfit > 0 ? '+' : ''}{flip.netProfit.toLocaleString()}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                  </>
-                                                                                );
-                                                                           })(isPremiumTax)}
-                                                                        </div>
-                                                                   </div>
-
-                                                                   <div className="text-xs text-muted-foreground">
-                                                                      <p className="mb-1">{t('lastUpdated', { time: new Date(flip.updatedAt).toLocaleString() })}</p>
-                                                                      <p>{t('verifyDisclaimer')}</p>
-                                                                   </div>
-                                                                </div>
-                                                           </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </Fragment>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-            {filteredFlips.length > 0 && (
-              <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-t border-border bg-muted/30 gap-4">
-                <div className="text-sm text-muted-foreground text-center sm:text-left">
-                  {t('showingResults', { start: startIndex + 1, end: Math.min(startIndex + itemsPerPage, filteredFlips.length), total: filteredFlips.length })}
-                </div>
-                <div className="flex gap-2 flex-wrap justify-center">
-                  <button
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="px-3 py-2 bg-secondary border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-secondary-foreground"
-                  >
-                    {t('previous')}
-                  </button>
-                  <div className="flex items-center px-3 py-2 bg-card border border-border rounded-lg text-sm font-medium text-foreground">
-                    {t('pageOf', { current: currentPage, total: totalPages })}
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-2 bg-secondary border border-border rounded-lg text-sm font-medium hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-secondary-foreground"
-                  >
-                    {t('next')}
-                  </button>
-                </div>
-              </div>
-            )}
-            </div>
-        )}
+        
+        {/* Filters */}
+        <FiltersSection 
+          minProfit={minProfit}
+          setMinProfit={setMinProfit}
+          minMargin={minMargin}
+          setMinMargin={setMinMargin}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedTier={selectedTier}
+          setSelectedTier={setSelectedTier}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          travelCost={travelCost}
+          setTravelCost={setTravelCost}
+          isPremiumTax={isPremiumTax}
+          setIsPremiumTax={setIsPremiumTax}
+        />
+        
+        {/* Results Table */}
+        <ResultsTable
+          flips={currentFlips}
+          totalFlips={filteredFlips.length}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={goToPage}
+          onNextPage={nextPage}
+          onPrevPage={prevPage}
+          loading={loading}
+          error={fetchError}
+          watchlist={watchlist}
+          onToggleWatchlist={toggleWatchlist}
+          formatItemName={formatItemName}
+          getTierLabel={getTierLabel}
+        />
       </div>
-
-      <InfoStrip currentPage="market-flipper">
-        <InfoBanner icon={<TrendingUp className="w-4 h-4" />} color="text-green-400" title={t('communityMarketData')}>
-          <p>{t('marketDataAggregated')}</p>
-          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-            <div className="bg-background/40 p-2 rounded">
-              <span className="font-semibold block mb-0.5">{t('pricesMayVary')}</span>
-              {t('pricesMayVaryDesc')}
-            </div>
-            <div className="bg-background/40 p-2 rounded">
-               <span className="font-semibold block mb-0.5">{t('contribute')}</span>
-               {t('contributeDesc')}
-            </div>
-          </div>
-        </InfoBanner>
-      </InfoStrip>
+      
+      <InfoStrip currentPage="market-flipper" />
     </PageShell>
   );
 }
 
-export default function MarketFlipperClient() {
+function WatchlistSummary({ summary, showWatchlistOnly, onToggle }: any) {
   const t = useTranslations('MarketFlipper');
+  
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-muted-foreground animate-pulse">{t('loadingMarketData')}</p>
+    <div className="bg-card/50 p-6 rounded-2xl border border-border/50">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-primary/10">
+            <Star className={`h-6 w-6 ${showWatchlistOnly ? 'fill-current' : ''} text-primary`} />
+          </div>
+          <div>
+            <h3 className="text-lg font-black text-foreground">{t('watchlistTitle')}</h3>
+            <p className="text-xs text-muted-foreground">{t('itemsTracked', { count: summary.count })}</p>
+          </div>
+        </div>
+        <Button
+          variant={showWatchlistOnly ? 'default' : 'secondary'}
+          size="sm"
+          onClick={onToggle}
+          className="gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          {showWatchlistOnly ? t('showAll') : t('showWatchlistOnly')}
+        </Button>
       </div>
-    </div>}>
-      <MarketFlipperContent />
-    </Suspense>
+
+      {summary.topPick && (
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-muted-foreground">{t('topPick')}:</span>
+          <span className="font-bold text-foreground">{summary.topPick.name}</span>
+          <span className="font-black text-success">+{summary.topPick.roi.toFixed(1)}% {t('roiLabel')}</span>
+          <span className="text-xs text-muted-foreground">({summary.profitable} {t('profitable')})</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FiltersSection({ minProfit, setMinProfit, minMargin, setMinMargin, selectedCategory, setSelectedCategory, selectedTier, setSelectedTier, searchTerm, setSearchTerm, travelCost, setTravelCost, isPremiumTax, setIsPremiumTax }: any) {
+  const t = useTranslations('MarketFlipper');
+
+  return (
+    <div className="bg-card/50 p-6 rounded-2xl border border-border/50">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-primary/10">
+          <Filter className="h-6 w-6 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-lg font-black text-foreground">{t('filtersTitle')}</h3>
+          <p className="text-xs text-muted-foreground">{t('customizeSearchDesc')}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div>
+          <label className="block text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+            <DollarSign className="h-4 w-4" /> {t('minProfitLabel')}
+          </label>
+          <NumberInput
+            value={minProfit}
+            onChange={setMinProfit}
+            min={0}
+            step={100}
+            className="rounded-xl"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
+            <TrendingUp className="h-4 w-4" /> {t('minMarginLabel')}
+          </label>
+          <NumberInput
+            value={minMargin}
+            onChange={setMinMargin}
+            min={0}
+            step={1}
+            className="rounded-xl"
+          />
+        </div>
+        <Select
+          label={t('categoryLabel')}
+          options={Object.keys(ITEM_CATEGORIES).map(cat => ({
+            value: cat,
+            label: t(`categoryLabels.${CATEGORY_LABEL_IDS[cat]}`) || cat
+          }))}
+          value={selectedCategory}
+          onChange={setSelectedCategory}
+        />
+        <Select
+          label={t('tierLabel')}
+          options={[
+            { value: 'All', label: t('allTiersLabel') },
+            { value: '8', label: t('tier8') },
+            { value: '7', label: t('tier7') },
+            { value: '6', label: t('tier6') },
+          ]}
+          value={selectedTier}
+          onChange={setSelectedTier}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border/50">
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-semibold text-muted-foreground mb-2">{t('searchItemLabel')}</label>
+          <Input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={t('searchItemPlaceholder')}
+            className="rounded-xl"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-muted-foreground mb-2">{t('travelCostLabel')}</label>
+          <NumberInput
+            value={travelCost}
+            onChange={setTravelCost}
+            min={0}
+            step={100}
+            className="rounded-xl"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border/50">
+        <Checkbox
+          id="premium-tax"
+          checked={isPremiumTax}
+          onChange={(e) => setIsPremiumTax(e.target.checked)}
+          label={
+            <span className="text-sm font-semibold text-foreground">
+              {t('premiumAccount')}
+            </span>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+function ResultsTable({ flips, totalFlips, currentPage, totalPages, onPageChange, onNextPage, onPrevPage, loading, error, watchlist, onToggleWatchlist, formatItemName, getTierLabel }: any) {
+  const t = useTranslations('MarketFlipper');
+  const itemsPerPage = 20;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  if (loading) {
+    return (
+      <div className="bg-card/50 rounded-2xl border border-border/50 p-12 text-center">
+        <div className="relative inline-block">
+          <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin absolute top-0 left-0" />
+        </div>
+        <p className="text-lg font-bold text-foreground mt-4">{t('loadingMarketData')}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t('fetchingPrices')}</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-card/50 rounded-2xl border border-border/50 p-12 text-center">
+        <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+        <p className="text-lg font-bold text-foreground">{t('errorLoadingData')}</p>
+        <p className="text-sm text-muted-foreground mt-1">{error}</p>
+      </div>
+    );
+  }
+
+  if (flips.length === 0) {
+    return (
+      <div className="bg-card/50 rounded-2xl border border-border/50 p-12 text-center">
+        <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <p className="text-lg font-bold text-foreground">{t('noFlipsFound')}</p>
+        <p className="text-sm text-muted-foreground mt-1">{t('tryAdjustingFilters')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-card/50 rounded-2xl border border-border/50 overflow-hidden">
+      <div className="p-6 border-b border-border/50 flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-black text-foreground">{t('availableFlips')}</h3>
+          <p className="text-xs text-muted-foreground mt-1">{totalFlips} {t('profitableOpportunities')}</p>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="px-6 py-4 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('item')}</th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('route')}</th>
+              <th className="px-6 py-4 text-right text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('buy')}</th>
+              <th className="px-6 py-4 text-right text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('sell')}</th>
+              <th className="px-6 py-4 text-right text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('profit')}</th>
+              <th className="px-6 py-4 text-center text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('actions')}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/50">
+            {flips.map((flip: any, index: number) => (
+              <FlipRow
+                key={index}
+                flip={flip}
+                watchlist={watchlist}
+                onToggleWatchlist={onToggleWatchlist}
+                formatItemName={formatItemName}
+                getTierLabel={getTierLabel}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="p-6 border-t border-border/50 flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            {t('showingResults', { start: Math.min(startIndex + 1, totalFlips), end: Math.min(endIndex, totalFlips), total: totalFlips })}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onPrevPage}
+              disabled={currentPage === 1}
+              className="gap-1"
+            >
+              <ChevronDown className="h-4 w-4 rotate-90" />
+              {t('previous')}
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? 'default' : 'secondary'}
+                    size="sm"
+                    onClick={() => onPageChange(pageNum)}
+                    className="w-10 h-10 p-0"
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+            </div>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onNextPage}
+              disabled={currentPage === totalPages}
+              className="gap-1"
+            >
+              {t('next')}
+              <ChevronDown className="h-4 w-4 -rotate-90" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FlipRow({ flip, watchlist, onToggleWatchlist, formatItemName, getTierLabel }: any) {
+  const [expanded, setExpanded] = useState(false);
+  const t = useTranslations('MarketFlipper');
+  const isWatchlisted = watchlist.includes(`${flip.itemId}-${flip.buyCity}`);
+
+  return (
+    <>
+      <tr className="group hover:bg-muted/30 transition-colors">
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <ItemIcon itemId={flip.itemId} className="w-12 h-12 rounded" />
+            <div>
+              <div className="font-black text-foreground">{formatItemName(flip.itemId)}</div>
+              <div className="text-xs text-muted-foreground">{getTierLabel(flip.itemId)}</div>
+            </div>
+          </div>
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-bold text-foreground">{flip.buyCity}</span>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <span className="font-bold text-primary">{t('bridgetwatch')}</span>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-right">
+          <div className="font-mono font-bold text-foreground">{flip.buyPrice.toLocaleString()}</div>
+          <div className="text-xs text-muted-foreground">{t('silver')}</div>
+        </td>
+        <td className="px-6 py-4 text-right">
+          <div className="font-mono font-bold text-foreground">{flip.sellPrice.toLocaleString()}</div>
+          <div className="text-xs text-muted-foreground">{t('silver')}</div>
+        </td>
+        <td className="px-6 py-4 text-right">
+          <div className="font-mono font-black text-success">+{flip.netProfit.toLocaleString()}</div>
+          <div className="text-xs text-muted-foreground">{t('silver')}</div>
+        </td>
+        <td className="px-6 py-4 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <Tooltip content={isWatchlisted ? t('removeFromWatchlist') : t('addToWatchlist')}>
+              <button
+                onClick={() => onToggleWatchlist(flip.itemId, flip.buyCity)}
+                className={`p-2 rounded-lg transition-all ${isWatchlisted ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-primary/10'}`}
+              >
+                <Star className={`h-4 w-4 ${isWatchlisted ? 'fill-current' : ''}`} />
+              </button>
+            </Tooltip>
+            <Tooltip content={t('viewDetails')}>
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="p-2 rounded-lg bg-muted text-muted-foreground hover:bg-primary/10 transition-all"
+              >
+                {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+            </Tooltip>
+          </div>
+        </td>
+      </tr>
+
+      {expanded && (
+        <tr>
+          <td colSpan={6} className="px-6 py-6 bg-muted/30">
+            <div className="space-y-6">
+              {/* Advanced Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <AdvancedStatCard
+                  label={t('marginLabel')}
+                  value={`${flip.margin.toFixed(1)}%`}
+                  icon={<TrendingUp className="h-4 w-4 text-primary" />}
+                />
+                <AdvancedStatCard
+                  label={t('roiLabel')}
+                  value={`${flip.roi.toFixed(1)}%`}
+                  icon={<Sparkles className="h-4 w-4 text-success" />}
+                  highlight={flip.roi > 30}
+                />
+                <AdvancedStatCard
+                  label={t('dailyVolumeLabel')}
+                  value={flip.dailyVolume?.toLocaleString() || 'N/A'}
+                  icon={<RefreshCw className="h-4 w-4 text-info" />}
+                />
+                <AdvancedStatCard
+                  label={t('lastUpdatedLabel')}
+                  value={new Date(flip.updatedAt).toLocaleDateString()}
+                  icon={<AlertCircle className="h-4 w-4 text-muted-foreground" />}
+                />
+              </div>
+
+              {/* Price Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-card rounded-xl border border-border/50">
+                <div>
+                  <h4 className="text-sm font-bold text-muted-foreground mb-2">{t('buyDetails')}</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t('locationLabel')}:</span>
+                      <span className="font-semibold text-foreground">{flip.buyCity}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t('priceLabel')}:</span>
+                      <span className="font-semibold text-foreground">{flip.buyPrice.toLocaleString()} {t('silver')}</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-muted-foreground mb-2">{t('sellDetails')}</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t('locationLabel')}:</span>
+                      <span className="font-semibold text-foreground">{t('bridgetwatch')}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">{t('priceLabel')}:</span>
+                      <span className="font-semibold text-foreground">{flip.sellPrice.toLocaleString()} {t('silver')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Price History Chart */}
+              <div className="p-4 bg-card rounded-xl border border-border/50">
+                <h4 className="text-sm font-bold text-muted-foreground mb-3">{t('priceHistoryTitle')}</h4>
+                <MarketHistoryChart itemId={flip.itemId} buyCity={flip.buyCity} region={flip.region} />
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function AdvancedStatCard({ label, value, icon, highlight }: { label: string; value: string; icon: React.ReactNode; highlight?: boolean }) {
+  return (
+    <div className={`p-4 rounded-xl border ${highlight ? 'bg-success/10 border-success/30' : 'bg-card border-border/50'}`}>
+      <div className="flex items-center gap-2 mb-2">
+        {icon}
+        <span className="text-xs font-semibold text-muted-foreground uppercase">{label}</span>
+      </div>
+      <div className={`text-lg font-black ${highlight ? 'text-success' : 'text-foreground'}`}>{value}</div>
+    </div>
   );
 }

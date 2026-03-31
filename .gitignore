@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (NEVER commit sensitive data)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -46,9 +47,26 @@ public/sw.js.map
 public/workbox-*.js
 public/workbox-*.js.map
 
-# BLEH
+# Build artifacts
 *.rules
-# *_*js
-# *_*.txt
 NUL
 .item-cache.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+scripts/
+# OS
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/

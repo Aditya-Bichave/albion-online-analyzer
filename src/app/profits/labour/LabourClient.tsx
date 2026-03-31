@@ -330,7 +330,6 @@ export default function LabourClient() {
       title={t('title')} 
       backgroundImage='/background/ao-crafting.jpg'  
       description={t('description')}
-      icon={<Users className="h-6 w-6" />}
       headerActions={
         <div className="flex items-center gap-4">
           <ServerSelector

@@ -4,42 +4,96 @@ import { getAllBuildsForSitemap } from '@/lib/sitemap-service';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://albionkit.com';
 
-  // 1. Static Routes (Core pages only - all have internal links)
-  const routes = [
-    '',
-    '/builds',
-    '/forum',
+  // 1. Core Pages (Highest Priority)
+  const corePages = [
+    { route: '', priority: 1, changeFrequency: 'daily' as const },
+    { route: '/builds', priority: 0.95, changeFrequency: 'daily' as const },
+    { route: '/guides', priority: 0.95, changeFrequency: 'daily' as const },
+  ].map(({ route, priority, changeFrequency }) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency,
+    priority,
+  }));
+
+  // 2. Tools Pages (High Priority)
+  const toolsPages = [
     '/tools/market-flipper',
     '/tools/pvp-intel',
-    '/tools/crafting-calc',
     '/tools/gold-price',
-    '/tools/kill-feed',
+    '/tools/killboard',
     '/tools/zvz-tracker',
-    '/profits/alchemy',
-    '/profits/cooking',
-    '/profits/farming',
-    '/profits/animal',
-    '/profits/chopped-fish',
-    '/profits/enchanting',
-    '/about',
-    '/privacy',
-    '/terms',
-    '/cookies',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : route === '/builds' ? 0.9 : 0.9,
+    priority: 0.9,
   }));
 
-  // 2. Dynamic Routes (Builds) - Limited to top 100 by likes
+  // 3. Profit Calculators (High Priority)
+  const profitsPages = [
+    '/profits/crafting',
+    '/profits/farming',
+    '/profits/animal',
+    '/profits/cooking',
+    '/profits/alchemy',
+    '/profits/enchanting',
+    '/profits/labour',
+    '/profits/chopped-fish',
+    '/profits/silver-farming',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.85,
+  }));
+
+  // 4. Guide Pages (High Priority - SEO Content)
+  const guidePages = [
+    '/guides/getting-started',
+    '/guides/combat/positioning',
+    '/guides/combat/rotations',
+    '/guides/combat/weapons',
+    '/guides/gathering/routes',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.85,
+  }));
+
+  // 5. Community & Info Pages
+  const infoPages = [
+    '/about',
+    '/donate',
+    '/privacy',
+    '/terms',
+    '/cookies',
+    '/settings',
+    '/login',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  // 6. Dynamic Routes (Builds) - Top 100 by likes
   const builds = await getAllBuildsForSitemap();
   const buildRoutes = builds.map((build) => ({
     url: `${baseUrl}/builds/${build.id}`,
     lastModified: build.updatedAt,
-    changeFrequency: 'weekly' as const,
+    changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
 
-  return [...routes, ...buildRoutes];
+  // Combine all sitemap entries
+  return [
+    ...corePages,
+    ...toolsPages,
+    ...profitsPages,
+    ...guidePages,
+    ...infoPages,
+    ...buildRoutes,
+  ];
 }

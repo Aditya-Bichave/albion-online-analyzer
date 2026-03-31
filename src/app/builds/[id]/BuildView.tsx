@@ -5,22 +5,19 @@ import { PageShell } from '@/components/PageShell';
 import { InfoStrip } from '@/components/InfoStrip';
 import { ItemIcon } from '@/components/ItemIcon';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { getBuild, Build, toggleBuildLike, getBuildLikeStatus, rateBuild, getBuildUserRating, getBuilds, hideBuild } from '@/lib/builds-service';
+import { getBuild, Build, getBuilds } from '@/lib/builds-service';
 import { deleteBuildAction, hideBuildAction } from '@/app/actions/builds';
 import { getUserProfile, UserProfile } from '@/lib/user-profile';
 import { getMarketPrices, LOCATIONS } from '@/lib/market-service';
 import { getItemNameService } from '@/lib/item-service';
-import { Loader2, User, Clock, Eye, Star, Share2, ThumbsUp, Calendar, Shield, Zap, Wind, BookOpen, Check, X as XIcon, ArrowLeft, ArrowRight, Heart, Link as LinkIcon, Copy, Sparkles, Coins, MessageSquare, Plus, Send, EyeOff, Trash2 } from 'lucide-react';
+import { Loader2, User, Clock, Eye, Star, Share2, ThumbsUp, Calendar, Shield, Zap, Wind, BookOpen, Check, X as XIcon, ArrowLeft, ArrowRight, Heart, Link as LinkIcon, Copy, Sparkles, Coins, EyeOff, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { BuildCard } from '@/components/BuildCard';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { formatDistanceToNow } from 'date-fns';
-import { Comment } from '@/lib/community-service';
-import { addCommentAction, createThreadAction, getCommentsAction, getThreadByBuildIdAction } from '@/app/actions/community';
 import { incrementBuildViewAction } from '@/app/actions/builds';
 import { useLoginModal } from '@/context/LoginModalContext';
 import { useTranslations, useLocale } from 'next-intl';
@@ -56,13 +53,7 @@ export function BuildView({ id }: BuildViewProps) {
         }
     };
     const [loading, setLoading] = useState(true);
-    const [isLiked, setIsLiked] = useState(false);
-    const [likeCount, setLikeCount] = useState(0);
-    const [isLikeLoading, setIsLikeLoading] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [userRating, setUserRating] = useState<number | null>(null);
-    const [hoverRating, setHoverRating] = useState(0);
-    const [isRatingLoading, setIsRatingLoading] = useState(false);
     const [similarBuilds, setSimilarBuilds] = useState<Build[]>([]);
     const [estPrice, setEstPrice] = useState<number | null>(null);
     const [authorProfile, setAuthorProfile] = useState<UserProfile | null>(null);
@@ -77,98 +68,6 @@ export function BuildView({ id }: BuildViewProps) {
     const isAuthor = user && build && user.uid === build.authorId;
     const isAdmin = profile?.isAdmin === true;
     const canManage = isAuthor || isAdmin;
-
-    // Community Integration
-    const [comments, setComments] = useState<Comment[]>([]);
-    const [isCommentsLoading, setIsCommentsLoading] = useState(false);
-    const [newComment, setNewComment] = useState('');
-    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-    const [threadId, setThreadId] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (build?.id) {
-            fetchComments();
-        }
-    }, [build?.id]);
-
-    const fetchComments = async () => {
-        if (!build?.id) return;
-        setIsCommentsLoading(true);
-
-        try {
-            const threadResult = await getThreadByBuildIdAction(build.id);
-
-            if (threadResult.success && threadResult.thread) {
-                setThreadId(threadResult.thread.id);
-                const commentsResult = await getCommentsAction(threadResult.thread.id);
-                if (commentsResult.success && commentsResult.comments) {
-                    setComments(commentsResult.comments);
-                }
-            }
-        } catch (e) {
-            console.error("Failed to fetch build comments", e);
-        } finally {
-            setIsCommentsLoading(false);
-        }
-    };
-
-    const handlePostComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!user || !profile) {
-            openLoginModal(t('signInToComment'));
-            return;
-        }
-
-        if (newComment.length < 2) return;
-
-        setIsSubmittingComment(true);
-
-        try {
-            let currentThreadId = threadId;
-
-            // If no thread exists for this build, create one automatically
-            if (!currentThreadId) {
-                const res = await createThreadAction({
-                    authorId: build!.authorId, // Original build author is the "owner" of the build thread
-                    authorName: build!.authorName,
-                    title: `Discussion: ${build!.title}`,
-                    content: `This thread is for discussing the build: ${build!.title}`,
-                    category: 'Builds',
-                    server: 'All',
-                    tags: [build?.category || 'solo'],
-                    relatedBuildId: build!.id
-                });
-                if (res.success && res.threadId) {
-                    currentThreadId = res.threadId;
-                    setThreadId(res.threadId);
-                }
-            }
-
-            if (currentThreadId) {
-                const res = await addCommentAction({
-                    threadId: currentThreadId,
-                    authorId: user.uid,
-                    authorName: profile.displayName || 'Anonymous',
-                    authorPhotoURL: profile.photoURL,
-                    authorRank: (profile as any).rank || 'Wanderer',
-                    content: newComment
-                });
-
-                if (res.success) {
-                    setNewComment('');
-                    const cRes = await getCommentsAction(currentThreadId);
-                    if (cRes.success && cRes.comments) {
-                        setComments(cRes.comments);
-                    }
-                    toast.success(t('commentPosted'));
-                }
-            }
-        } catch (error) {
-            toast.error('Failed to post comment');
-        } finally {
-            setIsSubmittingComment(false);
-        }
-    };
 
     // Build Management Functions
     const handleDeleteBuild = async () => {
@@ -270,26 +169,14 @@ export function BuildView({ id }: BuildViewProps) {
         const fetchBuild = async () => {
             setLoading(true);
             try {
-                // Pass user ID to getBuild so hidden builds are visible to author/admin
-                const data = await getBuild(id, user?.uid);
+                const data = await getBuild(id);
                 setBuild(data);
-                setLikeCount(data?.likes || 0);
-
-                // Handle view count with local storage to prevent duplicate views
+                
                 if (data && data.id) {
-                    const viewedBuildsKey = 'viewed_builds';
-                    const viewedBuilds = JSON.parse(localStorage.getItem(viewedBuildsKey) || '[]');
-
-                    if (!viewedBuilds.includes(data.id)) {
-                        incrementBuildViewAction(data.id);
-                        localStorage.setItem(viewedBuildsKey, JSON.stringify([...viewedBuilds, data.id]));
-                        // Optimistically update local view count
-                        setBuild(prev => prev ? ({ ...prev, views: prev.views + 1 }) : null);
-                    }
-
                     // Fetch similar builds
-                    const { builds: similar } = await getBuilds(data.category, 'recent', 4);
-                    setSimilarBuilds(similar.filter(b => b.id !== data.id).slice(0, 3));
+                    const allBuilds = await getBuilds(20);
+                    const similar = allBuilds.filter(b => b.category === data.category && b.id !== data.id);
+                    setSimilarBuilds(similar.slice(0, 3));
                 }
             } catch (error) {
                 console.error(error);
@@ -300,66 +187,10 @@ export function BuildView({ id }: BuildViewProps) {
         fetchBuild();
     }, [id]);
 
-    useEffect(() => {
-        if (user && build?.id) {
-            getBuildLikeStatus(build.id, user.uid).then(setIsLiked);
-            getBuildUserRating(build.id, user.uid).then(setUserRating);
-        }
-    }, [user, build?.id]);
-
-    const handleRate = async (rating: number) => {
-        if (!user) {
-            toast.error("Please sign in to rate builds");
-            return;
-        }
-        if (isRatingLoading || !build?.id) return;
-
-        setIsRatingLoading(true);
-        try {
-            await rateBuild(build.id, user.uid, rating);
-            setUserRating(rating);
-
-            // Refresh build to get updated average
-            const updatedBuild = await getBuild(build.id, user.uid);
-            if (updatedBuild) setBuild(updatedBuild);
-
-            toast.success("Rating submitted!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to submit rating");
-        } finally {
-            setIsRatingLoading(false);
-        }
-    };
-
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    };
-
-    const handleLike = async () => {
-        if (!user) {
-            toast.error("Please sign in to like builds");
-            return;
-        }
-        if (isLikeLoading || !build?.id) return;
-
-        setIsLikeLoading(true);
-        // Optimistic update
-        const previousIsLiked = isLiked;
-        const previousCount = likeCount;
-
-        setIsLiked(!previousIsLiked);
-        setLikeCount(prev => previousIsLiked ? prev - 1 : prev + 1);
-
-        const success = await toggleBuildLike(build.id, user.uid);
-        if (!success) {
-            // Revert
-            setIsLiked(previousIsLiked);
-            setLikeCount(previousCount);
-        }
-        setIsLikeLoading(false);
     };
 
     if (loading) {
@@ -392,7 +223,7 @@ export function BuildView({ id }: BuildViewProps) {
         <PageShell
             title={build.title}
             backgroundImage={`/background/ao-builds.jpg`}
-            description={`${t('createdBy')} ${build.authorName}`}
+            description={build.description}
             headerActions={canManage ? (
                 <div className="flex items-center gap-2">
                     <button
@@ -424,87 +255,50 @@ export function BuildView({ id }: BuildViewProps) {
                 </div>
 
                 {/* Header Stats */}
-                <div className="bg-card/50 border border-border rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center text-muted-foreground shrink-0">
-                            <User className="h-7 w-7" />
-                        </div>
-                        <div>
-                            <div className="text-sm text-muted-foreground">{t('createdBy')}</div>
-                            <Link href={`/user/${build.authorId}`} className="text-lg font-bold text-amber-500 hover:underline">
-                                {build.authorName}
-                            </Link>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                                <Calendar className="h-3 w-3" />
-                                <span>{build.updatedAt?.toDate ? t('updated', { date: build.updatedAt.toDate().toLocaleDateString() }) : t('recently')}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 sm:flex sm:items-center gap-4 sm:gap-8 border-t md:border-t-0 md:border-l border-border pt-4 md:pt-0 md:pl-8 w-full md:w-auto">
-                        {estPrice !== null && (
+                <div className="bg-card/50 border border-border rounded-xl p-6 mb-8">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        {/* Build Info */}
+                        <div className="flex items-center gap-4 border-border md:border-r pr-8">
                             <div className="text-center">
-                                <div className="text-xl font-bold text-emerald-400 flex items-center justify-center gap-1">
-                                    <Coins className="h-5 w-5" />
-                                    {estPrice > 1000000
-                                        ? `${(estPrice / 1000000).toFixed(1)}m`
-                                        : estPrice > 1000
-                                            ? `${(estPrice / 1000).toFixed(1)}k`
-                                            : estPrice}
-                                </div>
-                                <div className="text-xs text-muted-foreground">{t('estCost')}</div>
-                            </div>
-                        )}
-
-                        <div className="text-center group relative">
-                            <div className="text-2xl font-bold text-foreground flex items-center justify-center gap-2 cursor-help">
-                                <Star className="h-5 w-5 text-amber-500 fill-amber-500" />{build.rating.toFixed(1)}
-                            </div>
-                            <div className="text-xs text-muted-foreground">{t('ratings', { count: build.ratingCount })}</div>
-
-                            {/* Rating Popup */}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-popover border border-border rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-[160px]">
-                                <div className="text-xs text-muted-foreground mb-2 font-medium">{t('rateThis')}</div>
-                                <div className="flex items-center justify-center gap-1">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <button
-                                            key={star}
-                                            onClick={() => handleRate(star)}
-                                            onMouseEnter={() => setHoverRating(star)}
-                                            onMouseLeave={() => setHoverRating(0)}
-                                            disabled={isRatingLoading}
-                                            className="p-1 focus:outline-none transition-transform hover:scale-110"
-                                        >
-                                            <Star
-                                                className={`h-5 w-5 ${(hoverRating || userRating || 0) >= star
-                                                    ? 'text-amber-500 fill-amber-500'
-                                                    : 'text-muted-foreground'
-                                                    }`}
-                                            />
-                                        </button>
-                                    ))}
-                                </div>
-                                {userRating && <div className="text-[10px] text-muted-foreground mt-2">{t('yourRating', { rating: userRating })}</div>}
+                                {estPrice !== null ? (
+                                    <div className="text-2xl font-bold text-emerald-400 flex items-center justify-center gap-1">
+                                        <Coins className="h-6 w-6" />
+                                        {estPrice > 1000000
+                                            ? `${(estPrice / 1000000).toFixed(1)}m`
+                                            : estPrice > 1000
+                                                ? `${(estPrice / 1000).toFixed(1)}k`
+                                                : estPrice}
+                                    </div>
+                                ) : (
+                                    <div className="text-2xl font-bold text-muted-foreground">--</div>
+                                )}
+                                <div className="text-xs text-muted-foreground mt-1">{t('estCost')}</div>
                             </div>
                         </div>
 
-                        <button
-                            onClick={handleLike}
-                            disabled={isLikeLoading}
-                            className="text-center group transition-transform active:scale-95 cursor-pointer"
-                        >
-                            <div className={`text-2xl font-bold flex items-center justify-center gap-2 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground group-hover:text-red-400'}`}>
-                                <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-                                {likeCount}
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 sm:flex sm:items-center gap-4 sm:gap-8 border-t md:border-t-0 border-border pt-4 md:pt-0 md:pl-8 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
+                                    <Star className="h-5 w-5 text-amber-500 fill-amber-500" />{(build.rating || 0).toFixed(1)}
+                                </div>
+                                <div className="text-xs text-muted-foreground">{t('ratings', { count: build.ratingCount || 0 })}</div>
                             </div>
-                            <div className="text-xs text-muted-foreground group-hover:text-foreground">{t('likes')}</div>
-                        </button>
 
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
-                                <Eye className="h-5 w-5 text-muted-foreground" />{build.views}
+                            <div className="text-center">
+                                <div className={`text-2xl font-bold flex items-center justify-center gap-2 ${(build.likes || 0) > 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                    <Heart className={`h-5 w-5 ${(build.likes || 0) > 0 ? 'fill-current' : ''}`} />
+                                    {build.likes || 0}
+                                </div>
+                                <div className="text-xs text-muted-foreground">{t('likes')}</div>
                             </div>
-                            <div className="text-xs text-muted-foreground">{t('views')}</div>
+
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
+                                    <Eye className="h-5 w-5 text-muted-foreground" />{build.views || 0}
+                                </div>
+                                <div className="text-xs text-muted-foreground">{t('views')}</div>
+                            </div>
                         </div>
 
                         <button
@@ -781,97 +575,6 @@ export function BuildView({ id }: BuildViewProps) {
                         </div>
                     </div>
                 )}
-
-                {/* Build Discussion Section */}
-                <div className="mt-12 pt-8 border-t border-border">
-                    <h2 className="text-xl font-black text-foreground mb-6 flex items-center gap-2 uppercase tracking-tight">
-                        <MessageSquare className="h-5 w-5 text-primary" />
-                        {t('discussion')}
-                    </h2>
-
-                    <div className="max-w-3xl space-y-6">
-                        {/* New Comment Form */}
-                        <div className="bg-card/50 border border-border rounded-2xl p-6">
-                            <form onSubmit={handlePostComment} className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="hidden sm:block shrink-0">
-                                        <div className="w-10 h-10 rounded-full bg-muted overflow-hidden border border-border">
-                                            {profile?.photoURL ? (
-                                                <img src={profile.photoURL} alt="Me" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <User className="w-full h-full p-2 text-muted-foreground" />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1">
-                                        <textarea
-                                            value={newComment}
-                                            onChange={(e) => setNewComment(e.target.value)}
-                                            placeholder={user ? t('askQuestion') : t('signInToComment')}
-                                            disabled={!user || isSubmittingComment}
-                                            rows={3}
-                                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:border-primary outline-none resize-none transition-all disabled:opacity-50"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex justify-end">
-                                    <button
-                                        type="submit"
-                                        disabled={!user || isSubmittingComment || newComment.length < 2}
-                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-xl font-bold flex items-center gap-2 transition-all disabled:opacity-50"
-                                    >
-                                        {isSubmittingComment ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                                        {t('postComment')}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        {/* Comments List */}
-                        <div className="space-y-4">
-                            {isCommentsLoading ? (
-                                <div className="flex items-center justify-center py-10">
-                                    <Loader2 className="h-6 w-6 text-primary animate-spin" />
-                                </div>
-                            ) : comments.length === 0 ? (
-                                <div className="text-center py-10 text-muted-foreground italic bg-muted/10 rounded-2xl border border-dashed border-border">
-                                    {t('noQuestions')}
-                                </div>
-                            ) : (
-                                comments.map(comment => (
-                                    <div key={comment.id} className="bg-card border border-border rounded-2xl p-6 flex gap-4 animate-in fade-in slide-in-from-bottom-2">
-                                        <div className="shrink-0">
-                                            <div className="w-10 h-10 rounded-full bg-muted overflow-hidden border border-border">
-                                                {comment.authorPhotoURL ? (
-                                                    <img src={comment.authorPhotoURL} alt={comment.authorName} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <User className="w-full h-full p-2 text-muted-foreground" />
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-foreground">{comment.authorName}</span>
-                                                    <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold uppercase">
-                                                        {comment.authorRank}
-                                                    </span>
-                                                </div>
-                                                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                                    <Clock className="h-3 w-3" />
-                                                    {formatDistanceToNow(new Date(comment.createdAt))} {t('ago')}
-                                                </div>
-                                            </div>
-                                            <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                                {comment.content}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
             </div>
             <InfoStrip currentPage="builds" />
             

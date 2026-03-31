@@ -309,18 +309,13 @@ export async function fetchMarketPrices(
   } catch (error) {
     console.error('Prices API Error (client-side):', error);
     console.warn('⚠️ Falling back to server action for market data');
-    
+
     // Fall back to server action
     try {
       const { getMarketData } = await import('../app/tools/market-flipper/actions');
       // Pass items as additionalItems parameter
       const result = await getMarketData(region, items, [], 'en');
-      // The server action returns { flips, error } but we need MarketStat[]
-      // We'll need to re-process or just return empty
-      // For now, return empty and let the error show
-      if (result.error) {
-        console.error('Server action also failed:', result.error);
-      }
+      // The server action returns flips array directly
       // Note: This is a workaround - ideally we'd re-use the processing logic
       return [];
     } catch (serverError) {

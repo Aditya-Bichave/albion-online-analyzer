@@ -37,12 +37,6 @@ type Props = {
 };
 
 export default async function BuildsIndexPage({ searchParams }: Props) {
-  const resolvedSearchParams = await searchParams;
-  const tagParam = resolvedSearchParams?.tag;
-  const initialTag =
-    typeof tagParam === 'string' && tagParam
-      ? (tagParam as any)
-      : 'all';
-
-  return <BuildsClient initialTag={initialTag} />;
+  // BuildsClient reads filters from URL params directly
+  return <BuildsClient />;
 }

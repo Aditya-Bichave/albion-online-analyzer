@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PageShell } from '@/components/PageShell';
 import { useAuth } from '@/context/AuthContext';
-import { Fish, RefreshCw, ChevronUp, ChevronDown, AlertCircle, CircleHelp } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronUp, CircleHelp, Fish, RefreshCw } from 'lucide-react';
 import { ServerSelector } from '@/components/ServerSelector';
 import { useServer } from '@/hooks/useServer';
 import { getMarketPrices, getMarketVolume, LOCATIONS } from '@/lib/market-service';
@@ -14,6 +14,7 @@ import { Select } from '@/components/ui/Select';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { useTranslations, useLocale } from 'next-intl';
+import ExpandableFishRow from './components/ExpandableFishRow';
 
 // Helper to generate fish stats
 const getFishStats = (tier: number, isRare: boolean = false, id: string): Partial<FishType> => {
@@ -338,7 +339,6 @@ export default function ChoppedFishClient() {
       title={t('title')} 
       backgroundImage='/background/ao-crafting.jpg'  
       description={t('description')}
-      icon={<Fish className="h-6 w-6" />}
       headerActions={
         <div className="flex items-center gap-4">
            <ServerSelector
@@ -474,133 +474,39 @@ export default function ChoppedFishClient() {
                         {sortKey === 'fishVolume' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                       </div>
                   </th>
-                  <th className="w-[1%] p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('choppedYield')}>
-                      <div className="flex items-center justify-end gap-1">
-                        <Tooltip content={t('choppedFishTooltip')}>
-                           <span>{t('choppedFish')}</span>
-                           <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                        </Tooltip>
-                        {sortKey === 'choppedYield' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </div>
-                  </th>
-                  <th className="w-[1%] p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('fishRequired')}>
-                      <div className="flex items-center justify-end gap-1">
-                        <Tooltip content={t('fishReqTooltip', { val: choppedFishRequired.toLocaleString() })}>
-                           <span>{t('fishReq')}</span>
-                           <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                        </Tooltip>
-                        {sortKey === 'fishRequired' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </div>
-                  </th>
-                  {showPrices && (
-                    <th className="w-[1%] p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('pricePerChopped')}>
-                      <div className="flex items-center justify-end gap-1">
-                        <Tooltip content={t('priceChoppedTooltip')}>
-                           <span>{t('priceChopped')}</span>
-                           <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                        </Tooltip>
-                        {sortKey === 'pricePerChopped' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </div>
-                  </th>
-                  )}
-                  <th className="w-[1%] p-4 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('profit')}>
-                      <div className="flex items-center justify-end gap-1">
-                        <Tooltip content={t('profitTooltip', { val: choppedFishRequired.toLocaleString() })}>
-                           <span>{t('profit')}</span>
-                           <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                        </Tooltip>
-                        {sortKey === 'profit' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </div>
-                  </th>
-                  <th className="w-[1%] p-4 pr-6 font-medium text-right cursor-pointer hover:text-foreground whitespace-nowrap" onClick={() => handleSort('roi')}>
-                      <div className="flex items-center justify-end gap-1">
-                        <span>{t('roi')}</span>
-                        {sortKey === 'roi' && (sortDirection === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </div>
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {sortedData.map((row) => (
-                  <tr key={row.id} className="hover:bg-muted/30 transition-colors group">
-                    <td className="p-4 pl-6">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center border border-border relative">
-                                <img 
-                                    src={`https://render.albiononline.com/v1/item/${row.id}`} 
-                                    className="h-8 w-8 object-contain"
-                                    alt={localizedNames[row.id] || row.name}
-                                />
-                                <div className="absolute -bottom-1 -right-1 bg-background text-[10px] border border-border px-1 rounded-full font-mono text-muted-foreground">
-                                    T{row.tier}
-                                </div>
-                            </div>
-                            <div>
-                                <div className="font-medium text-foreground">{localizedNames[row.id] || row.name}</div>
-                                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <span className="font-mono">{row.id}</span>
-                                    {row.isRare && <span className="text-amber-500 font-bold">• {t('rare')}</span>}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    
-                    {showPrices && (
-                        <td className="p-4 text-right font-mono">
-                            <div className="text-foreground">{row.fishPrice.toLocaleString()}</div>
-                            {row.isCustomFishPrice && <span className="text-[10px] text-primary uppercase font-bold tracking-wider">{t('custom')}</span>}
-                        </td>
-                    )}
+                  <ExpandableFishRow
+                    key={row.id}
+                    row={row}
+                    isExpanded={expandedRow === row.id}
+                    onToggle={() => toggleRow(row.id)}
+                    showPrices={showPrices}
+                    t={t}
+                    localizedNames={localizedNames}
+                    choppedFishRequired={choppedFishRequired}
+                  />
+                ))}
 
-                    <td className="p-4 text-right font-mono text-muted-foreground">
-                        {row.fishVolume.toLocaleString()}
-                    </td>
-
-                    <td className="p-4 text-right font-mono text-muted-foreground">
-                        {row.choppedYield}
-                    </td>
-
-                    <td className="p-4 text-right font-mono text-foreground font-bold">
-                        {row.fishRequired.toLocaleString()}
-                    </td>
-
-                    {showPrices && (
-                        <td className="p-4 text-right font-mono text-muted-foreground">
-                            {Math.round(row.pricePerChopped).toLocaleString()}
-                        </td>
-                    )}
-
-                    <td className="p-4 text-right font-mono">
-                        <div className={`font-bold ${row.profit > 0 ? 'text-success' : 'text-destructive'}`}>
-                            {row.profit > 0 ? '+' : ''}{row.profit.toLocaleString()}
-                        </div>
-                    </td>
-
-                    <td className="p-4 pr-6 text-right font-mono">
-                        <div className={`font-bold ${row.roi > 0 ? 'text-success' : 'text-destructive'}`}>
-                            {row.roi.toFixed(1)}%
-                        </div>
+                {sortedData.length === 0 && !loading && (
+                  <tr>
+                    <td colSpan={showPrices ? 3 : 2} className="p-8 text-center text-muted-foreground">
+                      {t('noData')}
                     </td>
                   </tr>
-                ))}
-                
-                {sortedData.length === 0 && !loading && (
-                    <tr>
-                        <td colSpan={8} className="p-8 text-center text-muted-foreground">
-                            {t('noData')}
-                        </td>
-                    </tr>
                 )}
-                
+
                 {loading && (
-                    <tr>
-                        <td colSpan={8} className="p-8 text-center text-muted-foreground">
-                            <div className="flex items-center justify-center gap-2">
-                                <RefreshCw className="h-4 w-4 animate-spin" />
-                                {t('loading')}
-                            </div>
-                        </td>
-                    </tr>
+                  <tr>
+                    <td colSpan={showPrices ? 3 : 2} className="p-8 text-center text-muted-foreground">
+                      <div className="flex items-center justify-center gap-2">
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        {t('loading')}
+                      </div>
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>

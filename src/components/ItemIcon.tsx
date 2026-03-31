@@ -99,7 +99,7 @@ export function ItemIcon({
 
   if (!id || error) {
     return (
-      <div className={`flex items-center justify-center bg-muted text-muted-foreground ${className}`} title={alt}>
+      <div className={`flex items-center justify-center text-muted-foreground ${className}`} title={alt}>
         <ImageOff className="w-1/2 h-1/2 opacity-50" />
       </div>
     );

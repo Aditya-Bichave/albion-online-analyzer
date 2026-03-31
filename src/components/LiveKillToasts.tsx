@@ -49,8 +49,8 @@ function LiveKillToastsContent() {
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(false);
 
-  // Hide on kill-feed page since we're already viewing the feed
-  const shouldHide = pathname === '/tools/kill-feed';
+  // Hide on killboard page since we're already viewing the feed
+  const shouldHide = pathname === '/tools/killboard';
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -162,7 +162,7 @@ function LiveKillToastsContent() {
 
   return (
     <div className="hidden md:block fixed bottom-5 left-5 right-auto md:left-4 md:right-auto z-40 transition-all duration-300 ${isFadingOut ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}">
-      <Link href="/tools/kill-feed" className="block">
+      <Link href="/tools/killboard" className="block">
         <div className="relative w-full max-w-lg md:max-w-xl mx-auto md:mx-0 bg-card border border-border rounded-xl p-4 md:p-5 flex flex-col gap-3 hover:border-red-500/60 transition-all shadow-lg">
           <button
             type="button"

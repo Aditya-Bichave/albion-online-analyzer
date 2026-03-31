@@ -20,7 +20,7 @@ const STATIC_PAGES: SearchResult[] = [
   { id: 'tool-market', type: 'tool', title: 'Market Flipper', subtitle: 'Find arbitrage opportunities', href: '/tools/market-flipper', icon: 'Coins' },
   { id: 'tool-pvp', type: 'tool', title: 'PvP Intel', subtitle: 'Analyze battles and killboards', href: '/tools/pvp-intel', icon: 'Sword' },
   { id: 'tool-zvz', type: 'tool', title: 'ZvZ Tracker', subtitle: 'Large scale battle analysis', href: '/tools/zvz-tracker', icon: 'Shield' },
-  { id: 'tool-craft', type: 'tool', title: 'Crafting Calculator', subtitle: 'Optimize crafting profits', href: '/tools/crafting-calc', icon: 'Hammer' },
+  { id: 'tool-craft', type: 'tool', title: 'Crafting Calculator', subtitle: 'Optimize crafting profits', href: '/profits/crafting', icon: 'Hammer' },
   { id: 'tool-gold', type: 'tool', title: 'Gold Price', subtitle: 'Gold market charts', href: '/tools/gold-price', icon: 'LineChart' },
   
   // Profit Calculators

@@ -6,6 +6,10 @@ import { Loader2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { createPageMetadata } from '@/lib/screenshot-metadata';
 
+// Force dynamic rendering for real-time data
+export const dynamic = 'force-dynamic';
+export const revalidate = 60;
+
 // Base metadata with screenshot
 const baseMetadata = createPageMetadata(
   'zvz-tracker',

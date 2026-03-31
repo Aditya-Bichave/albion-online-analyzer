@@ -1,0 +1,61 @@
+name: 🌍 Translation
+description: Add or update translations
+title: "[Translation]: "
+labels: ["translations", "needs review"]
+assignees:
+  - cosmic-fi
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for contributing translations! Please read our [Translation Guide](https://github.com/cosmic-fi/albionkit/blob/main/docs/TRANSLATION_GUIDE.md) first.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Translation Type
+      description: What type of translation is this?
+      options:
+        - New language
+        - Update existing
+        - Missing keys
+        - Correction
+    validations:
+      required: true
+
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: Which language is this for?
+      placeholder: e.g., German (de), Spanish (es)
+    validations:
+      required: true
+
+  - type: textarea
+    id: changes
+    attributes:
+      label: Description of Changes
+      description: What translations are you adding or updating?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Translation Checklist
+      options:
+        - label: I am a native speaker of this language
+          required: false
+        - label: I have tested the translations in the app
+          required: true
+        - label: I have maintained the JSON structure
+          required: true
+        - label: I have not translated keys that shouldn't be translated (URLs, code, etc.)
+          required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Any notes about the translation choices made.

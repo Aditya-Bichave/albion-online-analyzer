@@ -1,12 +1,15 @@
-import type { Metadata } from 'next';
+import { Metadata } from 'next';
 import AnimalClient from './AnimalClient';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = createPageMetadata(
-  'animal-calc',
-  'Albion Online Animal Breeding Calculator - Profit & Growth | AlbionKit',
-  'Maximize your Animal Breeding profits in Albion Online. Calculate growth times, food consumption, offspring rates, and market profits for all animals and mounts.'
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Pages.animal');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function AnimalPage() {
   return <AnimalClient />;

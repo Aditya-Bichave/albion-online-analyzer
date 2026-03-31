@@ -91,7 +91,7 @@ export default function NotFound() {
               { label: t('links.market'), href: '/tools/market-flipper', icon: Coins, color: 'group-hover:text-green-500' },
               { label: t('links.pvp'), href: '/tools/pvp-intel', icon: Sword, color: 'group-hover:text-red-500' },
               { label: t('links.builds'), href: '/builds', icon: Shield, color: 'group-hover:text-blue-500' },
-              { label: t('links.crafting'), href: '/tools/crafting-calc', icon: Hammer, color: 'group-hover:text-amber-500' },
+              { label: t('links.crafting'), href: '/profits/crafting', icon: Hammer, color: 'group-hover:text-amber-500' },
             ].map((item) => (
               <Link
                 key={item.label}

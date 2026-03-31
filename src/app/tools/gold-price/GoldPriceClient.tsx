@@ -115,10 +115,10 @@ export default function GoldPriceClient() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-popover border border-border p-3 rounded-lg">
-          <p className="text-muted-foreground text-xs mb-1">{new Date(label).toLocaleString()}</p>
-          <p className="text-primary font-bold font-mono text-lg">
-            {formatPrice(payload[0].value)} {t('silver')}
+        <div className="bg-popover border-2 border-border p-4 rounded-2xl shadow-xl">
+          <p className="text-muted-foreground text-xs mb-2 font-semibold">{new Date(label).toLocaleString()}</p>
+          <p className="text-primary font-black font-mono text-xl">
+            {formatPrice(payload[0].value)} <span className="text-sm text-muted-foreground">{t('silver')}</span>
           </p>
         </div>
       );
@@ -131,9 +131,8 @@ export default function GoldPriceClient() {
       title={t('title')}
       backgroundImage='/background/ao-market.jpg'
       description={t('description')}
-      icon={<Coins className="h-6 w-6" />}
       headerActions={
-        <div className="flex flex-col md:flex-full md:flex-row  md:px-0 sm:items-end sm:items-start md:items-start gap-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-4">
           <SegmentedControl
             options={[
               { label: t('ranges.24h'), value: '24h' },
@@ -145,8 +144,8 @@ export default function GoldPriceClient() {
             size="sm"
             className='w-fit'
           />
-          <div className="h-8 w-px bg-border hidden md:block" />
-          <div className='flex flex-row gap-4'>
+          <div className="hidden md:block h-8 w-px bg-border" />
+          <div className='flex gap-2'>
             <ServerSelector
               selectedServer={region}
               onServerChange={setRegion}
@@ -154,7 +153,8 @@ export default function GoldPriceClient() {
             <button
               onClick={loadData}
               disabled={loading}
-              className="p-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              aria-label={t('refreshData')}
             >
               <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -163,79 +163,115 @@ export default function GoldPriceClient() {
       }
     >
       <div className="space-y-6">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <div className="text-muted-foreground text-sm mb-2">{t('currentPrice')}</div>
-            <div className="text-3xl font-bold font-mono text-primary flex items-end gap-2">
-              {loading ? <span className="animate-pulse">...</span> : formatPrice(stats.current)}
-              <span className="text-sm text-muted-foreground font-sans mb-1">{t('silver')}</span>
+        {/* Stats Grid - Enhanced for clarity */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Current Price */}
+          <div className="group bg-card/50 hover:bg-card/80 p-6 rounded-2xl border border-border/50 transition-all hover:scale-105 hover:shadow-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <Coins className="h-5 w-5 text-primary" />
+              <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('currentPrice')}</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-3xl lg:text-4xl font-black font-mono text-primary">
+                {loading ? <span className="animate-pulse">...</span> : formatPrice(stats.current)}
+              </div>
+              <span className="text-sm text-muted-foreground font-sans">{t('silver')}</span>
             </div>
           </div>
 
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <div className="text-muted-foreground text-sm mb-2">{t('change', { range: t(`ranges.${timeRange}`) })}</div>
-            <div className={`text-2xl font-bold font-mono flex items-center gap-2 ${stats.change24h > 0 ? 'text-success' : stats.change24h < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-              {loading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                <>
-                  {stats.change24h > 0 ? <TrendingUp className="h-6 w-6" /> : stats.change24h < 0 ? <TrendingDown className="h-6 w-6" /> : <Minus className="h-6 w-6" />}
-                  {stats.change24h > 0 ? '+' : ''}{formatPrice(stats.change24h)}
-                </>
-              )}
+          {/* Price Change */}
+          <div className={`group bg-card/50 hover:bg-card/80 p-6 rounded-2xl border border-border/50 transition-all hover:scale-105 hover:shadow-xl ${stats.change24h > 0 ? 'hover:border-success/30' : stats.change24h < 0 ? 'hover:border-destructive/30' : ''}`}>
+            <div className="flex items-center gap-2 mb-3">
+              {stats.change24h > 0 ? <TrendingUp className="h-5 w-5 text-success" /> : stats.change24h < 0 ? <TrendingDown className="h-5 w-5 text-destructive" /> : <Minus className="h-5 w-5 text-muted-foreground" />}
+              <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('change', { range: t(`ranges.${timeRange}`) })}</span>
             </div>
-            {!loading && (
-              <div className={`text-xs mt-1 ${stats.changePercent > 0 ? 'text-success' : stats.changePercent < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                {stats.changePercent > 0 ? '+' : ''}{stats.changePercent.toFixed(2)}%
-              </div>
+            {loading ? (
+              <span className="animate-pulse text-2xl">...</span>
+            ) : (
+              <>
+                <div className={`text-2xl lg:text-3xl font-black font-mono flex items-center gap-2 ${stats.change24h > 0 ? 'text-success' : stats.change24h < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  {stats.change24h > 0 ? '+' : ''}{formatPrice(stats.change24h)}
+                </div>
+                <div className={`text-sm font-bold ${stats.changePercent > 0 ? 'text-success' : stats.changePercent < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  {stats.changePercent > 0 ? '+' : ''}{stats.changePercent.toFixed(2)}%
+                </div>
+              </>
             )}
           </div>
 
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <div className="text-muted-foreground text-sm mb-2">{t('high', { range: t(`ranges.${timeRange}`) })}</div>
-            <div className="text-2xl font-bold font-mono text-success flex items-center gap-2">
+          {/* High */}
+          <div className="group bg-card/50 hover:bg-card/80 hover:border-success/30 p-6 rounded-2xl border border-border/50 transition-all hover:scale-105 hover:shadow-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <ArrowUp className="h-5 w-5 text-success/70" />
+              <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('high', { range: t(`ranges.${timeRange}`) })}</span>
+            </div>
+            <div className="text-2xl lg:text-3xl font-black font-mono text-success">
               {loading ? <span className="animate-pulse">...</span> : formatPrice(stats.high24h)}
-              <ArrowUp className="h-4 w-4 text-success/50" />
             </div>
           </div>
 
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <div className="text-muted-foreground text-sm mb-2">{t('low', { range: t(`ranges.${timeRange}`) })}</div>
-            <div className="text-2xl font-bold font-mono text-destructive flex items-center gap-2">
+          {/* Low */}
+          <div className="group bg-card/50 hover:bg-card/80 hover:border-destructive/30 p-6 rounded-2xl border border-border/50 transition-all hover:scale-105 hover:shadow-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <ArrowDown className="h-5 w-5 text-destructive/70" />
+              <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t('low', { range: t(`ranges.${timeRange}`) })}</span>
+            </div>
+            <div className="text-2xl lg:text-3xl font-black font-mono text-destructive">
               {loading ? <span className="animate-pulse">...</span> : formatPrice(stats.low24h)}
-              <ArrowDown className="h-4 w-4 text-destructive/50" />
             </div>
           </div>
         </div>
 
-        {/* Chart */}
-        <div className="bg-card/50 p-6 rounded-xl border border-border">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-2 md:gap-0">
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              {t('priceHistory')}
-            </h3>
-            <div className="text-xs text-muted-foreground">
-              {t('dataPoints', { count: history.length })}
+        {/* Chart - Enhanced with better accessibility and modern design */}
+        <div className="bg-card/50 p-6 rounded-2xl border border-border/50">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Calendar className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-foreground">{t('priceHistory')}</h3>
+                <p className="text-xs text-muted-foreground">{t('dataPoints', { count: history.length })}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-primary/40" />
+                <span className="text-muted-foreground">{t('goldPrice')}</span>
+              </div>
             </div>
           </div>
 
-          <div className="h-[300px] md:h-[400px] w-full -mx-2 md:mx-0">
+          <div className="h-[400px] md:h-[500px] w-full" role="img" aria-label={t('chartAriaLabel') || 'Gold price chart showing historical data'}>
             {loading && history.length === 0 ? (
               <div className="h-full flex items-center justify-center">
-                <RefreshCw className="h-8 w-8 text-muted-foreground animate-spin" />
+                <div className="flex flex-col items-center gap-3">
+                  <div className="relative">
+                    <div className="w-12 h-12 border-4 border-primary/20 rounded-full" />
+                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin absolute top-0 left-0" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">{t('loadingChart')}</p>
+                  <p className="text-xs text-muted-foreground">{t('fetchingPrices')}</p>
+                </div>
               </div>
             ) : history.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={history}>
+                <AreaChart data={history} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.5} />
+                      <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.2} />
+                      <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#9e9e9e6e" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#a8a29e" opacity={0.3} vertical={false} />
                   <XAxis
                     dataKey="timestamp"
                     tickFormatter={(str) => {
@@ -244,177 +280,244 @@ export default function GoldPriceClient() {
                         ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                         : d.toLocaleDateString([], { month: 'short', day: 'numeric' });
                     }}
-                    stroke="#475569"
+                    stroke="#a8a29e"
                     fontSize={12}
-                    minTickGap={40}
+                    tick={{ fill: '#a8a29e' }}
+                    axisLine={false}
+                    tickLine={false}
+                    minTickGap={50}
                     interval="preserveStartEnd"
                   />
                   <YAxis
                     domain={['auto', 'auto']}
-                    stroke="var(--muted-foreground)"
+                    stroke="#a8a29e"
                     fontSize={12}
-                    tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`}
-                    width={55}
+                    tick={{ fill: '#a8a29e' }}
+                    tickFormatter={(val) => `${(val / 1000).toFixed(1)}k`}
+                    width={60}
+                    axisLine={false}
+                    tickLine={false}
+                    tickCount={6}
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip 
+                    content={<CustomTooltip />}
+                    cursor={{ stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 5', opacity: 0.5 }}
+                  />
                   <Area
                     type="monotone"
                     dataKey="price"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
+                    name="Gold Price"
+                    stroke="#f59e0b"
+                    strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorPrice)"
-                    animationDuration={500}
+                    animationDuration={800}
+                    activeDot={{ r: 7, strokeWidth: 3, stroke: '#fff', fill: '#f59e0b' }}
+                    filter="url(#glow)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-muted-foreground">
-                {t('noData')}
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-muted-foreground font-semibold mb-2">No data available</p>
+                  <p className="text-xs text-muted-foreground">Try refreshing the page</p>
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+        {/* Tools Grid - Enhanced for usability */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Currency Converter */}
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-primary" />
-              {t('converterTitle')}
-            </h3>
-
-            <div className="space-y-4">
+          <div className="bg-card/50 p-6 rounded-2xl border border-border/50">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 rounded-xl bg-primary/10">
+                <ArrowRightLeft className="h-6 w-6 text-primary" />
+              </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1.5">{t('goldAmount')}</label>
+                <h3 className="text-lg font-black text-foreground">{t('converterTitle')}</h3>
+                <p className="text-xs text-muted-foreground">{t('converterDesc')}</p>
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label htmlFor="gold-input" className="block text-xs font-semibold text-muted-foreground mb-2">{t('goldAmount')}</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Coins className="h-4 w-4 text-primary" />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Coins className="h-5 w-5 text-primary" />
                   </div>
                   <Input
+                    id="gold-input"
+                    type="number"
                     value={goldAmount}
                     onChange={(e) => handleGoldChange(e.target.value)}
-                    className="pl-9 font-mono text-primary"
+                    className="pl-12 font-mono text-primary text-lg rounded-xl"
                     placeholder="0"
+                    aria-describedby="gold-description"
                   />
                 </div>
+                <p id="gold-description" className="sr-only">Enter amount of gold to convert to silver</p>
               </div>
 
               <div className="flex justify-center">
-                <div className="bg-muted p-2 rounded-full text-muted-foreground">
-                  <ArrowDown className="h-4 w-4" />
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <ArrowDown className="h-5 w-5 text-primary" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs text-muted-foreground mb-1.5">{t('silverValue')}</label>
+                <label htmlFor="silver-input" className="block text-xs font-semibold text-muted-foreground mb-2">{t('silverValue')}</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-muted-foreground text-sm font-bold">S</span>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="text-primary text-sm font-black">S</span>
                   </div>
                   <Input
+                    id="silver-input"
+                    type="number"
                     value={silverAmount}
                     onChange={(e) => handleSilverChange(e.target.value)}
-                    className="pl-9 font-mono text-foreground"
+                    className="pl-12 font-mono text-foreground text-lg rounded-xl"
                     placeholder="0"
+                    aria-describedby="silver-description"
                   />
                 </div>
+                <p id="silver-description" className="sr-only">Equivalent silver value</p>
               </div>
 
-              <div className="text-xs text-muted-foreground text-center pt-2">
-                {t('basedOnPrice', { price: stats.current.toLocaleString() })}
+              <div className="bg-muted/50 p-4 rounded-xl border border-border/50">
+                <p className="text-sm text-muted-foreground text-center">
+                  {t('basedOnPrice', { price: stats.current.toLocaleString() })}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Premium Calculator */}
-          <div className="bg-card/50 p-6 rounded-xl border border-border">
-            <h3 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-info" />
-              {t('premiumCalculator')}
-            </h3>
+          <div className="bg-card/50 p-6 rounded-2xl border border-border/50">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 rounded-xl bg-info/10">
+                <Calculator className="h-6 w-6 text-info" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-foreground">{t('premiumCalculator')}</h3>
+                <p className="text-xs text-muted-foreground">{t('premiumCalculatorDesc')}</p>
+              </div>
+            </div>
 
             <div className="space-y-6">
-              <div className="bg-muted/50 p-4 rounded-lg border border-border">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-muted-foreground">{t('premiumGoldCost')}</span>
-                  <span className="text-xs text-muted-foreground">{t('premiumNote')}</span>
+              <div className="bg-muted/50 p-5 rounded-xl border border-border/50">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('premiumGoldCost')}</span>
+                  <span className="text-xs text-muted-foreground bg-background px-2 py-1 rounded">{t('premiumNote')}</span>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Coins className="h-4 w-4 text-primary" />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Coins className="h-5 w-5 text-primary" />
                   </div>
                   <Input
+                    id="premium-gold-input"
+                    type="number"
                     value={premiumGoldCost}
                     onChange={(e) => setPremiumGoldCost(e.target.value)}
-                    className="pl-9 font-mono bg-background"
+                    className="pl-12 font-mono bg-background rounded-xl"
+                    aria-label={t('premiumGoldCost')}
                   />
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-muted/50 rounded border border-border">
-                  <span className="text-muted-foreground">{t('silverCost')}</span>
-                  <span className="text-xl font-bold font-mono text-foreground">
+                <div className="flex justify-between items-center p-4 bg-muted/50 rounded-xl border border-border/50">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('silverCost')}</span>
+                  <span className="text-2xl font-black font-mono text-foreground">
                     {(!isNaN(parseFloat(premiumGoldCost)) && stats.current > 0)
                       ? (parseFloat(premiumGoldCost) * stats.current).toLocaleString()
                       : '---'}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center p-3 bg-muted/50 rounded border border-border">
-                  <span className="text-muted-foreground">{t('realMoney')}</span>
-                  <span className="text-sm font-mono text-success">~$15.00 USD</span>
+                <div className="flex justify-between items-center p-4 bg-success/10 rounded-xl border border-success/30">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('realMoney')}</span>
+                  <span className="text-lg font-bold font-mono text-success">~$15.00 USD</span>
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t('premiumCalculatorDesc')}
-              </p>
+              <div className="bg-muted/30 p-4 rounded-xl border border-border/50">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {t('premiumCalculatorDesc')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Market Insights - Enhanced for clarity */}
+        <div className="bg-card/50 p-8 rounded-2xl border border-border/50">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-primary/10">
+              <TrendingUp className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-foreground">{t('marketInsights')}</h3>
+              <p className="text-sm text-muted-foreground">Tips and data to help you trade smarter</p>
             </div>
           </div>
 
-        </div>
-
-        {/* Market Insights */}
-        <div className="bg-card/50 p-6 rounded-xl border border-border">
-          <h3 className="text-lg font-bold text-foreground mb-4">{t('marketInsights')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-medium text-foreground mb-2">{t('aboutGoldPrice')}</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                {t('aboutGoldPriceDesc')}
-              </p>
-              <h4 className="font-medium text-foreground mb-2">{t('tradingTips')}</h4>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                <li>{t('tip1')}</li>
-                <li>{t('tip2')}</li>
-                <li>{t('tip3')}</li>
-              </ul>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Info */}
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  {t('aboutGoldPrice')}
+                </h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {t('aboutGoldPriceDesc')}
+                </p>
+              </div>
+              <div>
+                <h4 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  {t('tradingTips')}
+                </h4>
+                <ul className="space-y-2">
+                  { [t('tip1'), t('tip2'), t('tip3')].map((tip, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="text-primary font-bold mt-0.5">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div>
-              <h4 className="font-medium text-foreground mb-2">{t('recentAverages')}</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm p-2 bg-muted/50 rounded">
-                  <span className="text-muted-foreground">{t('average7d')}</span>
-                  <span className="font-mono font-medium">
+
+            {/* Right Column - Stats */}
+            <div className="space-y-4">
+              <h4 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-info" />
+                {t('recentAverages')}
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-4 bg-muted/50 rounded-xl border border-border/50">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('average7d')}</span>
+                  <span className="text-lg font-black font-mono text-foreground">
                     {history.length > 0
                       ? formatPrice(Math.round(history.reduce((a, b) => a + b.price, 0) / history.length))
-                      : '---'} {t('silver')}
+                      : '---'} <span className="text-sm text-muted-foreground">{t('silver')}</span>
                   </span>
                 </div>
-                <div className="flex justify-between text-sm p-2 bg-muted/50 rounded">
-                  <span className="text-muted-foreground">{t('high30d')}</span>
-                  <span className="font-mono font-medium text-success">
-                    {formatPrice(stats.high24h)} {t('silver')}
+                <div className="flex justify-between items-center p-4 bg-success/10 rounded-xl border border-success/30">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('high30d')}</span>
+                  <span className="text-lg font-black font-mono text-success">
+                    {formatPrice(stats.high24h)} <span className="text-sm text-muted-foreground">{t('silver')}</span>
                   </span>
                 </div>
-                <div className="flex justify-between text-sm p-2 bg-muted/50 rounded">
-                  <span className="text-muted-foreground">{t('low30d')}</span>
-                  <span className="font-mono font-medium text-destructive">
-                    {formatPrice(stats.low24h)} {t('silver')}
+                <div className="flex justify-between items-center p-4 bg-destructive/10 rounded-xl border border-destructive/30">
+                  <span className="text-sm font-semibold text-muted-foreground">{t('low30d')}</span>
+                  <span className="text-lg font-black font-mono text-destructive">
+                    {formatPrice(stats.low24h)} <span className="text-sm text-muted-foreground">{t('silver')}</span>
                   </span>
                 </div>
               </div>

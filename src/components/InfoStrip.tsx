@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MessageSquare, Crown, TrendingUp, Shield, Zap, Heart, Coins, Hammer, Lightbulb, Bug, Sword, ScrollText, Utensils } from 'lucide-react';
+import { MessageSquare, Crown, TrendingUp, Shield, Zap, Heart, Coins, Hammer, Lightbulb, Bug, Sword, ScrollText, Utensils, Coffee, Github } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
-export type PageId = 'home' | 'pvp-intel' | 'zvz-tracker' | 'market-flipper' | 'crafting-calc' | 'kill-feed' | 'gold-price' | 'builds' | 'profits' | 'profits-alchemy' | 'profits-cooking' | 'profits-animal' | 'profits-farming' | 'profits-labour' | 'profits-enchanting' | 'profits-chopped-fish';
+export type PageId = 'home' | 'pvp-intel' | 'zvz-tracker' | 'market-flipper' | 'crafting-calc' | 'killboard' | 'gold-price' | 'builds' | 'profits' | 'profits-alchemy' | 'profits-cooking' | 'profits-animal' | 'profits-farming' | 'profits-labour' | 'profits-enchanting' | 'profits-chopped-fish';
 
 interface InfoItem {
   id: string;
@@ -55,7 +55,7 @@ const INFO_ITEMS: InfoItem[] = [
   },
   {
     id: 'pvp-intel',
-    excludePages: ['pvp-intel', 'kill-feed'],
+    excludePages: ['pvp-intel', 'killboard'],
     icon: Zap,
     translationKey: 'pvpIntel',
     actionLink: "/tools/pvp-intel",
@@ -74,7 +74,7 @@ const INFO_ITEMS: InfoItem[] = [
     excludePages: ['crafting-calc'],
     icon: Hammer,
     translationKey: 'craftingCalc',
-    actionLink: "/tools/crafting-calc",
+    actionLink: "/profits/crafting",
     color: "text-orange-400"
   },
   {
@@ -116,6 +116,23 @@ const INFO_ITEMS: InfoItem[] = [
     translationKey: 'feedback',
     actionLink: "https://github.com/albionkit",
     color: "text-rose-400",
+    isExternal: true
+  },
+  
+  // Support & Contributions
+  {
+    id: 'donate',
+    icon: Coffee,
+    translationKey: 'donateInfo',
+    actionLink: "/donate",
+    color: "text-pink-400",
+  },
+  {
+    id: 'contribute',
+    icon: Github,
+    translationKey: 'contributeInfo',
+    actionLink: "https://github.com/cosmic-fi/albionkit",
+    color: "text-foreground",
     isExternal: true
   }
 ];

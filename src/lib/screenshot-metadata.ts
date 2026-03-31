@@ -58,18 +58,18 @@ export function getFullScreenshotUrl(key: ScreenshotKey, baseUrl = 'https://albi
 
 /**
  * Create Open Graph image configuration
- * 
+ *
  * @example
  * const ogImage = createOpenGraphImage('market-flipper');
- * 
+ *
  * @param key - Screenshot key
- * @param width - Image width (default: 1920)
- * @param height - Image height (default: 1080)
+ * @param width - Image width (default: 1200 for OG)
+ * @param height - Image height (default: 630 for OG)
  */
 export function createOpenGraphImage(
   key: ScreenshotKey,
-  width = 1920,
-  height = 1080
+  width = 1200,
+  height = 630
 ) {
   const screenshot = getScreenshot(key);
   return {
@@ -161,14 +161,14 @@ export function createPageMetadata(
  */
 export function getScreenshotsByCategory(category: string): ScreenshotKey[] {
   const categoryMapping: Record<string, ScreenshotKey[]> = {
-    tools: ['market-flipper', 'kill-feed', 'gold-price', 'crafting-calc', 'pvp-intel', 'zvz-tracker'],
+    tools: ['market-flipper', 'gold-price', 'crafting-calc', 'pvp-intel', 'zvz-tracker'],
     profits: ['farming-calc', 'cooking-calc', 'alchemy-calc', 'animal-calc', 'chopped-fish-calc', 'enchanting-calc', 'labour-calc'],
     builds: ['builds-list', 'build-detail'],
     forum: ['forum-list', 'thread-detail'],
     user: ['user-profile', 'settings'],
     misc: ['homepage', 'login', 'about']
   };
-  
+
   return categoryMapping[category] || [];
 }
 
@@ -193,7 +193,7 @@ function getScreenshotPathMapping(key: ScreenshotKey): string {
     
     // Tools
     'market-flipper': 'tools',
-    'kill-feed': 'tools',
+    'killboard': 'tools',
     'gold-price': 'tools',
     'crafting-calc': 'tools',
     'pvp-intel': 'tools',

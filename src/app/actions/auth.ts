@@ -1,6 +1,5 @@
 'use server';
 
-import { getTranslations } from 'next-intl/server';
 import { adminAuth, adminDb } from '@/lib/firebase-admin';
 import { sendEmail } from '@/lib/email-service';
 import { getVerificationEmailHtml } from '@/lib/email-templates';

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Twitter, MessageCircle, Mail, Github } from 'lucide-react';
+import { Twitter, Mail, Github, Heart } from 'lucide-react';
 
 export function Footer() {
   const t = useTranslations('Footer');
@@ -10,36 +10,40 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-card border-t border-border py-12 mt-auto">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-8">
+    <footer className="w-full bg-card border-t-2 border-border mt-auto">
+      <div className="container mx-auto px-4 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-10">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
-            <h3 className="font-bold text-lg mb-4 text-foreground">AlbionKit</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              The ultimate Albion Online companion tool for market trading, PvP tracking, and build sharing.
+            <h3 className="font-extrabold text-xl mb-4 text-foreground flex items-center gap-2">
+              <img src="/logo-dark.svg" alt="AlbionKit" className="h-8 w-auto dark:hidden" />
+              <img src="/logo-light.svg" alt="AlbionKit" className="h-8 w-auto hidden dark:block" />
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              {t('description')}
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Link
                 href="https://twitter.com/Albion_Kit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
                 aria-label="Twitter"
               >
                 <Twitter className="h-5 w-5" />
               </Link>
               <Link
                 href="mailto:support@albionkit.com"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
               </Link>
               <Link
                 href="https://github.com/cosmic-fi/albionkit"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Email"
+                className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
+                aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
               </Link>
@@ -48,30 +52,30 @@ export function Footer() {
 
           {/* Tools Column */}
           <div>
-            <h4 className="font-bold mb-4 text-foreground">{t('tools')}</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-extrabold mb-4 text-foreground text-sm uppercase tracking-wider">{t('tools')}</h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/tools/market-flipper" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/tools/market-flipper" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('marketFlipper')}
                 </Link>
               </li>
               <li>
-                <Link href="/tools/kill-feed" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t('killFeed')}
+                <Link href="/tools/killboard" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
+                  {t('killboard')}
                 </Link>
               </li>
               <li>
-                <Link href="/tools/pvp-intel" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/tools/pvp-intel" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('pvpIntel')}
                 </Link>
               </li>
               <li>
-                <Link href="/tools/crafting-calc" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/crafting" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('craftingCalc')}
                 </Link>
               </li>
               <li>
-                <Link href="/tools/gold-price" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/tools/gold-price" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('goldPrice')}
                 </Link>
               </li>
@@ -80,30 +84,30 @@ export function Footer() {
 
           {/* Profit Calculators Column */}
           <div>
-            <h4 className="font-bold mb-4 text-foreground">{t('calculators')}</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-extrabold mb-4 text-foreground text-sm uppercase tracking-wider">{t('calculators')}</h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/profits/farming" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/farming" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('farming')}
                 </Link>
               </li>
               <li>
-                <Link href="/profits/cooking" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/cooking" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('cooking')}
                 </Link>
               </li>
               <li>
-                <Link href="/profits/alchemy" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/alchemy" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('alchemy')}
                 </Link>
               </li>
               <li>
-                <Link href="/profits/labour" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/labour" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('laborers')}
                 </Link>
               </li>
               <li>
-                <Link href="/profits/animal" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/profits/animal" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('animal')}
                 </Link>
               </li>
@@ -112,15 +116,15 @@ export function Footer() {
 
           {/* Community Column */}
           <div>
-            <h4 className="font-bold mb-4 text-foreground">{t('community')}</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-extrabold mb-4 text-foreground text-sm uppercase tracking-wider">{t('community')}</h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/builds" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/builds" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('builds')}
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/about" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('about')}
                 </Link>
               </li>
@@ -129,20 +133,20 @@ export function Footer() {
 
           {/* Legal Column */}
           <div>
-            <h4 className="font-bold mb-4 text-foreground">{t('legal')}</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-extrabold mb-4 text-foreground text-sm uppercase tracking-wider">{t('legal')}</h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/privacy" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('privacy')}
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/terms" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('terms')}
                 </Link>
               </li>
               <li>
-                <Link href="/cookies" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/cookies" className="text-muted-foreground hover:text-primary hover:translate-x-1 transition-all inline-block">
                   {t('cookies')}
                 </Link>
               </li>
@@ -151,12 +155,14 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="pt-8 border-t-2 border-border flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-sm text-muted-foreground font-medium">
             © {currentYear} AlbionKit. {t('allRightsReserved')}
           </div>
-          <div className="text-sm text-muted-foreground">
-            {t('notAffiliated')}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+            <span>{t('madeWith')}</span>
+            <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+            <span>{t('forCommunity')}</span>
           </div>
         </div>
       </div>

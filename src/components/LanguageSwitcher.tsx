@@ -53,11 +53,11 @@ export function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors border border-transparent hover:border-border"
+        className="flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors border border-transparent hover:border-border"
         title="Change Language"
       >
         <Globe className="h-4 w-4" />
-        <span className="hidden lg:inline uppercase">{currentLocale}</span>
+        <span className="uppercase font-bold text-xs sm:text-sm">{currentLocale}</span>
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 

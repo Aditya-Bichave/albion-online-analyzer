@@ -433,7 +433,7 @@ function SettingsContent() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-3 px-4">
+    <div className="max-w-7xl mx-auto py-3 px-4 mb-10">
       <h1 className="text-3xl font-bold pt-10 mb-8 flex items-center gap-2">
         <UserIcon className="h-8 w-8 text-primary" />
         {t('title')}
@@ -660,7 +660,7 @@ function SettingsContent() {
                                     <div className="flex flex-col gap-2">
                                         <button
                                             onClick={() => handleLinkCharacter(foundCharacter)}
-                                            className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg transition-colors flex items-center gap-2 justify-center"
+                                            className="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-foreground font-bold rounded-lg transition-colors flex items-center gap-2 justify-center"
                                         >
                                             <Save className="h-4 w-4" />
                                             {t('identity.confirm')}
@@ -940,7 +940,7 @@ function SettingsContent() {
                  <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                            <SettingsIcon className="h-5 w-5 text-slate-400" />
+                            <SettingsIcon className="h-5 w-5 text-muted-foreground" />
                             {t('preferences.title')}
                         </h2>
                         {isSavingPreferences && (
@@ -1068,24 +1068,6 @@ function SettingsContent() {
                                 {t('preferences.privacy')}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 bg-muted/50 rounded-lg border border-border flex items-center justify-between">
-                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-lg bg-secondary text-blue-400">
-                                            <Eye className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-foreground text-sm">{t('preferences.publicProfile')}</div>
-                                            <div className="text-xs text-muted-foreground">{t('preferences.publicProfileDesc')}</div>
-                                        </div>
-                                     </div>
-                                     <button 
-                                        onClick={() => handleSavePreferences({ ...preferences, publicProfile: !preferences.publicProfile })}
-                                        className={`w-10 h-5 rounded-full relative transition-colors ${preferences.publicProfile ? 'bg-primary' : 'bg-secondary'}`}
-                                     >
-                                        <div className={`absolute top-1 w-3 h-3 bg-white rounded-full  transition-all ${preferences.publicProfile ? 'right-1' : 'left-1'}`} />
-                                     </button>
-                                </div>
-
                                 <div className="p-4 bg-muted/50 rounded-lg border border-border flex items-center justify-between">
                                      <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-secondary text-amber-400">
@@ -1372,10 +1354,6 @@ function SettingsContent() {
             <div className="bg-card backdrop-blur rounded-xl border border-border p-6">
                 <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">{t('sidebar.quickActions')}</h3>
                 <div className="space-y-2">
-                    <Link href={`/user/${user?.uid}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
-                        <span className="text-sm text-muted-foreground group-hover:text-foreground">{preferences.publicProfile ? t('preferences.publicProfile') : 'Profile'}</span>
-                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
-                    </Link>
                     <Link href="/tools/market-flipper" className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                         <span className="text-sm text-muted-foreground group-hover:text-foreground">{tc('categories.Market')} Flipper</span>
                         <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
@@ -1418,7 +1396,7 @@ function SettingsContent() {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen pt-24 flex justify-center text-slate-400">Loading settings...</div>}>
+    <Suspense fallback={<div className="min-h-screen pt-24 flex justify-center text-muted-foreground">Loading settings...</div>}>
       <SettingsContent />
     </Suspense>
   );

@@ -6,8 +6,8 @@ const withNextIntl = createNextIntlPlugin();
 
 const withPWA = withPWAInit({
   dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
+  cacheOnFrontEndNav: false,
+  aggressiveFrontEndNavCaching: false,
   reloadOnOnline: true,
   disable: process.env.NODE_ENV === "development",
   workboxOptions: {
@@ -15,20 +15,7 @@ const withPWA = withPWAInit({
     skipWaiting: true,
     clientsClaim: true,
     // Don't cache cross-origin or redirect responses
-    runtimeCaching: [
-      {
-        // Cache same-origin static assets only
-        urlPattern: /^https:\/\/albionkit\.com\/_next\/static\/.*/i,
-        handler: 'CacheFirst',
-        options: {
-          cacheName: 'next-static',
-          expiration: {
-            maxEntries: 64,
-            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-          },
-        },
-      },
-    ],
+    runtimeCaching: [],
   },
 });
 

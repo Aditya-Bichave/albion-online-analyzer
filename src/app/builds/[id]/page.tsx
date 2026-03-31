@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         }
     }
 
-    const description = build.description || t('checkoutBuild', { author: build.authorName });
+    const description = build.description || t('checkoutBuild', { author: build.authorName || 'Unknown' });
 
     return {
         title: `${build.title} | AlbionKit`,
@@ -38,9 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: description,
             type: 'article',
             images: images.map(url => ({ url })),
-            authors: [build.authorName],
-            publishedTime: build.createdAt?.toDate?.().toISOString(),
-            modifiedTime: build.updatedAt?.toDate?.().toISOString(),
+            authors: [build.authorName || 'Unknown'],
         },
         twitter: {
             card: 'summary_large_image',
@@ -62,9 +60,9 @@ export default async function BuildPage({ params }: PageProps) {
       description: build.description,
       author: {
         '@type': 'Person',
-        name: build.authorName
+        name: build.authorName || 'Unknown'
       },
-      datePublished: build.createdAt?.toDate?.().toISOString() || new Date().toISOString(),
+      datePublished: new Date().toISOString(),
       image: 'https://albionkit.com/og-image.jpg',
       publisher: {
         '@type': 'Organization',

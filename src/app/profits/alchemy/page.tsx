@@ -1,12 +1,15 @@
-import type { Metadata } from 'next';
+import { Metadata } from 'next';
 import AlchemyClient from './AlchemyClient';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = createPageMetadata(
-  'alchemy-calc',
-  'Albion Online Alchemy Calculator - Profit & Recipes | AlbionKit',
-  'Maximize your Alchemy profits in Albion Online. Calculate potion costs, focus efficiency, and return rates. Find the most profitable recipes.'
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Pages.alchemy');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function AlchemyPage() {
   return <AlchemyClient />;

@@ -61,24 +61,24 @@ export function ItemSelectorModal({ isOpen, onClose, onSelect, filter, title }: 
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-xl  flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
-        
+      <div className="w-full max-w-2xl bg-card border border-border rounded-xl flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
+
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
-          <h3 className="text-lg font-bold text-white">{title || t('selectItem')}</h3>
-          <button onClick={onClose} className="p-1 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h3 className="text-lg font-bold text-foreground">{title || t('selectItem')}</h3>
+          <button onClick={onClose} className="p-1 hover:bg-muted rounded-full text-muted-foreground hover:text-foreground transition-colors">
             <X className="h-6 w-6" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-slate-800">
+        <div className="p-4 border-b border-border">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <input
               ref={inputRef}
               type="text"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-4 py-3 text-slate-200 focus:border-amber-500 outline-none transition-colors"
+              className="w-full bg-background border border-border rounded-lg pl-10 pr-4 py-3 text-foreground focus:border-primary outline-none transition-colors"
               placeholder={t('searchByName')}
               value={query}
               onChange={e => setQuery(e.target.value)}
@@ -89,12 +89,12 @@ export function ItemSelectorModal({ isOpen, onClose, onSelect, filter, title }: 
         {/* Results */}
         <div className="flex-1 overflow-y-auto p-2 space-y-1 min-h-[300px]">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-slate-500">
+            <div className="flex items-center justify-center h-full text-muted-foreground">
               <Loader2 className="animate-spin h-8 w-8 mr-2" />
               {t('loadingItems')}
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-500 py-12">
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground py-12">
               <Search className="h-12 w-12 mb-4 opacity-20" />
               <p>{t('noItemsFound')}</p>
             </div>
@@ -104,12 +104,12 @@ export function ItemSelectorModal({ isOpen, onClose, onSelect, filter, title }: 
                 <button
                   key={item.id}
                   onClick={() => onSelect(item)}
-                  className="flex items-center gap-3 p-2 hover:bg-slate-800 rounded-lg text-left transition-colors group"
+                  className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg text-left transition-colors group"
                 >
                   <ItemIcon item={{ Type: item.id }} size={48} className="w-12 h-12" />
                   <div>
-                    <div className="font-medium text-slate-200 group-hover:text-amber-400 transition-colors">{item.name}</div>
-                    <div className="text-xs text-slate-500">{item.id}</div>
+                    <div className="font-medium text-foreground group-hover:text-primary transition-colors">{item.name}</div>
+                    <div className="text-xs text-muted-foreground">{item.id}</div>
                   </div>
                 </button>
               ))}

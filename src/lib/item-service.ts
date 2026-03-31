@@ -73,14 +73,20 @@ async function getRawItems(): Promise<AlbionItem[]> {
   try {
     // Don't use Next.js cache - items.json is 31MB (exceeds 2MB limit)
     // Use localStorage caching instead
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout for large file
+
     const response = await fetch(ITEMS_JSON_URL, {
-        cache: 'no-store' // Disable Next.js caching
+        cache: 'no-store',
+        signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) throw new Error('Failed to fetch items');
 
     cachedRawItems = await response.json();
-    
+
     // Save to localStorage for future client-side requests
     if (typeof window !== 'undefined') {
       try {
@@ -90,10 +96,14 @@ async function getRawItems(): Promise<AlbionItem[]> {
         // localStorage might be full or disabled
       }
     }
-    
+
     return cachedRawItems || [];
   } catch (error) {
     console.error('Error fetching items:', error);
+    // Return cached data if available
+    if (cachedRawItems && cachedRawItems.length > 0) {
+      return cachedRawItems;
+    }
     return [];
   }
 }

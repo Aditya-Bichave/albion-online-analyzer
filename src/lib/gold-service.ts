@@ -12,24 +12,27 @@ const REGION_URLS = {
 export async function getGoldHistory(region: 'west' | 'east' | 'europe' = 'west', count: number = 24): Promise<GoldPricePoint[]> {
   try {
     const baseUrl = REGION_URLS[region];
-    // The endpoint is /api/v2/stats/gold?count=X
     const url = `${baseUrl}/api/v2/stats/gold?count=${count}`;
-    
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     const response = await fetch(url, {
-      next: { revalidate: 300 }, // Cache for 5 minutes
+      next: { revalidate: 300 },
       headers: {
         'User-Agent': 'AlbionTools/1.0 (Development)'
-      }
+      },
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch gold history: ${response.status}`);
     }
 
     const data = await response.json();
-    
-    // Map response to our interface
-    // API returns array of { price: number, timestamp: string }
+
     return data.map((item: any) => ({
       price: item.price,
       timestamp: item.timestamp

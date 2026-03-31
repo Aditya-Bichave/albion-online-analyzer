@@ -271,11 +271,11 @@ export default async function Image({ params }: { params: Promise<{ category: st
                 fontWeight: 700,
                 color: 'white',
               }}>
-                {build.authorName.charAt(0).toUpperCase()}
+                {(build.authorName || '').charAt(0).toUpperCase()}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontSize: 14, color: '#71717a' }}>Created by</div>
-                <div style={{ fontWeight: 600, color: '#e4e4e7' }}>{build.authorName}</div>
+                <div style={{ fontWeight: 600, color: '#e4e4e7' }}>{build.authorName || 'Unknown'}</div>
               </div>
             </div>
           </div>

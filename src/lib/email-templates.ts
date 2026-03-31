@@ -1,22 +1,22 @@
 const BASE_STYLES = `
-  body { margin: 0; padding: 0; background-color: #0f172a; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; padding: 0; background-color: #0c0a09; font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fafaf9; -webkit-font-smoothing: antialiased; }
   .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-  .card { background-color: #1e293b; border-radius: 16px; padding: 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #334155; }
+  .card { background-color: #1c1917; border-radius: 16px; padding: 40px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #292524; }
   .header { text-align: center; margin-bottom: 32px; }
   .banner-img { max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto; }
-  h1 { color: #f8fafc; font-size: 24px; font-weight: 700; margin: 0 0 24px; text-align: center; letter-spacing: -0.5px; }
-  p { margin: 0 0 24px; line-height: 1.6; color: #cbd5e1; font-size: 16px; }
+  h1 { color: #fafaf9; font-size: 24px; font-weight: 700; margin: 0 0 24px; text-align: center; letter-spacing: -0.5px; }
+  p { margin: 0 0 24px; line-height: 1.6; color: #d6d3d1; font-size: 16px; }
   .btn-container { text-align: center; margin: 32px 0; }
-  .btn { display: inline-block; background-color: #f59e0b; color: #0f172a; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px; transition: all 0.2s; font-size: 16px; }
+  .btn { display: inline-block; background-color: #f59e0b; color: #0c0a09; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px; transition: all 0.2s; font-size: 16px; }
   .btn:hover { background-color: #d97706; }
-  .footer { margin-top: 32px; text-align: center; color: #64748b; font-size: 12px; }
-  .footer p { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-  .footer a { color: #94a3b8; text-decoration: none; }
-  .divider { height: 1px; background-color: #334155; margin: 32px 0; }
-  ul { padding-left: 20px; margin-bottom: 24px; color: #cbd5e1; }
+  .footer { margin-top: 32px; text-align: center; color: #a8a29e; font-size: 12px; }
+  .footer p { font-size: 12px; color: #a8a29e; margin-bottom: 8px; }
+  .footer a { color: #d6d3d1; text-decoration: none; }
+  .divider { height: 1px; background-color: #292524; margin: 32px 0; }
+  ul { padding-left: 20px; margin-bottom: 24px; color: #d6d3d1; }
   li { margin-bottom: 12px; line-height: 1.5; }
   .highlight { color: #f59e0b; font-weight: 600; }
-  .small-text { font-size: 13px; color: #94a3b8; }
+  .small-text { font-size: 13px; color: #a8a29e; }
 `;
 
 // Use Albion Online logo or item image - emails need reliable image hosting
@@ -53,7 +53,7 @@ function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_UR
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #0f172a;">
+<body style="margin: 0; padding: 0; background-color: #0c0a09;">
   <div style="display:none;font-size:1px;color:#333333;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
     ${previewText || title}
   </div>
@@ -63,21 +63,21 @@ function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_UR
         <img src="${bannerUrl}" alt="AlbionKit" class="banner-img" style="height: auto; border-radius: 8px; display: block; margin: 0 auto;" >
       </a>
     </div>
-    <div class="card" style="background-color: #1e293b; border-radius: 16px; padding: 40px; border: 1px solid #334155;">
+    <div class="card" style="background-color: #1c1917; border-radius: 16px; padding: 40px; border: 1px solid #292524;">
       ${content}
 
-      <div class="divider" style="height: 1px; background-color: #334155; margin: 32px 0;"></div>
+      <div class="divider" style="height: 1px; background-color: #292524; margin: 32px 0;"></div>
 
-      <p style="font-size: 14px; color: #94a3b8; margin-bottom: 0; text-align: center;">
+      <p style="font-size: 14px; color: #a8a29e; margin-bottom: 0; text-align: center;">
         ${t ? t('common.companion') : 'Your companion for Albion Online - Builds, Market Data, and PvP Intel.'}
       </p>
     </div>
-    <div class="footer" style="margin-top: 32px; text-align: center; color: #64748b; font-size: 12px;">
-      <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">&copy; ${new Date().getFullYear()} AlbionKit. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
-      <p style="font-size: 12px; color: #64748b; margin: 0;">
-        <a href="https://albionkit.com/privacy" style="color: #94a3b8; text-decoration: none;">${t ? t('common.privacy') : 'Privacy Policy'}</a> &bull;
-        <a href="https://albionkit.com/terms" style="color: #94a3b8; text-decoration: none;">${t ? t('common.terms') : 'Terms of Service'}</a> &bull;
-        <a href="https://albionkit.com/settings" style="color: #94a3b8; text-decoration: none;">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
+    <div class="footer" style="margin-top: 32px; text-align: center; color: #a8a29e; font-size: 12px;">
+      <p style="font-size: 12px; color: #a8a29e; margin-bottom: 8px;">&copy; ${new Date().getFullYear()} AlbionKit. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
+      <p style="font-size: 12px; color: #a8a29e; margin: 0;">
+        <a href="https://albionkit.com/privacy" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.privacy') : 'Privacy Policy'}</a> &bull;
+        <a href="https://albionkit.com/terms" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.terms') : 'Terms of Service'}</a> &bull;
+        <a href="https://albionkit.com/settings" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
       </p>
     </div>
   </div>
@@ -212,20 +212,20 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) 
   // Use translated "Traveler" if name is the default
   const displayName = name && name !== 'Traveler' ? name : (t ? t('common.travelerName') : 'Traveler');
   const itemsHtml = items.map(item => `
-    <li style="margin-bottom: 16px; list-style: none; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+    <li style="margin-bottom: 16px; list-style: none; background: #0c0a09; padding: 12px; border-radius: 8px; border: 1px solid #292524;">
       <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="https://render.albiononline.com/v1/item/${item.itemId}?quality=1" 
-             width="48" 
-             height="48" 
-             style="border-radius: 4px; background: #1e293b;" 
+        <img src="https://render.albiononline.com/v1/item/${item.itemId}?quality=1"
+             width="48"
+             height="48"
+             style="border-radius: 4px; background: #1c1917;"
              alt="${item.name}"
              onerror="this.src='https://render.albiononline.com/v1/item/T8_BAG_ENIGMA_FULL?quality=1';this.onerror=null;">
         <div>
-          <div style="font-weight: bold; color: #f8fafc;">${item.name}</div>
+          <div style="font-weight: bold; color: #fafaf9;">${item.name}</div>
           <div style="font-size: 13px; color: #f59e0b;">
             ${t ? t('watchlist.profit', { profit: Math.round(item.profit || 0).toLocaleString(), roi: item.margin || 0 }) : `Profit: <strong>${Math.round(item.profit || 0).toLocaleString()} Silver</strong> (${item.margin || 0}% ROI)`}
           </div>
-          <div style="font-size: 12px; color: #94a3b8;">
+          <div style="font-size: 12px; color: #a8a29e;">
             ${t ? t('watchlist.buySell', { buyPrice: (item.buyPrice || 0).toLocaleString(), buyCity: item.buyCity || 'Anywhere', sellPrice: (item.sellPrice || 0).toLocaleString() }) : `Buy: ${(item.buyPrice || 0).toLocaleString()} (${item.buyCity || 'Anywhere'}) → Sell: ${(item.sellPrice || 0).toLocaleString()} (BM)`}
           </div>
         </div>
@@ -272,9 +272,9 @@ export function getGoldAlertEmailHtml(name: string, region: string, currentPrice
     <p>${t ? t('gold.greeting', { name: displayName }) : `Hi ${displayName},`}</p>
     <p>${t ? t('gold.body', { region: region.toUpperCase() }) : `We've detected a significant movement in the **Gold Market (${region.toUpperCase()})**.`}</p>
     
-    <div style="background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #334155; margin: 24px 0; text-align: center;">
-      <div style="font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">${t ? t('gold.currentPriceLabel') : 'Current Gold Price'}</div>
-      <div style="font-size: 36px; font-weight: 900; color: #f8fafc; font-family: monospace;">${currentPrice.toLocaleString()} <span style="font-size: 16px; color: #94a3b8;">Silver</span></div>
+    <div style="background: #0c0a09; padding: 20px; border-radius: 12px; border: 1px solid #292524; margin: 24px 0; text-align: center;">
+      <div style="font-size: 14px; color: #a8a29e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">${t ? t('gold.currentPriceLabel') : 'Current Gold Price'}</div>
+      <div style="font-size: 36px; font-weight: 900; color: #fafaf9; font-family: monospace;">${currentPrice.toLocaleString()} <span style="font-size: 16px; color: #a8a29e;">Silver</span></div>
       <div style="font-size: 18px; font-weight: bold; color: ${color}; margin-top: 8px;">
         ${t ? t('gold.trend', { icon, trendText, change: Math.abs(change).toFixed(1) }) : `${icon} ${trendText} by ${Math.abs(change).toFixed(1)}%`}
       </div>

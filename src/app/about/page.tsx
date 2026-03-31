@@ -11,7 +11,6 @@ import {
   Shield,
   Globe,
   Heart,
-  Code2,
   Database,
   ExternalLink,
   Crown,

@@ -18,6 +18,7 @@ import { RECIPES, FoodRecipe, Ingredient, FISH_SAUCES } from './constants';
 import { NumberInput } from '@/components/ui/NumberInput';
 import { Select } from '@/components/ui/Select';
 import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/Button';
 
 // Interfaces for enhanced data structure
 interface EnhancedIngredient extends Ingredient {
@@ -409,27 +410,39 @@ export default function CookingClient() {
             title={t('title')}
             backgroundImage='/background/ao-crafting.jpg'
             description={t('description')}
-            icon={<Utensils className="h-6 w-6" />}
             headerActions={
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-4">
                     <ServerSelector selectedServer={region} onServerChange={setRegion} />
-                    <button onClick={fetchData} disabled={loading} className="p-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg border border-border transition-colors">
-                        <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-                    </button>
+                    <Button
+                        onClick={fetchData}
+                        disabled={loading}
+                        variant="default"
+                        size="sm"
+                        className="gap-2"
+                    >
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        <span className="hidden sm:inline">{t('refresh')}</span>
+                    </Button>
                 </div>
             }
         >
             <div className="space-y-6">
                 {/* Main Configuration Card */}
-                <div className="bg-card rounded-xl border border-border transition-all duration-300">
-                    <div className="p-4 border-b border-border bg-muted/50 flex items-center justify-between rounded-t-xl">
+                <div className="bg-card rounded-xl border border-border">
+                    <div className="p-5 border-b border-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Settings className="h-5 w-5 text-muted-foreground" />
+                            <div className="p-2 rounded-lg bg-orange-500/10">
+                                <Settings className="h-4 w-4 text-orange-500" />
+                            </div>
                             <h3 className="font-bold text-foreground">{tAlchemy('configuration')}</h3>
                         </div>
                         <button
                             onClick={() => setShowAdvanced(!showAdvanced)}
-                            className={`flex items-center gap-1 text-xs font-bold transition-colors ${showAdvanced ? 'text-warning' : 'text-muted-foreground hover:text-foreground'}`}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                                showAdvanced 
+                                    ? 'bg-orange-500 text-white' 
+                                    : 'bg-muted text-muted-foreground hover:text-foreground'
+                            }`}
                         >
                             <Settings className="h-3 w-3" />
                             {showAdvanced ? tAlchemy('simpleMode') : tAlchemy('advancedMode')}
@@ -472,11 +485,13 @@ export default function CookingClient() {
 
                     {/* Advanced Configuration (Collapsible) */}
                     {showAdvanced && (
-                        <div className="p-6 border-t border-border bg-muted/30 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-200 rounded-b-xl">
+                        <div className="p-6 border-t border-border bg-muted/30 grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {/* Market Strategy */}
-                                <div className="bg-card/50 p-4 rounded-lg border border-border/50 space-y-4">
-                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
-                                        <TrendingUp className="h-4 w-4 text-success" />
+                                <div className="bg-card rounded-xl border border-border p-5 space-y-4">
+                                    <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+                                        <div className="p-2 rounded-lg bg-green-500/10">
+                                            <TrendingUp className="h-4 w-4 text-green-500" />
+                                        </div>
                                         <h4 className="text-sm font-bold text-foreground">{tAlchemy('marketStrategy')}</h4>
                                     </div>
                                     <div className="space-y-4">
@@ -512,9 +527,11 @@ export default function CookingClient() {
                                 </div>
 
                                 {/* Bonuses */}
-                                <div className="bg-card/50 p-4 rounded-lg border border-border/50  space-y-4">
-                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
-                                        <DollarSign className="h-4 w-4 text-warning" />
+                                <div className="bg-card rounded-xl border border-border p-5 space-y-4">
+                                    <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+                                        <div className="p-2 rounded-lg bg-amber-500/10">
+                                            <DollarSign className="h-4 w-4 text-amber-500" />
+                                        </div>
                                         <h4 className="text-sm font-bold text-foreground">{tAlchemy('bonusesAndFees')}</h4>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
@@ -536,9 +553,11 @@ export default function CookingClient() {
                                 </div>
 
                                 {/* Sourcing Cities */}
-                                <div className="bg-card/50 p-4 rounded-lg border border-border/50 space-y-4">
-                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
-                                        <Package className="h-4 w-4 text-primary" />
+                                <div className="bg-card rounded-xl border border-border p-5 space-y-4">
+                                    <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+                                        <div className="p-2 rounded-lg bg-blue-500/10">
+                                            <Package className="h-4 w-4 text-blue-500" />
+                                        </div>
                                         <h4 className="text-sm font-bold text-foreground">{tAlchemy('sourcingCities')}</h4>
                                     </div>
                                     <div className="space-y-3">

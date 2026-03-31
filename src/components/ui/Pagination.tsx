@@ -57,11 +57,11 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading }:
         variant="outline"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || isLoading}
-        className="px-3 py-1.5 min-w-[2.5rem] h-9"
+        className="px-2 sm:px-3 py-1.5 min-w-[2rem] sm:min-w-[2.5rem] h-8 sm:h-9 text-xs sm:text-sm"
         aria-label="Previous page"
       >
         <span className="sr-only">Previous</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </Button>
@@ -72,7 +72,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading }:
           return (
             <span
               key={`ellipsis-${index}`}
-              className="px-3 py-1.5 text-muted-foreground select-none"
+              className="px-2 sm:px-3 py-1.5 text-muted-foreground select-none text-xs sm:text-sm"
             >
               ...
             </span>
@@ -88,7 +88,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading }:
             variant={isActive ? 'default' : 'outline'}
             onClick={() => onPageChange(pageNum)}
             disabled={isLoading}
-            className={`px-3 py-1.5 min-w-[2.5rem] h-9 ${
+            className={`px-2 sm:px-3 py-1.5 min-w-[2rem] sm:min-w-[2.5rem] h-8 sm:h-9 text-xs sm:text-sm ${
               isActive
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                 : 'hover:bg-secondary'
@@ -106,11 +106,11 @@ export function Pagination({ currentPage, totalPages, onPageChange, isLoading }:
         variant="outline"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || isLoading}
-        className="px-3 py-1.5 min-w-[2.5rem] h-9"
+        className="px-2 sm:px-3 py-1.5 min-w-[2rem] sm:min-w-[2.5rem] h-8 sm:h-9 text-xs sm:text-sm"
         aria-label="Next page"
       >
         <span className="sr-only">Next</span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </Button>

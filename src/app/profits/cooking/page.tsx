@@ -1,12 +1,15 @@
-import type { Metadata } from 'next';
+import { Metadata } from 'next';
 import CookingClient from './CookingClient';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = createPageMetadata(
-  'cooking-calc',
-  'Albion Online Cooking Calculator - Profit & Recipes | AlbionKit',
-  'Maximize your Cooking profits in Albion Online. Calculate food crafting costs, focus efficiency, and return rates. Find the most profitable recipes.'
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Pages.cooking');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function CookingPage() {
   return <CookingClient />;

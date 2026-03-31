@@ -1,9 +1,7 @@
 'use client';
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface FeatureSectionProps {
   title: string;
@@ -27,67 +25,61 @@ export function FeatureSection({
   reverse = false,
 }: FeatureSectionProps) {
   return (
-    <section className="relative w-full min-h-[500px] md:min-h-[500px] flex items-center justify-center overflow-hidden py-24 group">
-      {/* Background Image (Static) */}
+    <section className="relative w-full min-h-[250px] flex items-center overflow-hidden border-2 border-background rounded-2xl group">
+      {/* Albion Background Image Layer */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 rounded-2xl"
         style={{
           backgroundImage: `url(${backgroundImage})`,
-          backgroundPosition: 'center',
+          backgroundPosition: 'center top',
           backgroundSize: 'cover',
         }}
       />
 
-      {/* Overlay - Gradient + Blur */}
-      <div className="absolute inset-0 z-0 bg-background/90 backdrop-blur-[3px] bg-gradient-to-b from-background via-background/80 to-background" />
+      {/* Gradient Overlay Layer */}
+      <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-r from-background via-background/90 to-background/70 dark:from-background dark:via-background/85 dark:to-background/60" />
 
-      <div className="container relative z-10 px-4 md:px-6">
-        <div className={cn(
-          "flex flex-col items-center gap-12 lg:gap-24",
-          reverse ? "lg:flex-row-reverse" : "lg:flex-row"
-        )}>
-          {/* Text Content */}
-          <div className="flex-1 space-y-6 text-center lg:text-left">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-foreground">{title}</h2>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl mx-auto lg:mx-0">
-              {description}
-            </p>
-            <div className="pt-4 flex justify-center lg:justify-start">
-              <Link
-                href={link}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-bold transition-all hover:scale-105"
-              >
-                {linkText}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
+      {/* Screenshot Overlay Layer
+      <div
+        className="absolute inset-0 z-0 rounded-2xl opacity-50"
+        style={{
+          backgroundImage: `url(${previewImageLight})`,
+          backgroundPosition: 'center right',
+          backgroundSize: 'cover',
+        }}
+      /> */}
 
-          {/* Preview Image with Parallax */}
-          <div className="flex-1 w-full max-w-[650px]">
-            <div className="group/card relative h-[300px] md:h-[350px] w-full rounded-xl border border-border/50 overflow-hidden bg-card/50 backdrop-blur-sm transform transition-all duration-700 hover:scale-[1.02] group-hover:border-primary/20">
-              {/* Light Mode Image */}
-              <Image
-                src={previewImageLight}
-                alt={`${title} Preview`}
-                fill
-                className="object-cover object-top block dark:hidden transition-[object-position] duration-[15000ms] ease-in-out group-hover/card:object-bottom"
-                sizes="(max-width: 768px) 100vw, 650px"
-                quality={90}
-              />
-              {/* Dark Mode Image */}
-              <Image
-                src={previewImageDark}
-                alt={`${title} Preview`}
-                fill
-                className="object-cover object-top hidden dark:block transition-[object-position] duration-[15000ms] ease-in-out group-hover/card:object-bottom"
-                sizes="(max-width: 768px) 100vw, 650px"
-                quality={90}
-              />
+      {/* Dark Mode Screenshot */}
+      {/* <div
+        className="absolute inset-0 z-0 hidden dark:block rounded-2xl opacity-80"
+        style={{
+          backgroundImage: `url(${previewImageDark})`,
+          backgroundPosition: 'center right',
+          backgroundSize: 'cover',
+        }}
+      /> */}
 
-              {/* Shine effect on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-tr from-transparent via-white to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none" />
-            </div>
+      <div className="container relative z-20 px-6 md:px-8 py-12">
+        <div className="max-w-2xl space-y-6">
+          {/* Title */}
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-foreground">
+            {title}
+          </h2>
+          
+          {/* Description */}
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+            {description}
+          </p>
+          
+          {/* CTA Button */}
+          <div className="pt-2">
+            <Link
+              href={link}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-amber-600 hover:from-amber-600 hover:to-primary text-primary-foreground rounded-2xl font-bold transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/20 shadow-lg"
+            >
+              {linkText}
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
       </div>

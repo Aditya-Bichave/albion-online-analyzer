@@ -22,7 +22,6 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
 
   const categoryKey = build.category ? build.category.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) : 'solo';
   const buildLink = `/builds/${build.id}`;
-  const authorLink = `/user/${build.authorId}`;
 
   const handleCardClick = React.useCallback((e: React.MouseEvent) => {
     // Prevent navigation if clicking on a link or button
@@ -39,8 +38,8 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
     >
       <div className={`flex items-start justify-between ${compactMode ? 'mb-2' : 'mb-4'}`}>
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <ItemIcon item={build.items.MainHand} size={compactMode ? 48 : 64} className={`${compactMode ? 'w-10 h-10' : 'w-14 h-14'} object-contain bg-muted/50 rounded-lg border border-border/50`} alt={build.items.MainHand?.Type || 'Main Hand'} />
+          <div className="relative w-fit">
+            <ItemIcon item={build.items.MainHand} size={64} className={`w-14 h-14`} alt={build.items.MainHand?.Type || 'Main Hand'} />
             {build.items.OffHand && (
               <div className={`absolute -bottom-0.5 -right-2 ${compactMode ? 'w-6 h-6' : 'w-8 h-8'} rounded-md bg-card border border-border z-10 overflow-hidden`}>
                 <ItemIcon item={build.items.OffHand} size={32} className="w-full h-full object-contain" alt={build.items.OffHand.Type || 'Off Hand'} />
@@ -49,20 +48,12 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
           </div>
           <div>
             <h3 className={`font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1 ${compactMode ? 'text-sm' : 'text-base'}`}>{build.title}</h3>
-            <Link
-              href={authorLink}
-              className="flex items-center gap-2 text-xs text-muted-foreground mt-1 hover:text-primary transition-colors w-fit relative z-20"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <User className="h-3 w-3" />
-              <span>{build.authorName}</span>
-            </Link>
           </div>
         </div>
-        {build.rating > 0 && (
+        {(build.rating || 0) > 0 && (
           <div className="px-2 py-1 bg-primary/10 rounded text-xs font-bold text-primary border border-primary/20 flex items-center gap-1">
             <Star className="h-3 w-3 fill-primary" />
-            {build.rating.toFixed(1)}
+            {(build.rating || 0).toFixed(1)}
           </div>
         )}
       </div>
@@ -70,7 +61,7 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
       {/* Equipment Preview (Small icons) */}
       <div className="flex gap-1 mb-4 opacity-50 group-hover:opacity-100 transition-opacity">
         {[build.items.Head, build.items.Armor, build.items.Shoes, build.items.Cape].map((item, i) => (
-          item && <ItemIcon key={i} item={item} size={32} className="w-6 h-6 object-contain bg-muted rounded border border-border" alt={item.Type || 'Item'} />
+          item && <ItemIcon key={i} item={item} size={32} className="w-6 h-6 object-contain rounded border border-border" alt={item.Type || 'Item'} />
         ))}
       </div>
 

@@ -27,13 +27,13 @@ import {
 } from "lucide-react";
 
 import { ItemIcon } from "@/components/ItemIcon";
-import { getTickerData, getGlobalStats } from "@/lib/ticker-service";
 import { MarketTicker } from "@/components/MarketTicker";
 import { InfoStrip, InfoBanner } from "@/components/InfoStrip";
 import { FeatureSection } from "@/components/FeatureSection";
 import { SocialShare } from "@/components/SocialShare";
+import { StatsSection } from "@/components/StatsSection";
 import { useTranslations } from 'next-intl';
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 import { createPageMetadata } from '@/lib/screenshot-metadata';
 
@@ -69,11 +69,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const t = await getTranslations('HomePage');
-  const locale = await getLocale();
-  const [tickerData, stats] = await Promise.all([
-    getTickerData(locale),
-    getGlobalStats(locale)
-  ]);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -147,18 +142,15 @@ export default async function Home() {
             </div>
           </div>
         </div>
-
-        {/* Market Ticker */}
-        <MarketTicker data={tickerData} />
       </section>
 
       {/* Stats Strip */}
       <section className="bg-muted/50 backdrop-blur-sm relative z-20 border-b-5 border-muted">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0 py-6 md:py-10 container mx-auto px-4">
-          <StatItem value={`${stats.itemsTracked > 0 ? stats.itemsTracked.toLocaleString() : '6,000'}+`} label={t('itemsTracked')} />
-          <StatItem value={`${stats.battlesAnalyzed > 0 ? stats.battlesAnalyzed.toLocaleString() : '50'}+`} label={t('recentBattles')} />
-          <StatItem value={stats.marketUpdates} label={t('marketUpdates')} />
-          <StatItem value={stats.uptime} label={t('serverUptime')} />
+          <StatItem value="6,000+" label={t('itemsTracked')} />
+          <StatItem value="50+" label={t('recentBattles')} />
+          <StatItem value="24/7" label={t('marketUpdates')} />
+          <StatItem value="99.9%" label={t('serverUptime')} />
         </div>
       </section>
 

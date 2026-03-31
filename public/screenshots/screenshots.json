@@ -59,22 +59,21 @@
     ],
     "page": "/tools/market-flipper"
   },
-  "kill-feed": {
-    "alt": "Live Kill Feed showing real-time PvP battles",
-    "title": "Kill Feed Tracker",
-    "caption": "Track PvP action in real-time",
+  "killboard": {
+    "alt": "Killboard - Real-time PvP battle tracker showing live kills and statistics",
+    "title": "Killboard - PvP Battle Tracker",
+    "caption": "Track PvP battles and kills in real-time",
     "keywords": [
-      "kill feed",
+      "killboard",
       "pvp tracker",
       "live battles",
       "player kills",
-      "albion kill feed",
+      "albion killboard",
       "live pvp",
       "albion pvp",
       "kill tracker",
       "battle tracker",
       "real-time kills",
-      "albion killboard",
       "pvp statistics",
       "kill statistics",
       "fame tracking",
@@ -87,9 +86,11 @@
       "kill monitoring",
       "albion online pvp",
       "pvp tool",
-      "battle feed"
+      "battle feed",
+      "kill feed",
+      "albion kills"
     ],
-    "page": "/tools/kill-feed"
+    "page": "/tools/killboard"
   },
   "gold-price": {
     "alt": "Gold Price Calculator - Compare gold prices across servers",

@@ -45,12 +45,11 @@ export async function searchPlayer(query: string, region?: 'west' | 'east' | 'eu
 
 export async function getPlayerStats(playerId: string, region: 'west' | 'east' | 'europe' = 'west') {
   // Small helper to retry on transient failures (network/5xx)
-  const fetchWithRetry = async (url: string, init?: RequestInit, retries = 2, delayMs = 300) => {
+  const fetchWithRetry = async (url: string, init?: RequestInit, retries = 3, delayMs = 400) => {
     let lastErr: any = null;
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         const res = await fetch(url, init);
-        // If 5xx, optionally retry; otherwise return
         if (!res.ok && res.status >= 500 && res.status < 600 && attempt < retries) {
           await new Promise(r => setTimeout(r, delayMs));
           continue;
@@ -71,12 +70,10 @@ export async function getPlayerStats(playerId: string, region: 'west' | 'east' |
   try {
     const baseUrl = REGION_URLS[region];
 
-    // Fetch stats with retry first, since it's the gate for displaying anything
     const statsUrl = `${baseUrl}/api/gameinfo/players/${playerId}`;
     const statsRes = await fetchWithRetry(statsUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
 
     if (!statsRes.ok) {
-      // If 404, allow caller to try other regions without logging a hard error
       if (statsRes.status === 404) {
         return { error: 'not_found', stats: null, kills: [], deaths: [] };
       }
@@ -84,14 +81,14 @@ export async function getPlayerStats(playerId: string, region: 'west' | 'east' |
       throw new Error('Failed to fetch player stats');
     }
 
-    // Fetch kills/deaths in parallel (no retries, degrade to empty on failure)
+    // Get kills and deaths (API limits to 10 each)
     const [killsRes, deathsRes] = await Promise.all([
       fetch(
-        `${baseUrl}/api/gameinfo/players/${playerId}/kills?limit=500`,
+        `${baseUrl}/api/gameinfo/players/${playerId}/kills?limit=1000`,
         { headers: { 'User-Agent': 'Mozilla/5.0' } }
       ).catch(() => null as any),
       fetch(
-        `${baseUrl}/api/gameinfo/players/${playerId}/deaths?limit=500`,
+        `${baseUrl}/api/gameinfo/players/${playerId}/deaths?limit=1000`,
         { headers: { 'User-Agent': 'Mozilla/5.0' } }
       ).catch(() => null as any)
     ]);
@@ -99,6 +96,11 @@ export async function getPlayerStats(playerId: string, region: 'west' | 'east' |
     const stats = await statsRes.json();
     const kills = killsRes && killsRes.ok ? await killsRes.json() : [];
     const deaths = deathsRes && deathsRes.ok ? await deathsRes.json() : [];
+
+    console.log(`[PlayerStats] Player: ${playerId}`);
+    console.log(`[PlayerStats] Kills: ${kills.length}, Deaths: ${deaths.length}`);
+    console.log(`[PlayerStats] Sample kill timestamp: ${kills[0]?.Timestamp}`);
+    console.log(`[PlayerStats] Stats: KillFame=${stats.KillFame}, DeathFame=${stats.DeathFame}`);
 
     return { stats, kills, deaths, error: undefined };
   } catch (error: any) {

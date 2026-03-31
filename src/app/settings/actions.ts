@@ -721,54 +721,40 @@ export async function updateGuildLicenseAllianceAction(guildId: string, alliance
 export async function updateUserProfileAndBuildsAction(uid: string, data: any) {
     try {
         const userRef = adminDb.collection('users').doc(uid);
-        
-        // Get current data to check for name change
-        const userSnap = await userRef.get();
-        const currentData = userSnap.data();
-        
+
         const newDisplayName = data.displayName;
-        const currentDisplayName = currentData?.displayName;
-        const nameChanged = newDisplayName && newDisplayName !== currentDisplayName;
-        
-        // Update user profile
+
+        // Update user profile (1 write)
         await userRef.set({
             ...data,
             updatedAt: new Date().toISOString()
         }, { merge: true });
-        
+
         // Check for any builds that need name updates (auto-healing)
-        const buildsRef = adminDb.collection('builds');
-        const buildsSnap = await buildsRef.where('authorId', '==', uid).get();
-        
-        if (!buildsSnap.empty) {
-            const batch = adminDb.batch();
-            const chunks = [];
-            let count = 0;
-            let currentBatchCount = 0;
-            let currentBatch = adminDb.batch();
+        // Only query if we actually have a new display name
+        if (newDisplayName) {
+            const buildsRef = adminDb.collection('builds');
+            const buildsSnap = await buildsRef
+                .where('authorId', '==', uid)
+                .where('authorName', '!=', newDisplayName)
+                .get();
 
-            buildsSnap.docs.forEach((doc) => {
-                const buildData = doc.data();
-                // Only update if the name is actually different and new name is valid
-                if (newDisplayName && buildData.authorName !== newDisplayName) {
-                    currentBatch.update(doc.ref, { authorName: newDisplayName });
-                    currentBatchCount++;
-                    count++;
+            if (!buildsSnap.empty) {
+                // Firestore batches max 500 operations
+                const batch = adminDb.batch();
+                let count = 0;
 
-                    if (currentBatchCount >= 500) {
-                        chunks.push(currentBatch.commit());
-                        currentBatch = adminDb.batch();
-                        currentBatchCount = 0;
+                buildsSnap.docs.forEach((doc) => {
+                    if (count < 500) { // Stay under batch limit
+                        batch.update(doc.ref, { authorName: newDisplayName });
+                        count++;
                     }
+                });
+
+                if (count > 0) {
+                    await batch.commit();
+                    console.log(`Updated ${count} builds with new author name`);
                 }
-            });
-
-            if (currentBatchCount > 0) {
-                chunks.push(currentBatch.commit());
-            }
-
-            if (chunks.length > 0) {
-                await Promise.all(chunks);
             }
         }
 

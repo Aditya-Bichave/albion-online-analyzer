@@ -1,13 +1,36 @@
 {
-  "name": "albion-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "albionkit",
+  "version": "1.0.0",
+  "description": "A comprehensive toolkit for Albion Online players featuring market analysis, build databases, PvP intelligence, and profit calculators",
+  "private": false,
+  "author": "Cosmic-fi (AlbionKit Team)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmic-fi/albionkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmic-fi/albionkit/issues"
+  },
+  "homepage": "https://albionkit.com",
+  "keywords": [
+    "albion-online",
+    "mmo",
+    "gaming",
+    "market-analysis",
+    "build-database",
+    "pvp",
+    "nextjs",
+    "react",
+    "typescript"
+  ],
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "i18n:check": "node check_translations.js"
+    "i18n:check": "node check_translations.js",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

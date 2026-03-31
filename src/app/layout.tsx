@@ -9,7 +9,6 @@ import { Toaster } from 'sonner';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, getLocale } from 'next-intl/server';
-import { LiveKillToasts } from "@/components/LiveKillToasts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -161,7 +160,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               <LoginModalProvider>
                 <MainLayout>
                   {children}
-                  <LiveKillToasts />
                 </MainLayout>
                 <Toaster />
               </LoginModalProvider>

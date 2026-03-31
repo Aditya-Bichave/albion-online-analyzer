@@ -1,23 +1,25 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
-import { PageShell } from '@/components/PageShell';
-import { InfoStrip, InfoBanner } from '@/components/InfoStrip';
-import { ItemIcon } from '@/components/ItemIcon';
-import { Sprout, RefreshCw, Calculator, TrendingUp, TrendingDown, Info, Leaf, Flower2, ChevronDown, ChevronUp, ArrowRight, DollarSign, Scale, Percent, Edit2, CircleHelp } from 'lucide-react';
-import { CROP_DEFINITIONS, Crop } from './constants';
-import { getMarketPrices, getMarketVolume, MarketStat, LOCATIONS } from '@/lib/market-service';
-import { getItemNameService } from '@/lib/item-service';
-import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { ServerSelector } from '@/components/ServerSelector';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { useServer } from '@/hooks/useServer';
-import { Loader2 } from 'lucide-react';
-import { Checkbox } from '@/components/ui/Checkbox';
+import { PageShell } from '@/components/PageShell';
+import { InfoStrip } from '@/components/InfoStrip';
+import { ItemIcon } from '@/components/ItemIcon';
+import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { NumberInput } from '@/components/ui/NumberInput';
-import { CategoryTabs } from '@/components/ui/CategoryTabs';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { ServerSelector } from '@/components/ServerSelector';
 import { Tooltip } from '@/components/ui/Tooltip';
-import React, { useEffect, useState } from 'react';
+import {
+  Sprout, Leaf, Flower2, TrendingUp, TrendingDown,
+  Coins, MapPin, DollarSign, Scale,
+  ChevronDown, ChevronUp, ArrowRight, RefreshCw, Info, CircleHelp
+} from 'lucide-react';
+import { CROP_DEFINITIONS, Crop } from './constants';
+import { getMarketPrices, getMarketVolume, MarketStat, LOCATIONS } from '@/lib/market-service';
+import { useAuth } from '@/context/AuthContext';
 
 interface FarmingData extends Crop {
   seedPrice: number;
@@ -28,129 +30,81 @@ interface FarmingData extends Crop {
   profitPerPlot: number;
   roi: number;
   warning?: string;
-  // User override flags
   isCustomSeedPrice?: boolean;
   isCustomProducePrice?: boolean;
-
-  // Original fetched prices (for reset)
   originalSeedPrice?: number;
   originalProducePrice?: number;
 }
 
-const CITIES = LOCATIONS.filter(l => l !== 'Black Market' && l !== 'Caerleon'); // Royal cities usually used for farming
-// Add Caerleon if needed, but farming islands can be in Caerleon too.
+const CITIES = LOCATIONS.filter(l => l !== 'Black Market' && l !== 'Caerleon');
+
+const getCropStats = (tier: number, id: string, type: 'crop' | 'herb'): Partial<Crop> => {
+  const upperId = id.toUpperCase();
+  const seedId = `T${tier}_FARM_${upperId}_SEED`;
+  const produceId = `T${tier}_${upperId}`;
+  const baseYield = 8;
+
+  let seedReturnRate = 0;
+  let seedReturnRateFocus = 0;
+
+  if (tier === 1) {
+    seedReturnRate = 0;
+    seedReturnRateFocus = 200;
+  } else {
+    const rates: Record<number, { base: number; focus: number }> = {
+      2: { base: 80, focus: 180 },
+      3: { base: 86.67, focus: 186.67 },
+      4: { base: 91.11, focus: 191.11 },
+      5: { base: 93.33, focus: 193.33 },
+      6: { base: 94.44, focus: 194.44 },
+      7: { base: 95.24, focus: 195.24 },
+      8: { base: 96.15, focus: 196.15 }
+    };
+    const rate = rates[tier];
+    if (rate) {
+      seedReturnRate = rate.base;
+      seedReturnRateFocus = rate.focus;
+    }
+  }
+
+  return { seedId, produceId, baseYield, seedReturnRate, seedReturnRateFocus };
+};
 
 export default function FarmingClient() {
   const t = useTranslations('Farming');
   const { server: region, setServer: setRegion } = useServer();
-  const [buyCity, setBuyCity] = useState<string>('Martlock');
-  const [sellCity, setSellCity] = useState<string>('Martlock');
+  const { profile } = useAuth();
+
+  const [buyCity, setBuyCity] = useState('Martlock');
+  const [sellCity, setSellCity] = useState('Martlock');
   const [category, setCategory] = useState<'crop' | 'herb'>('crop');
-
-  // Helper to generate crop stats
-  const getCropStats = (tier: number, id: string, type: 'crop' | 'herb'): Partial<Crop> => {
-    const upperId = id.toUpperCase();
-    const seedId = `T${tier}_FARM_${upperId}_SEED`;
-    // Produce ID usually matches T{tier}_{UPPERID} but let's verify exceptions if any
-    // T1_CARROT, T2_BEAN, etc. seems consistent.
-    const produceId = `T${tier}_${upperId}`;
-
-    const name = t(`cropNames.${id}`);
-
-    const baseYield = 8; // Standard for most crops/herbs
-
-    // Seed Return Rates (approximate based on wiki)
-    // T1: 0 (Shop only? Carrots often 0 return without focus?) Actually T1 carrots have 0 seed yield? 
-    // Wiki says Carrots: 0% base, ? focus. Actually usually you buy carrot seeds.
-    // Let's use the values from the old constant for consistency.
-    let seedReturnRate = 0;
-    let seedReturnRateFocus = 0;
-    let focusCost = 500;
-
-    if (tier === 1) {
-      seedReturnRate = 0;
-      seedReturnRateFocus = 200; // Is it?
-      focusCost = 1000;
-    } else {
-      // T2-T8
-      const rates: Record<number, { base: number, focus: number }> = {
-        2: { base: 80, focus: 180 },
-        3: { base: 86.67, focus: 186.67 },
-        4: { base: 91.11, focus: 191.11 },
-        5: { base: 93.33, focus: 193.33 },
-        6: { base: 94.44, focus: 194.44 },
-        7: { base: 95.24, focus: 195.24 },
-        8: { base: 96.15, focus: 196.15 }
-      };
-      const rate = rates[tier];
-      if (rate) {
-          seedReturnRate = rate.base;
-          seedReturnRateFocus = rate.focus;
-      }
-    }
-
-    return {
-      name,
-      seedId,
-      produceId,
-      baseYield,
-      seedReturnRate,
-      seedReturnRateFocus,
-      focusCost
-    };
-  };
-  
   const [usePremium, setUsePremium] = useState(true);
   const [useFocus, setUseFocus] = useState(false);
   const [loading, setLoading] = useState(true);
   const [crops, setCrops] = useState<Crop[]>([]);
   const [data, setData] = useState<FarmingData[]>([]);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [localizedItemNames, setLocalizedItemNames] = useState<Record<string, string>>({});
-  const locale = useLocale();
-
-  // Generate Crops List
-  useEffect(() => {
-    const generated: Crop[] = CROP_DEFINITIONS.map(def => {
-        const stats = getCropStats(def.tier, def.id, def.type);
-        return {
-            id: def.id,
-            tier: def.tier,
-            type: def.type,
-            ...stats
-        } as Crop;
-    });
-    setCrops(generated);
-  }, [t]); // Add t as dependency since getCropStats uses it
-
-  // Load localized item names for crops and seeds
-  useEffect(() => {
-    const loadLocalizedNames = async () => {
-      const itemIds = CROP_DEFINITIONS.flatMap(def => [
-        `T${def.tier}_FARM_${def.id.toUpperCase()}_SEED`,
-        `T${def.tier}_${def.id.toUpperCase()}`
-      ]);
-      
-      const names: Record<string, string> = {};
-      await Promise.all(
-        itemIds.map(async (itemId) => {
-          const name = await getItemNameService(itemId, locale);
-          if (name) {
-            names[itemId] = name;
-          }
-        })
-      );
-      setLocalizedItemNames(names);
-    };
-    
-    loadLocalizedNames();
-  }, [locale]);
-
-  // Sorting State
   const [sortConfig, setSortConfig] = useState<{ key: keyof FarmingData; direction: 'asc' | 'desc' }>({
     key: 'profit',
     direction: 'desc'
   });
+
+  useEffect(() => {
+    if (profile?.preferences?.defaultMarketLocation) {
+      setBuyCity(profile.preferences.defaultMarketLocation);
+      setSellCity(profile.preferences.defaultMarketLocation);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    const generated: Crop[] = CROP_DEFINITIONS.map(def => ({
+      id: def.id,
+      tier: def.tier,
+      type: def.type,
+      ...getCropStats(def.tier, def.id, def.type)
+    } as Crop));
+    setCrops(generated);
+  }, []);
 
   const handleSort = (key: keyof FarmingData) => {
     setSortConfig(current => ({
@@ -159,150 +113,82 @@ export default function FarmingClient() {
     }));
   };
 
-  const toggleRow = (id: string) => {
-    setExpandedRow(expandedRow === id ? null : id);
+  const handlePriceUpdate = (id: string, type: 'seedPrice' | 'producePrice', value: number) => {
+    setData(prev => prev.map(row => {
+      if (row.id === id) {
+        const updated = {
+          ...row,
+          [type]: value,
+          [type === 'seedPrice' ? 'isCustomSeedPrice' : 'isCustomProducePrice']: true
+        };
+        return recalculateRow(updated);
+      }
+      return row;
+    }));
   };
 
-  const updateCalculation = (currentData: FarmingData[]) => {
-    return currentData.map(row => {
-      // Re-calculate derived values based on current prices (which might be user-edited)
-      const yieldAmount = row.baseYield * (usePremium ? 2 : 1); 
-      const seedReturn = useFocus ? row.seedReturnRateFocus : row.seedReturnRate;
-      
-      const revenue = (yieldAmount * row.producePrice) + ((seedReturn / 100) * row.seedPrice);
-      const cost = row.seedPrice;
-      const profit = revenue - cost;
-      const roi = cost > 0 ? (profit / cost) * 100 : 0;
-      
-      return {
-        ...row,
-        profit,
-        profitPerPlot: profit * 9,
-        roi
-      };
-    });
+  const handleResetPrice = (id: string, type: 'seedPrice' | 'producePrice') => {
+    setData(prev => prev.map(row => {
+      if (row.id === id) {
+        const updated = {
+          ...row,
+          [type]: row[`original${type === 'seedPrice' ? 'SeedPrice' : 'ProducePrice'}`] || 0,
+          [type === 'seedPrice' ? 'isCustomSeedPrice' : 'isCustomProducePrice']: false
+        };
+        return recalculateRow(updated);
+      }
+      return row;
+    }));
   };
 
-  const handlePriceUpdate = (id: string, field: 'seedPrice' | 'producePrice', value: number) => {
-    setData(prev => {
-      const newData = prev.map(row => {
-        if (row.id === id) {
-          const updatedRow = { ...row, [field]: value };
-          // Mark as custom if user edits
-          if (field === 'seedPrice') updatedRow.isCustomSeedPrice = true;
-          if (field === 'producePrice') updatedRow.isCustomProducePrice = true;
-          return updatedRow;
-        }
-        return row;
-      });
-      return updateCalculation(newData);
-    });
+  const recalculateRow = (row: FarmingData): FarmingData => {
+    const yieldAmount = row.baseYield * (usePremium ? 2 : 1);
+    const seedReturn = useFocus ? row.seedReturnRateFocus : row.seedReturnRate;
+    const revenue = (yieldAmount * row.producePrice) + ((seedReturn / 100) * row.seedPrice);
+    const cost = row.seedPrice;
+    const profit = revenue - cost;
+    const roi = cost > 0 ? (profit / cost) * 100 : 0;
+
+    return { ...row, profit, profitPerPlot: profit * 9, roi };
   };
 
-  const handleResetPrice = (id: string, field: 'seedPrice' | 'producePrice') => {
-    setData(prev => {
-        const newData = prev.map(row => {
-            if (row.id === id) {
-                const updatedRow = { ...row };
-                
-                if (field === 'seedPrice') {
-                    updatedRow.seedPrice = row.originalSeedPrice || 0;
-                    updatedRow.isCustomSeedPrice = false;
-                }
-                if (field === 'producePrice') {
-                    updatedRow.producePrice = row.originalProducePrice || 0;
-                    updatedRow.isCustomProducePrice = false;
-                }
-                return updatedRow;
-            }
-            return row;
-        });
-        return updateCalculation(newData);
-    });
-  };
-
-  // Effect to re-run calculations when toggles change, without losing custom prices
-  useEffect(() => {
-    if (data.length > 0) {
-      setData(prev => updateCalculation(prev));
-    }
-  }, [usePremium, useFocus]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (crops.length === 0) return;
-
     setLoading(true);
+
     try {
       const filteredCrops = crops.filter(c => c.type === category);
-      
-      const itemIds = [
-        ...filteredCrops.map(c => c.seedId),
-        ...filteredCrops.map(c => c.produceId)
-      ];
+      const seedIds = filteredCrops.map(c => c.seedId);
+      const produceIds = filteredCrops.map(c => c.produceId);
+      const allItemIds = [...seedIds, ...produceIds];
 
-      // Fetch prices for Buy City (Seeds) and Sell City (Produce)
-      // If cities are same, we can optimize, but for simplicity let's just fetch what we need.
-      // We need Seed Prices from Buy City
-      // We need Produce Prices from Sell City
-      // We need Volume for Produce from Sell City (to see if we can sell)
-      // We need Volume for Seeds from Buy City (to see if we can buy)
+      const [prices, seedVolumes, produceVolumes] = await Promise.all([
+        getMarketPrices(allItemIds, region),
+        getMarketVolume(seedIds, region),
+        getMarketVolume(produceIds, region)
+      ]);
 
-      // Let's fetch prices for both cities for all items to be safe/flexible
-      const locationsToFetch = Array.from(new Set([buyCity, sellCity]));
-      const prices = await getMarketPrices(itemIds, region, locationsToFetch);
-      
-      // Fetch volumes for both (history api)
-      // Note: History API is heavier. Let's fetch for sell city produce and buy city seeds.
-      // Actually getMarketVolume is designed to return volume for a specific location.
-      
-      // We need 2 volume calls if cities are different
-      let seedVolumes: any[] = [];
-      let produceVolumes: any[] = [];
-      
-      if (buyCity === sellCity) {
-          const vols = await getMarketVolume(itemIds, region, buyCity);
-          seedVolumes = vols;
-          produceVolumes = vols;
-      } else {
-          const [volsBuy, volsSell] = await Promise.all([
-              getMarketVolume(filteredCrops.map(c => c.seedId), region, buyCity),
-              getMarketVolume(filteredCrops.map(c => c.produceId), region, sellCity)
-          ]);
-          seedVolumes = volsBuy;
-          produceVolumes = volsSell;
-      }
-      
       const calculated = filteredCrops.map(crop => {
-        // 1. Seed Cost (Buy City)
         const seedStats = prices.filter(p => p.item_id === crop.seedId && p.city === buyCity);
         const validSeedPrices = seedStats.filter(s => s.sell_price_min > 0).map(s => s.sell_price_min);
         const seedPrice = validSeedPrices.length > 0 ? Math.min(...validSeedPrices) : 0;
-        
-        // Seed Volume (Last 24h)
+
         const seedVolData = seedVolumes.find(v => v.item_id === crop.seedId);
         const seedVolume = seedVolData?.data?.[seedVolData.data.length - 1]?.item_count || 0;
 
-        // 2. Produce Revenue (Sell City)
         const produceStats = prices.filter(p => p.item_id === crop.produceId && p.city === sellCity);
         const validProducePrices = produceStats.filter(s => s.sell_price_min > 0).map(s => s.sell_price_min);
         const producePrice = validProducePrices.length > 0 ? Math.min(...validProducePrices) : 0;
-        
-        // Produce Volume (Last 24h)
+
         const produceVolData = produceVolumes.find(v => v.item_id === crop.produceId);
         const produceVolume = produceVolData?.data?.[produceVolData.data.length - 1]?.item_count || 0;
 
         let warning = undefined;
-        if (seedPrice === 0) warning = "warningNoSeed";
-        else if (producePrice === 0) warning = "warningNoProduce";
+        if (seedPrice === 0) warning = t('warningNoSeed');
+        else if (producePrice === 0) warning = t('warningNoProduce');
 
-        // Calculations
-        // Yield: Base usually around 6-9 depending on RNG
-        // Premium doubles yield for crops/herbs
-        const yieldAmount = crop.baseYield * (usePremium ? 2 : 1); 
-        
+        const yieldAmount = crop.baseYield * (usePremium ? 2 : 1);
         const seedReturn = useFocus ? crop.seedReturnRateFocus : crop.seedReturnRate;
-        // Expected Seed Value = (seedReturn / 100) * seedPrice
-        
         const revenue = (yieldAmount * producePrice) + ((seedReturn / 100) * seedPrice);
         const cost = seedPrice;
         const profit = revenue - cost;
@@ -323,332 +209,365 @@ export default function FarmingClient() {
         };
       });
 
-      // Sort by profit
       calculated.sort((a, b) => b.profit - a.profit);
-      
       setData(calculated);
     } catch (error) {
-      console.error(error);
+      console.error('Farming data error:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [region, buyCity, sellCity, category, crops, usePremium, useFocus, t]);
 
   useEffect(() => {
-    if (crops.length > 0) {
-        loadData();
-    }
-  }, [region, buyCity, sellCity, category, crops]); // Removed usePremium/useFocus from here to prevent overwrite
+    if (crops.length > 0) loadData();
+  }, [loadData]);
 
-  // Trigger initial calc or re-calc when premium/focus change is handled by separate effect now, 
-  // BUT we need to make sure initial load happens. 
-  // actually, loadData fetches prices. If we just toggle premium, we shouldn't re-fetch prices, just re-calc.
-  // The separate effect above handles re-calc. 
-  // So we only re-fetch when location/category changes.
-
-  const cityOptions = LOCATIONS.filter(l => l !== 'Black Market').map(city => ({
-    value: city,
-    label: city
-  }));
-
-  const allCityOptions = LOCATIONS.map(city => ({
-    value: city,
-    label: city
-  }));
-
-  // Re-sort when data changes
   const sortedData = [...data].sort((a, b) => {
     const { key, direction } = sortConfig;
     let aValue: any = a[key];
     let bValue: any = b[key];
-
-    // Handle string comparison
     if (typeof aValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
+      aValue = aValue.toLowerCase();
+      bValue = bValue.toLowerCase();
     }
-
     if (aValue < bValue) return direction === 'asc' ? -1 : 1;
     if (aValue > bValue) return direction === 'asc' ? 1 : -1;
     return 0;
   });
 
+  const toggleRow = (id: string) => setExpandedRow(expandedRow === id ? null : id);
+
+  const cityOptions = CITIES.map(city => ({ value: city, label: t(`cities.${city}`) }));
+  const allCityOptions = LOCATIONS.map(city => ({ value: city, label: t(`cities.${city}`) }));
+
   return (
-    <PageShell 
-      title={t('title')} 
-      backgroundImage='/background/ao-crafting.jpg'  
+    <PageShell
+      title={t('title')}
+      backgroundImage='/background/ao-crafting.jpg'
       description={t('description')}
-      icon={<Sprout className="h-6 w-6" />}
       headerActions={
-        <div className="flex flex-wrap items-center gap-4">
-           <ServerSelector selectedServer={region} onServerChange={setRegion} />
-          <button
+        <div className="flex items-center gap-4">
+          <ServerSelector selectedServer={region} onServerChange={setRegion} />
+          <Button
             onClick={loadData}
             disabled={loading}
-            className="p-2 bg-success hover:bg-success/90 text-primary-foreground rounded-lg transition-colors   disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="default"
+            size="sm"
+            className="gap-2"
           >
-            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{loading ? t('loading') : t('refresh')}</span>
+          </Button>
         </div>
       }
     >
       <div className="space-y-6">
         {/* Category Tabs */}
-        <CategoryTabs
-            options={[
-                { label: t('crops'), value: 'crop' },
-                { label: t('herbs'), value: 'herb' },
-            ]}
-            value={category}
-            onChange={(val) => setCategory(val as any)}
-        />
+        <div className="flex gap-2 bg-card p-1 rounded-xl border border-border w-fit">
+          <button
+            onClick={() => setCategory('crop')}
+            className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${
+              category === 'crop'
+                ? 'bg-green-500 text-white shadow-md'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            }`}
+          >
+            <Sprout className="h-4 w-4" /> {t('crops')}
+          </button>
+          <button
+            onClick={() => setCategory('herb')}
+            className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${
+              category === 'herb'
+                ? 'bg-purple-500 text-white shadow-md'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+            }`}
+          >
+            <Flower2 className="h-4 w-4" /> {t('herbs')}
+          </button>
+        </div>
 
-        {/* Controls */}
-        <div className="bg-card/50 p-6 rounded-xl border border-border space-y-6">
-          
-          {/* Top Row: Cities */}
-          <div className="flex flex-col sm:flex-row gap-4">
-               <div className="flex-1">
-                 <Select 
-                   label={t('buyFrom')}
-                   options={cityOptions}
-                   value={buyCity}
-                   onChange={(val) => setBuyCity(val)}
-                 />
-               </div>
-               
-               <div className="hidden sm:flex items-center justify-center pt-6 text-muted-foreground">
-                  <ArrowRight className="h-5 w-5" />
-               </div>
-
-               <div className="flex-1">
-                 <Select 
-                   label={t('sellAt')}
-                   options={allCityOptions}
-                   value={sellCity}
-                   onChange={(val) => setSellCity(val)}
-                 />
-               </div>
+        {/* Controls Card */}
+        <div className="bg-card rounded-xl border border-border p-6 space-y-6">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="flex-1 w-full">
+              <Select
+                label={
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-green-500" />
+                    <span>{t('buySeedsFrom')}</span>
+                  </div>
+                }
+                options={cityOptions}
+                value={buyCity}
+                onChange={setBuyCity}
+              />
+            </div>
+            <div className="hidden md:flex items-center pb-3">
+              <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <div className="flex-1 w-full">
+              <Select
+                label={
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-blue-500" />
+                    <span>{t('sellProduceTo')}</span>
+                  </div>
+                }
+                options={allCityOptions}
+                value={sellCity}
+                onChange={setSellCity}
+              />
+            </div>
           </div>
-          
+
           <div className="h-px bg-border" />
 
-          {/* Bottom Row: Toggles */}
-          <div className="flex flex-wrap gap-8">
-            <Checkbox 
-               label={t('premium')} 
-               description={t('tooltips.premium')}
-               checked={usePremium}
-               onChange={(e) => setUsePremium(e.target.checked)}
-            />
-            
-            <Checkbox 
-               label={t('focus')} 
-               description={t('tooltips.focus')}
-               checked={useFocus}
-               onChange={(e) => setUseFocus(e.target.checked)}
-            />
+          <div className="flex flex-wrap gap-6">
+            <div className="flex items-center gap-3 p-4 bg-green-500/5 rounded-lg border border-green-500/20">
+              <Checkbox
+                id="premium-toggle"
+                checked={usePremium}
+                onChange={(e) => setUsePremium(e.target.checked)}
+              />
+              <div>
+                <div className="font-bold text-sm text-green-500">{t('premium')}</div>
+                <div className="text-xs text-muted-foreground">{t('premiumDesc')}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-blue-500/5 rounded-lg border border-blue-500/20">
+              <Checkbox
+                id="focus-toggle"
+                checked={useFocus}
+                onChange={(e) => setUseFocus(e.target.checked)}
+              />
+              <div>
+                <div className="font-bold text-sm text-blue-500">{t('focus')}</div>
+                <div className="text-xs text-muted-foreground">{t('focusDesc')}</div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Results Table */}
-        <div className="bg-card/50 rounded-xl border border-border overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left">
               <thead>
-                  <tr className="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wider border-b border-border">
-                    <th className="p-4 font-medium pl-8 cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('name')}>
-                        <div className="flex items-center gap-1">
-                            {t('item')}
-                            {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                        </div>
-                    </th>
-                    <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('profit')}>
-                        <div className="flex items-center justify-end gap-1">
-                            <Tooltip content={t('tooltips.profit')}>
-                                <span>{t('plotProfit')}</span>
-                                <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                            </Tooltip>
-                            {sortConfig.key === 'profit' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                        </div>
-                    </th>
-                    <th className="p-4 font-medium text-right cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('roi')}>
-                        <div className="flex items-center justify-end gap-1">
-                            <Tooltip content={t('roiTooltip')}>
-                                <span>{t('roi')}</span>
-                                <CircleHelp className="h-3 w-3 text-muted-foreground" />
-                            </Tooltip>
-                            {sortConfig.key === 'roi' && (sortConfig.direction === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                        </div>
-                    </th>
-                    <th className="p-4 font-medium text-center w-16"></th>
-                  </tr>
-                </thead>
-              <tbody className="divide-y divide-border text-sm">
+                <tr className="bg-muted/50 border-b border-border">
+                  <th className="p-5 pl-8 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    {t('item')}
+                  </th>
+                  <th className="p-5 text-right text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <div className="flex items-center justify-end gap-2">
+                      <span>{t('profitPerPlot')}</span>
+                      <Tooltip content="Estimated profit per 9 squares (1 plot)">
+                        <CircleHelp className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Tooltip>
+                    </div>
+                  </th>
+                  <th className="p-5 text-right text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <div className="flex items-center justify-end gap-2">
+                      <span>ROI</span>
+                      <Tooltip content="Return on Investment (Profit / Cost × 100)">
+                        <CircleHelp className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Tooltip>
+                    </div>
+                  </th>
+                  <th className="p-5 text-center w-16"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
                 {loading ? (
                   <tr>
-                    <td colSpan={4} className="p-12 text-center text-muted-foreground">
-                      <div className="flex flex-col items-center justify-center gap-3">
-                        <Loader2 className="h-8 w-8 animate-spin text-success" />
-                        <p>{t('loading')}</p>
+                    <td colSpan={4} className="p-16 text-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <RefreshCw className="h-10 w-10 animate-spin text-green-500" />
+                        <div>
+                          <p className="font-bold text-foreground">{t('loading')}</p>
+                          <p className="text-sm text-muted-foreground">Fetching real-time market data...</p>
+                        </div>
                       </div>
                     </td>
                   </tr>
-                ) : data.length === 0 ? (
+                ) : sortedData.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-muted-foreground">{t('noData')}</td>
+                    <td colSpan={4} className="p-16 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <Sprout className="h-12 w-12 text-muted-foreground/30" />
+                        <p className="text-muted-foreground">{t('noData')}</p>
+                      </div>
+                    </td>
                   </tr>
                 ) : (
                   sortedData.map((row) => (
                     <React.Fragment key={row.id}>
-                      <tr 
+                      <tr
                         onClick={() => toggleRow(row.id)}
                         className={`
-                          cursor-pointer transition-colors border-l-2
-                          ${expandedRow === row.id ? 'bg-muted/50 border-l-success' : 'hover:bg-muted/30 border-l-transparent'}
+                          cursor-pointer transition-all
+                          ${expandedRow === row.id 
+                            ? 'bg-green-500/5 border-l-4 border-l-green-500' 
+                            : 'hover:bg-muted/30 border-l-4 border-l-transparent'
+                          }
                         `}
                       >
-                        <td className="p-4 pl-8">
-                          <div className="flex items-center gap-4">
-                             <div className="h-12 w-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 border border-border relative group">
-                               <ItemIcon itemId={row.seedId} alt={`${row.name} ${t('seed')}`} className="h-10 w-10 object-contain" />
-                               <div className="absolute -bottom-2 -right-2 h-6 w-6 bg-card rounded-full border border-border flex items-center justify-center ">
-                                 <ItemIcon itemId={row.produceId} alt={row.name} className="h-4 w-4 object-contain" />
-                               </div>
-                             </div>
-                             <div>
-                               <div className="font-bold text-foreground text-lg flex items-center gap-2">
-                                 {row.name} {t('seed')}
-                                 <span className="text-xs font-bold text-muted-foreground px-2 py-0.5 bg-muted rounded-full">T{row.tier}</span>
-                               </div>
-                               <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-                                 <span className="capitalize">{t(row.type === 'crop' ? 'crops' : 'herbs')}</span>
-                                 {row.warning && (
-                                   <span className="text-warning flex items-center gap-1">
-                                     • <Info className="h-3 w-3" /> {t(row.warning)}
-                                   </span>
-                                 )}
-                               </div>
-                             </div>
+                        <td className="p-5 pl-8">
+                          <div className="flex items-center gap-5">
+                            <div className="relative group">
+                              <div className="h-14 w-14 bg-muted rounded-xl border border-border flex items-center justify-center group-hover:border-green-500/50 transition-colors">
+                                <ItemIcon itemId={row.seedId} className="h-11 w-11 object-contain" />
+                              </div>
+                              <div className="absolute -bottom-2 -right-2 h-7 w-7 bg-card rounded-full border border-border flex items-center justify-center">
+                                <ItemIcon itemId={row.produceId} className="h-4 w-4 object-contain" />
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3">
+                                <span className="font-bold text-foreground text-base">
+                                  {t(`cropNames.${row.id}`)} Seed
+                                </span>
+                                <span className="text-xs font-bold text-muted-foreground px-2.5 py-1 bg-muted rounded-full border border-border">
+                                  T{row.tier}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 mt-1.5">
+                                <span className="text-xs text-muted-foreground capitalize">
+                                  {t(row.type)}
+                                </span>
+                                {row.warning && (
+                                  <span className="text-xs text-amber-500 flex items-center gap-1.5 font-medium">
+                                    <Info className="h-3.5 w-3.5" /> {row.warning}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </td>
-                        
-                        <td className="p-4 text-right">
-                          <div className={`font-mono font-bold text-lg ${row.profitPerPlot > 0 ? 'text-success' : 'text-destructive'}`}>
+                        <td className="p-5 text-right">
+                          <div className={`font-mono font-bold text-lg ${row.profitPerPlot > 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {Math.round(row.profitPerPlot).toLocaleString()}
                           </div>
-                          <div className="text-xs text-muted-foreground">{t('per9Squares')}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{t('per9Squares')}</div>
                         </td>
-
-                        <td className="p-4 text-right">
-                          <div className={`font-mono font-medium ${row.roi > 0 ? 'text-success' : 'text-destructive'}`}>
+                        <td className="p-5 text-right">
+                          <div className={`font-mono font-semibold ${row.roi > 20 ? 'text-green-500' : row.roi > 0 ? 'text-blue-500' : 'text-red-500'}`}>
                             {row.roi.toFixed(1)}%
                           </div>
                         </td>
-
-                        <td className="p-4 text-center text-muted-foreground">
-                          {expandedRow === row.id ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                        <td className="p-5 text-center">
+                          <div className={`transition-transform ${expandedRow === row.id ? 'rotate-180' : ''}`}>
+                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          </div>
                         </td>
                       </tr>
-                      
-                      {/* Expanded Detail Row */}
+
                       {expandedRow === row.id && (
-                        <tr className="bg-muted/30 border-b border-border">
-                          <td colSpan={4} className="p-0">
-                            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-top-2 duration-200">
-                              
-                              {/* Seed Stats */}
-                              <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                  <Leaf className="h-3 w-3" /> {t('seedInfo', { city: buyCity })}
-                                </h4>
-                                <div className="bg-card/50 rounded-lg p-4 border border-border space-y-3">
-                                  <Tooltip content={t('tooltips.seedPrice', { city: buyCity })}>
-                                    <div>
-                                      <NumberInput 
-                                        label={t('seedPrice')}
-                                        value={row.seedPrice}
-                                        onChange={(val) => handlePriceUpdate(row.id, 'seedPrice', val)}
-                                        className="bg-card"
-                                        isCustom={row.isCustomSeedPrice}
-                                        onReset={() => handleResetPrice(row.id, 'seedPrice')}
-                                      />
-                                    </div>
-                                  </Tooltip>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground text-sm">{t('volume')}</span>
-                                    <span className="font-mono text-foreground">{row.seedVolume.toLocaleString()}</span>
+                        <tr className="bg-muted/20">
+                          <td colSpan={4} className="p-0 border-b border-border">
+                            <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                              {/* Seed Info */}
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2.5 mb-3">
+                                  <div className="p-2 rounded-lg bg-green-500/10">
+                                    <Leaf className="h-4 w-4 text-green-500" />
                                   </div>
-                                  <div className="h-px bg-border" />
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground text-sm">{t('seedReturn')}</span>
-                                    <span className="font-mono text-success">
-                                      {useFocus ? row.seedReturnRateFocus : row.seedReturnRate}%
-                                      <span className="text-xs text-muted-foreground ml-1">({useFocus ? t('focus') : t('noFocus')})</span>
-                                    </span>
+                                  <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
+                                    {t('seedInfo', { city: buyCity })}
+                                  </h4>
+                                </div>
+                                <div className="bg-card rounded-xl p-5 border border-border space-y-4">
+                                  <NumberInput
+                                    label={t('seedPrice')}
+                                    value={row.seedPrice}
+                                    onChange={(val) => handlePriceUpdate(row.id, 'seedPrice', val)}
+                                    isCustom={row.isCustomSeedPrice}
+                                    onReset={() => handleResetPrice(row.id, 'seedPrice')}
+                                  />
+                                  <div className="pt-3 border-t border-border">
+                                    <div className="flex justify-between items-center mb-3">
+                                      <span className="text-sm text-muted-foreground">{t('volume')}</span>
+                                      <span className="font-mono font-semibold text-foreground">{row.seedVolume.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-sm text-muted-foreground">{t('seedReturnRate')}</span>
+                                      <span className="font-mono font-bold text-green-500">
+                                        {useFocus ? row.seedReturnRateFocus.toFixed(2) : row.seedReturnRate.toFixed(2)}%
+                                        <span className="text-xs text-muted-foreground ml-2 font-normal">
+                                          ({useFocus ? t('focus') : t('noFocus')})
+                                        </span>
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Produce Stats */}
-                              <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                  <Flower2 className="h-3 w-3" /> {t('produceInfo', { city: sellCity })}
-                                </h4>
-                                <div className="bg-card/50 rounded-lg p-4 border border-border space-y-3">
-                                  <Tooltip content={t('tooltips.producePrice', { city: sellCity })}>
-                                    <div>
-                                      <NumberInput 
-                                        label={t('producePrice')}
-                                        value={row.producePrice}
-                                        onChange={(val) => handlePriceUpdate(row.id, 'producePrice', val)}
-                                        className="bg-card"
-                                        isCustom={row.isCustomProducePrice}
-                                        onReset={() => handleResetPrice(row.id, 'producePrice')}
-                                      />
-                                    </div>
-                                  </Tooltip>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground text-sm">{t('volume')}</span>
-                                    <span className="font-mono text-foreground">{row.produceVolume.toLocaleString()}</span>
+                              {/* Produce Info */}
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2.5 mb-3">
+                                  <div className="p-2 rounded-lg bg-blue-500/10">
+                                    <Flower2 className="h-4 w-4 text-blue-500" />
                                   </div>
-                                  <div className="h-px bg-border" />
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground text-sm">{t('yield')}</span>
-                                    <span className="font-mono text-success">
-                                      {row.baseYield * (usePremium ? 2 : 1)}
-                                      <span className="text-xs text-muted-foreground ml-1">({usePremium ? t('premium') : t('standard')})</span>
-                                    </span>
+                                  <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
+                                    {t('produceInfo', { city: sellCity })}
+                                  </h4>
+                                </div>
+                                <div className="bg-card rounded-xl p-5 border border-border space-y-4">
+                                  <NumberInput
+                                    label={t('producePrice')}
+                                    value={row.producePrice}
+                                    onChange={(val) => handlePriceUpdate(row.id, 'producePrice', val)}
+                                    isCustom={row.isCustomProducePrice}
+                                    onReset={() => handleResetPrice(row.id, 'producePrice')}
+                                  />
+                                  <div className="pt-3 border-t border-border">
+                                    <div className="flex justify-between items-center mb-3">
+                                      <span className="text-sm text-muted-foreground">{t('volume')}</span>
+                                      <span className="font-mono font-semibold text-foreground">{row.produceVolume.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-sm text-muted-foreground">{t('expectedYield')}</span>
+                                      <span className="font-mono font-bold text-blue-500">
+                                        {row.baseYield * (usePremium ? 2 : 1)}
+                                        <span className="text-xs text-muted-foreground ml-2 font-normal">
+                                          ({usePremium ? t('premium') : t('standard')})
+                                        </span>
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Profit Breakdown */}
-                              <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                  <Scale className="h-3 w-3" /> {t('calculate')}
-                                </h4>
-                                <div className="bg-card/50 rounded-lg p-4 border border-border space-y-3">
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">{t('totalRevenue')}</span>
-                                    <span className="font-mono text-foreground">
-                                      {Math.round((row.baseYield * (usePremium ? 2 : 1) * row.producePrice) + ((useFocus ? row.seedReturnRateFocus : row.seedReturnRate) / 100 * row.seedPrice)).toLocaleString()}
+                              {/* Profit Analysis */}
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2.5 mb-3">
+                                  <div className="p-2 rounded-lg bg-purple-500/10">
+                                    <Scale className="h-4 w-4 text-purple-500" />
+                                  </div>
+                                  <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">
+                                    {t('profitAnalysis')}
+                                  </h4>
+                                </div>
+                                <div className="bg-card rounded-xl p-5 border border-purple-500/20 space-y-4">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-sm text-muted-foreground">{t('revenuePerSeed')}</span>
+                                    <span className="font-mono font-bold text-foreground">
+                                      {Math.round((row.baseYield * (usePremium ? 2 : 1) * row.producePrice) + 
+                                        ((useFocus ? row.seedReturnRateFocus : row.seedReturnRate) / 100 * row.seedPrice)).toLocaleString()}
                                     </span>
                                   </div>
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">{t('totalCost')}</span>
-                                    <span className="font-mono text-destructive">-{row.seedPrice.toLocaleString()}</span>
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-sm text-muted-foreground">{t('costPerSeed')}</span>
+                                    <span className="font-mono font-bold text-red-500">-{row.seedPrice.toLocaleString()}</span>
                                   </div>
                                   <div className="h-px bg-border" />
-                                  <div className="flex justify-between items-center font-bold">
-                                    <span className="text-foreground">{t('netProfit')}</span>
-                                    <span className={`font-mono ${row.profit > 0 ? 'text-success' : 'text-destructive'}`}>
+                                  <div className="flex justify-between items-center pt-1">
+                                    <span className="text-sm font-bold text-foreground">{t('netProfitPerSeed')}</span>
+                                    <span className={`font-mono font-bold text-lg ${row.profit > 0 ? 'text-green-500' : 'text-red-500'}`}>
                                       {Math.round(row.profit).toLocaleString()}
                                     </span>
                                   </div>
                                 </div>
                               </div>
-
                             </div>
                           </td>
                         </tr>
@@ -661,16 +580,8 @@ export default function FarmingClient() {
           </div>
         </div>
       </div>
-      <InfoStrip currentPage="profits-farming">
-        <InfoBanner icon={<Sprout className="w-4 h-4" />} color="text-green-400" title={t('guide.title')}>
-          <p>{t('guide.description')}</p>
-          <ul className="list-disc list-inside mt-1 space-y-1 text-xs opacity-90">
-             <li><strong>{t('guide.premium')}</strong></li>
-             <li><strong>{t('guide.focus')}</strong></li>
-             <li><strong>{t('guide.location')}</strong></li>
-          </ul>
-        </InfoBanner>
-      </InfoStrip>
+
+      <InfoStrip currentPage="profits-farming" />
     </PageShell>
   );
 }

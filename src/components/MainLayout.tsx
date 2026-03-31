@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Navbar } from './navbar';
 import { ServerStatusBanner } from './ServerStatusBanner';
 import { Footer } from './footer';
 import { CookieBanner } from './CookieBanner';
@@ -11,12 +10,12 @@ import { useAuth } from '@/context/AuthContext';
 import { VerificationBanner } from './VerificationBanner';
 import { CommandMenuProvider, useCommandMenu } from '@/context/CommandMenuContext';
 import { NavigationProgress } from './NavigationProgress';
+import { SidebarLayout } from './SidebarLayout';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
   const { isOpen, setIsOpen } = useCommandMenu();
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
 
   // Apply reduced motion preference
   useEffect(() => {
@@ -28,18 +27,21 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   }, [profile?.preferences?.reducedMotion]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
-      <NavigationProgress />
-      <ServerStatusBanner />
-      <VerificationBanner />
-      <Navbar />
-      <CommandMenu />
-      <main className={`flex-1 w-full ${isHomePage ? '' : ''}`}>
-        {children}
-      </main>
-      <Footer />
-      <CookieBanner />
-    </div>
+    <SidebarLayout>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <NavigationProgress />
+        <ServerStatusBanner />
+        <VerificationBanner />
+        <CommandMenu />
+        <main className="flex-1 overflow-y-auto w-full">
+          <div className="min-h-full">
+            {children}
+          </div>
+        </main>
+        <Footer />
+        <CookieBanner />
+      </div>
+    </SidebarLayout>
   );
 }
 

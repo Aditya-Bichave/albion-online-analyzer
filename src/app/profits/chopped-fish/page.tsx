@@ -1,12 +1,15 @@
-import type { Metadata } from 'next';
+import { Metadata } from 'next';
 import ChoppedFishClient from './ChoppedFishClient';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = createPageMetadata(
-  'chopped-fish-calc',
-  'Albion Online Chopped Fish Calculator - Profit & Yield | AlbionKit',
-  'Calculate profits from converting raw fish into chopped fish in Albion Online. Compare yields, market prices, and ROI for all fish tiers.'
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Pages.choppedFish');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function ChoppedFishPage() {
   return <ChoppedFishClient />;

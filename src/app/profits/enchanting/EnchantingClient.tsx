@@ -451,7 +451,6 @@ export default function EnchantingClient() {
       title={t('title')} 
       backgroundImage='/background/ao-crafting.jpg'  
       description={t('description')}
-      icon={<Sparkles className="h-6 w-6" />}
       headerActions={
         <div className="flex items-center gap-4">
            <ServerSelector
@@ -461,7 +460,7 @@ export default function EnchantingClient() {
           <button 
             onClick={loadData}
             disabled={loading || !selectedItem}
-            className="p-2 bg-success hover:bg-success/90 text-primary-foreground rounded-lg   transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg   transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -469,11 +468,11 @@ export default function EnchantingClient() {
       }
     >
       <div className="space-y-6">
-        
+
         {/* Top Section: Search & Filters */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             {/* Search */}
-            <div className="lg:col-span-4 bg-card/50 p-6 rounded-xl border border-border">
+            <div className="lg:col-span-5 bg-card/50 p-4 sm:p-6 rounded-xl border border-border">
                 <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{t('itemSelection')}</h3>
                 
                 <div className="relative">
@@ -553,7 +552,7 @@ export default function EnchantingClient() {
             </div>
 
             {/* Filters */}
-            <div className="lg:col-span-8 bg-card/50 p-6 rounded-xl border border-border">
+            <div className="lg:col-span-7 bg-card/50 p-4 sm:p-6 rounded-xl border border-border">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <Settings className="h-4 w-4 text-muted-foreground" />
@@ -561,7 +560,7 @@ export default function EnchantingClient() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 gap-6 sm:gap-8">
                     
                     {/* Column 1: Item Configuration */}
                     <div className="space-y-6">
@@ -569,9 +568,9 @@ export default function EnchantingClient() {
                             <Sparkles className="h-4 w-4 text-warning" />
                             <h4 className="text-sm font-bold text-foreground">{t('itemConfiguration')}</h4>
                         </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <Select 
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Select
                                 label={t('fromTier')}
                                 options={fromTierOptions}
                                 value={currentTier}
@@ -605,8 +604,8 @@ export default function EnchantingClient() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <Select 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Select
                                 label={t('quality')}
                                 options={qualityOptions}
                                 value={quality}
@@ -628,8 +627,8 @@ export default function EnchantingClient() {
                             <h4 className="text-sm font-bold text-foreground">{t('marketSettings')}</h4>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                             <Select 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <Select
                                 label={t('buyMaterialsAt')}
                                 options={cityOptions}
                                 value={buyCity}
@@ -642,9 +641,9 @@ export default function EnchantingClient() {
                                 onChange={setSellCity}
                             />
                         </div>
-                        
-                         <div className="grid grid-cols-2 gap-4 text-xs">
-                             <Checkbox 
+
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                             <Checkbox
                                 label={t('premiumTax')}
                                 checked={isPremium}
                                 onChange={(e) => setIsPremium(e.target.checked)}
@@ -655,9 +654,9 @@ export default function EnchantingClient() {
                                 onChange={(e) => setIncludeTax(e.target.checked)}
                              />
                         </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                             <Select 
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <Select
                                 label={t('buyStrategy')}
                                 options={[
                                     { value: 'sell_order', label: ta('instantBuy') },
@@ -689,7 +688,7 @@ export default function EnchantingClient() {
                       {showFormDetails ? t('hidePathDetails') : t('showPathDetails')}
                     </button>
                     {showFormDetails && (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs">
                         <div className="bg-muted/30 rounded-lg border border-border/60 p-3 space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-foreground">{t('enchantPath')}</span>
@@ -754,73 +753,88 @@ export default function EnchantingClient() {
         
         {/* Results */}
         {calculation && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                <div className="bg-card/60 border border-border rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    {baseVisualId && (
-                      <div className="flex items-center gap-4">
-                        <div className="h-16 w-16 md:h-20 md:w-20 bg-background/80 rounded-xl border border-border/80  flex items-center justify-center">
-                          <ItemIcon itemId={baseVisualId} className="h-14 w-14 md:h-16 md:w-16 object-contain" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="text-xs font-semibold text-muted-foreground uppercase">{t('from')}</div>
-                          <div className="text-sm font-bold text-foreground truncate max-w-[160px]">
-                            {selectedItemName || selectedItem}
+            <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                {/* Item Header - Full Width */}
+                <div className="bg-gradient-to-br from-card to-card/50 border border-border rounded-2xl p-4 sm:p-5 shadow-lg">
+                  <div className="flex flex-col items-center gap-4 sm:gap-6">
+                    {/* From/To Items */}
+                    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                      {baseVisualId && (
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 bg-background/80 rounded-xl border border-border/80 flex items-center justify-center shrink-0">
+                            <ItemIcon itemId={baseVisualId} className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain" />
                           </div>
-                          <div className="text-[11px] text-muted-foreground">
-                            {getTierLabel(currentTier)}
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase">{t('from')}</div>
+                            <div className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[120px] sm:max-w-[160px]">
+                              {selectedItemName || selectedItem}
+                            </div>
+                            <div className="text-[10px] sm:text-[11px] text-muted-foreground">
+                              {getTierLabel(currentTier)}
+                            </div>
                           </div>
                         </div>
+                      )}
+                      
+                      <div className="flex items-center justify-center p-1 sm:p-2">
+                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       </div>
-                    )}
-                    <div className="flex items-center justify-center px-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
+                      
+                      {targetVisualId && (
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 bg-primary/5 rounded-xl border border-primary/30 flex items-center justify-center shrink-0">
+                            <ItemIcon itemId={targetVisualId} quality={quality} className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 object-contain" />
+                          </div>
+                          <div className="space-y-0.5 min-w-0">
+                            <div className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase">{t('to')}</div>
+                            <div className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[120px] sm:max-w-[160px]">
+                              {selectedItemName || selectedItem}
+                            </div>
+                            <div className="text-[10px] sm:text-[11px] text-muted-foreground">
+                              {getTierLabel(targetTier)} · {getQualityLabel(quality)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {targetVisualId && (
-                      <div className="flex items-center gap-4">
-                        <div className="h-16 w-16 md:h-20 md:w-20 bg-primary/5 rounded-xl border border-primary/30  flex items-center justify-center">
-                          <ItemIcon itemId={targetVisualId} quality={quality} className="h-14 w-14 md:h-16 md:w-16 object-contain" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="text-xs font-semibold text-muted-foreground uppercase">{t('to')}</div>
-                          <div className="text-sm font-bold text-foreground truncate max-w-[160px]">
-                            {selectedItemName || selectedItem}
-                          </div>
-                          <div className="text-[11px] text-muted-foreground">
-                            {getTierLabel(targetTier)} · {getQualityLabel(quality)}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-3 justify-end w-full md:w-auto text-[11px] text-muted-foreground">
-                    <span>{t('qty')} {quantity}</span>
-                    <span>{t('quality')} {getQualityLabel(quality)}</span>
-                    <span>{buyCity} → {sellCity}</span>
+                    
+                    {/* Meta Info - Mobile Stack */}
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full pt-2 sm:pt-0 border-t sm:border-none border-border/50">
+                      <span className="text-[10px] sm:text-[11px] text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                        {t('qty')} {quantity}
+                      </span>
+                      <span className="text-[10px] sm:text-[11px] text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                        {t('quality')} {getQualityLabel(quality)}
+                      </span>
+                      <span className="text-[10px] sm:text-[11px] text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                        {buyCity} → {sellCity}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                {/* Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-card p-4 rounded-xl border border-border">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('totalCost')}</div>
+                
+                {/* Summary Cards - 2x2 Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div className="bg-card p-3 sm:p-4 rounded-xl border border-border">
+                        <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('totalCost')}</div>
                         <div className="text-xl font-mono font-bold text-foreground">
                             {Math.round(calculation.totalCost).toLocaleString()}
                         </div>
                     </div>
-                    <div className="bg-card p-4 rounded-xl border border-border">
-                         <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('revenueEst')}</div>
+                    <div className="bg-card p-3 sm:p-4 rounded-xl border border-border">
+                         <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('revenueEst')}</div>
                          <div className="text-xl font-mono font-bold text-success">
                             {Math.round(calculation.revenue).toLocaleString()}
                          </div>
                     </div>
-                     <div className="bg-card p-4 rounded-xl border border-border">
-                         <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('netProfit')}</div>
+                     <div className="bg-card p-3 sm:p-4 rounded-xl border border-border">
+                         <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('netProfit')}</div>
                          <div className={`text-xl font-mono font-bold ${calculation.profit > 0 ? 'text-success' : 'text-destructive'}`}>
                             {Math.round(calculation.profit).toLocaleString()}
                          </div>
                     </div>
-                     <div className="bg-card p-4 rounded-xl border border-border">
-                         <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('roi')}</div>
+                     <div className="bg-card p-3 sm:p-4 rounded-xl border border-border">
+                         <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">{t('roi')}</div>
                          <div className={`text-xl font-mono font-bold ${calculation.roi > 0 ? 'text-success' : 'text-destructive'}`}>
                             {calculation.roi.toFixed(1)}%
                          </div>
@@ -1020,7 +1034,7 @@ export default function EnchantingClient() {
                         </table>
                     </div>
                     <div className="border-t border-border bg-muted/10 px-4 py-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs">
                         <div>
                           <div className="text-muted-foreground uppercase tracking-wider mb-1">{t('totalMaterialCost')}</div>
                           <div className="font-mono text-sm font-bold text-foreground">

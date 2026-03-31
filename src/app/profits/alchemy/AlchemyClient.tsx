@@ -558,7 +558,6 @@ export default function AlchemyClient() {
       title={t('title')} 
       backgroundImage='/background/ao-crafting.jpg'  
       description={t('description')}
-      icon={<FlaskConical className="h-6 w-6" />}
       headerActions={
         <div className="flex flex-wrap items-center gap-4">
           <ServerSelector selectedServer={region} onServerChange={setRegion} />

@@ -19,17 +19,22 @@ export async function getMarketData(
   region: 'west' | 'east' | 'europe' = 'west',
   additionalItems: string[] = [],
   categoryItems: string[] = [],
-  locale: string = 'en' // Pass locale from client
+  tier: string | null = null
 ) {
   try {
-    let baseItems = categoryItems.length > 0 ? categoryItems : POPULAR_ITEMS;
-    const allItems = Array.from(new Set([...baseItems, ...additionalItems]));
+    let baseItems = categoryItems.length > 0 ? categoryItems : [];
+    let allItems = Array.from(new Set([...baseItems, ...additionalItems]));
+    
+    // Filter by tier if specified
+    if (tier && tier !== 'All') {
+      allItems = allItems.filter(item => item.startsWith(`T${tier}_`));
+    }
 
     // Fetch Prices, Volume, and Item Names in parallel
     const [data, historyData, itemsList] = await Promise.all([
       getMarketPrices(allItems, region),
       getMarketVolume(allItems, region),
-      getItems(locale).catch((err) => {
+      getItems('en').catch((err) => {
         console.error('[MarketData] getItems error:', err);
         return [];
       })
@@ -59,7 +64,7 @@ export async function getMarketData(
     return processMarketData(data, additionalItems, volumeMap, nameMap);
   } catch (error) {
     console.error('Market Data Error:', error);
-    return { flips: [], error: 'Failed to fetch market data' };
+    return [];
   }
 }
 
@@ -147,7 +152,7 @@ function processMarketData(
   });
 
   // Sort by profit descending
-  return { flips: flips.sort((a, b) => b.profit - a.profit), error: undefined };
+  return flips.sort((a, b) => b.profit - a.profit);
 }
 
 export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'east' | 'europe', watchlist: string[], locale: string = 'en') {
@@ -171,8 +176,8 @@ export async function triggerWatchlistAlerts(userId: string, region: 'west' | 'e
     const itemIds = Array.from(new Set(watchlist.map(w => w.split('-')[0])));
 
     // 2. Fetch current market data for these items
-    const { flips } = await getMarketData(region, itemIds, [], locale);
-    
+    const flips = await getMarketData(region, itemIds, [], locale);
+
     // 3. Filter for profitable flips (> 5000 profit and > 10% margin for alert)
     const profitableWatchlistItems = flips.filter(f => 
       itemIds.includes(f.itemId) && f.profit > 5000 && f.margin > 10
