@@ -1,10 +1,11 @@
-# AlbionKit - Albion Online Toolkit
+<img width="1582" height="366" alt="albionkit-banner" src="https://github.com/user-attachments/assets/b6f0fe61-a865-461c-93aa-dd41d6ccea3d" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 
+# AlbionKit - Albion Online Toolkit
 A comprehensive toolkit for Albion Online players featuring market analysis, build databases, PvP intelligence, and profit calculators.
 
 ## 🎯 Features
