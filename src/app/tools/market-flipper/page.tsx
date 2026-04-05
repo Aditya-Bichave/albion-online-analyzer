@@ -2,24 +2,19 @@ import { Metadata } from 'next';
 import MarketFlipperClient from './MarketFlipperClient';
 import { getItemNameService } from '@/lib/item-service';
 import { getTranslations, getLocale } from 'next-intl/server';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'market-flipper',
-  'Albion Online Market Flipper - Real-Time Profit Calculator | AlbionKit',
-  'Find profitable market flips in Albion Online. Track prices across all cities, set watchlist alerts, and maximize profits with real-time market data. Free tool with premium features.'
-);
-
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const t = await getTranslations('Pages.marketFlipper');
+  const tPage = await getTranslations('MarketFlipperPage');
   const locale = await getLocale();
-  let title = t('title');
-  let description = t('description');
+  let title = tPage('title');
+  let description = tPage('description');
+  const screenshotKey = 'market-flipper';
 
   const resolvedSearchParams = await searchParams;
   const itemId = resolvedSearchParams?.item;
@@ -28,31 +23,36 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     try {
       const itemName = await getItemNameService(itemId, locale);
       if (itemName) {
-        title = `${itemName} - Market Flipper | AlbionKit`;
-        description = `Find profitable market flips for ${itemName} in Albion Online. Real-time price tracking and profit calculator.`;
+        title = `${itemName} - ${t('title')}`;
+        description = t('descriptionDynamic', { itemName });
       }
     } catch (e) {
       console.error('Failed to fetch Market Flipper metadata', e);
     }
   }
 
-  // Merge base metadata with dynamic content
   return {
-    ...baseMetadata,
     title,
     description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
       title,
       description,
       url: 'https://albionkit.com/tools/market-flipper',
-      images: baseMetadata.openGraph?.images, // Explicitly include screenshot
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
       title,
       description,
-      images: baseMetadata.twitter?.images, // Explicitly include screenshot
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

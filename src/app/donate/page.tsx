@@ -10,6 +10,25 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('title'),
     description: t('description'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: 'https://albionkit.com/donate',
+      type: 'website',
+      images: [{
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AlbionKit Preview',
+        type: 'image/jpeg'
+      }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: ['/og-image.jpg'],
+    }
   };
 }
 

@@ -282,38 +282,8 @@
     "zvzTrackerDesc": "Suivez les batailles massives en monde ouvert"
   },
   "AboutPage": {
-    "heroBadge": "Le compagnon ultime",
-    "heroTitle": "Boostez votre ",
-    "heroJourney": "aventure sur Albion",
-    "heroSubtitle": "AlbionKit est une suite d'outils avancés conçus pour vous donner l'avantage compétitif sur Albion Online. Du marché au PvP, nous avons tout prévu.",
-    "missionTitle": "Notre Mission",
-    "missionP1": "Albion Online est un MMORPG sandbox complexe porté par une économie dirigée par les joueurs. Le succès nécessite des connaissances, de la stratégie et les bonnes données.",
-    "missionP2": "Notre mission est de démocratiser l'accès aux analyses de haut niveau. Nous pensons que chaque joueur mérite des outils professionnels pour maximiser son efficacité.",
-    "missionP3": "Construit par des joueurs, pour des joueurs, AlbionKit évolue constamment pour répondre aux besoins de la communauté d'Albion.",
-    "itemsTracked": "Objets suivis",
-    "marketUpdates": "Mises à jour du marché",
-    "coreFeatures": "Fonctions principales",
-    "everythingYouNeed": "Tout ce dont vous avez besoin",
-    "marketFlipper": "Marché Flipper",
-    "marketFlipperDesc": "Analyse des prix en temps réel dans toutes les villes royales pour trouver les meilleures opportunités d'arbitrage.",
-    "pvpIntel": "Infos PvP",
-    "pvpIntelDesc": "Plongez dans les killboards, analysez les performances des guildes et suivez vos propres stats K/D.",
-    "killFeed": "Killboard",
-    "killFeedDesc": "Flux en temps réel des kills de joueurs avec graphiques d'activité instantanés et inspection de builds.",
-    "craftingCalc": "Calculateur d'Artisanat",
-    "craftingCalcDesc": "Calculez les marges de profit exactes pour l'artisanat, le raffinage et l'enchantement avec des prix à jour.",
-    "metaBuilds": "Meta Builds",
-    "metaBuildsDesc": "Découvrez les builds les plus efficaces pour tout type de contenu.",
-    "guildManagement": "Gestion de Guilde",
-    "guildManagementDesc": "Outils pour les chefs de guilde afin de gérer les effectifs, suivre l'assiduité et distribuer l'équipement.",
-    "globalSupport": "Support serveur mondial",
-    "globalSupportDesc": "Support complet pour les serveurs Amériques, Asie et Europe avec des données spécifiques à chaque région.",
-    "dataSources": "Sources de données",
-    "dataSourcesDesc": "Les données de marché sont fournies par l'<strong>Albion Data Project</strong>, un effort communautaire pour collecter et distribuer les données du jeu.",
-    "learnMoreADP": "En savoir plus sur ADP",
-    "legalDisclaimer": "Avertissement légal",
-    "joinCommunity": "Rejoindre la communauté",
-    "twitter": "Twitter"
+    "title": "À propos d'AlbionKit - Notre Mission & Équipe",
+    "description": "Découvrez AlbionKit, notre mission de fournir des outils gratuits pour Albion Online et l'équipe."
   },
   "MarketFlipper": {
     "itemsTracked": "{count} items suivis",
@@ -3592,38 +3562,8 @@
     "impact2": "Développement"
   },
   "DonatePage": {
-    "heroBadge": "Fait avec amour",
-    "heroTitle": "Soutenir AlbionKit",
-    "heroSubtitle": "Votre soutien garde AlbionKit gratuit, sans publicité et en amélioration continue. Chaque contribution fait la différence !",
-    "bmcTitle": "Offrez-moi un café",
-    "bmcSubtitle": "Don unique",
-    "bmcDescription": "Offrez-moi un café pour montrer votre appréciation ! Les dons uniques aident à couvrir les coûts du serveur et à maintenir le projet en ligne.",
-    "bmcButton": "Offrir un café",
-    "githubTitle": "Sponsors GitHub",
-    "githubSubtitle": "Soutien mensuel",
-    "githubDescription": "Devenez sponsor mensuel sur GitHub. Le soutien récurrent nous aide à planifier des améliorations et de nouvelles fonctionnalités à long terme.",
-    "githubButton": "Sponsoriser sur GitHub",
-    "impactTitle": "Votre impact",
-    "impactSubtitle": "Chaque contribution soutient directement le projet et nous aide à construire de meilleurs outils pour la communauté.",
-    "impact1Title": "Coûts du serveur",
-    "impact1Desc": "Hébergement, bases de données et accès API pour maintenir le service 24h/24 et 7j/7.",
-    "impact2Title": "Développement",
-    "impact2Desc": "Temps passé à créer de nouvelles fonctionnalités, corriger des bugs et améliorer les performances.",
-    "impact3Title": "Communauté",
-    "impact3Desc": "Soutien aux événements communautaires, traductions et ressources pour les joueurs.",
-    "otherWaysTitle": "Autres façons d'aider",
-    "way1Title": "Passez le mot",
-    "way1Desc": "Partagez AlbionKit avec vos amis et membres de guilde",
-    "way2Title": "Laissez une étoile",
-    "way2Desc": "Mettez une étoile sur GitHub pour montrer votre soutien",
-    "way3Title": "Contribuez au code",
-    "way3Desc": "Soumettez des corrections de bugs, des fonctionnalités ou des traductions",
-    "way4Title": "Signaler des problèmes",
-    "way4Desc": "Aidez-nous à améliorer en signalant des bugs et en suggérant des fonctionnalités",
-    "thankYouTitle": "Merci !",
-    "thankYouDesc": "Chaque contribution, aussi petite soit-elle, nous aide à garder AlbionKit gratuit et accessible à tous les joueurs. Ensemble, nous construisons le meilleur outil compagnon pour Albion Online !",
-    "title": "Soutenir AlbionKit - Gratuit et Sans Pub",
-    "description": "Soutenez le développement d'AlbionKit par des dons. Votre aide maintient le projet gratuit et sans publicité."
+    "title": "Soutenir AlbionKit - Faire un Don",
+    "description": "Soutenez le développement d'AlbionKit par des dons. Aidez-nous à garder le projet gratuit et sans publicité."
   },
   "Sidebar": {
     "silverFarming": "Farm d'Argent",
@@ -4181,5 +4121,65 @@
     "metaInfo": "Informations Méta 2026",
     "metaRating": "Classement Méta",
     "lastUpdated": "Dernière Mise à Jour"
+  },
+  "CraftingPage": {
+    "title": "Calculatrice d'Artisanat - Albion Online",
+    "description": "Maximisez vos profits d'artisanat dans Albion Online. Calculez les coûts de matériaux et l'efficacité du foyer."
+  },
+  "EnchantingPage": {
+    "title": "Calculatrice d'Enchantement - Albion Online",
+    "description": "Comparez les coûts d'enchantement vs achat d'items enchantés. Calculez les coûts de runes, âmes et reliques."
+  },
+  "WeaponsPage": {
+    "title": "Guide des Rotations d'Armes - Toutes Armes",
+    "description": "Maîtrisez les rotations optimales pour toutes les armes. Dégâts explosifs, DPS soutenu et combos de mobilité."
+  },
+  "SettingsPage": {
+    "title": "Paramètres du Compte | AlbionKit",
+    "description": "Gérez vos paramètres de compte AlbionKit, notifications, langue et profil."
+  },
+  "LoginPage": {
+    "title": "Se connecter à AlbionKit",
+    "description": "Connectez-vous à AlbionKit pour accéder aux fonctionnalités premium, sauvegarder des builds et personnaliser."
+  },
+  "NotFoundPage": {
+    "title": "Page non trouvée - 404 | AlbionKit",
+    "description": "La page que vous recherchez n'existe pas. Retournez à l'accueil d'AlbionKit."
+  },
+  "BuildsPage": {
+    "title": "Base de Données de Builds - Méta Builds",
+    "description": "Explorez et partagez des métabuilds pour toutes les armes. Trouvez des configurations optimales pour PvP, PvE et ZvZ."
+  },
+  "PrivacyPage": {
+    "title": "Politique de Confidentialité",
+    "description": "Politique de confidentialité d'AlbionKit - comment nous collectons, utilisons et protégeons vos données."
+  },
+  "TermsPage": {
+    "title": "Conditions d'Utilisation",
+    "description": "Conditions d'utilisation d'AlbionKit et directives."
+  },
+  "CookiesPage": {
+    "title": "Politique de Cookies",
+    "description": "Politique de cookies d'AlbionKit - comment nous utilisons les cookies pour améliorer votre expérience."
+  },
+  "MarketFlipperPage": {
+    "title": "Market Flipper - Calculatrice de Profit",
+    "description": "Trouvez des market flips rentables dans Albion Online. Suivez les prix et maximisez les profits."
+  },
+  "GoldPricePage": {
+    "title": "Calculateur de Prix de l'Or - Albion Online",
+    "description": "Comparez les prix de l'or sur tous les serveurs. Suivez les taux de conversion premium."
+  },
+  "PvPIntelPage": {
+    "title": "PvP Intel - Statistiques des Joueurs",
+    "description": "Analysez les joueurs d'Albion Online, suivez la méta des armes et obtenez des renseignements PvP avec des statistiques en direct."
+  },
+  "KillboardPage": {
+    "title": "Killboard - Suivi PvP",
+    "description": "Suivez les batailles PvP en temps réel dans Albion Online. Killboard avec statistiques des joueurs et analyse des combats."
+  },
+  "ZvZTrackerPage": {
+    "title": "Suivi ZvZ - Suivi de Batailles",
+    "description": "Suivez les batailles massives ZvZ et GvG dans Albion Online. Statistiques de batailles en direct et analyse de guerre de guildes."
   }
 }

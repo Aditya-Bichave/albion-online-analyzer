@@ -4,23 +4,17 @@ import ZvzTrackerClient from './ZvzTrackerClient';
 import { getBattles } from './actions';
 import { Loader2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 // Force dynamic rendering for real-time data
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'zvz-tracker',
-  'ZvZ Tracker - Albion Online Battle Tracker | AlbionKit',
-  'Track massive ZvZ and GvG battles in Albion Online. Live battle statistics, guild warfare analysis, and participant tracking.'
-);
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.zvzTracker');
   let title = t('title');
   let description = t('description');
+  const screenshotKey = 'zvz-tracker';
 
   try {
     // Default to Americas for metadata snapshot
@@ -43,21 +37,27 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    ...baseMetadata,
     title,
     description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
       title,
       description,
       url: 'https://albionkit.com/tools/zvz-tracker',
-      images: baseMetadata.openGraph?.images,
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
       title,
       description,
-      images: baseMetadata.twitter?.images,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

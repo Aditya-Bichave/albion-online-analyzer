@@ -20,34 +20,36 @@ import {
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
-
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'about',
-  'About AlbionKit - Built by Players, for Players',
-  'Learn about AlbionKit - the ultimate Albion Online companion tool built by the community.'
-);
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Pages.about');
+  const t = await getTranslations('AboutPage');
+  const title = t('title');
+  const description = t('description');
+  const screenshotKey = 'about';
   
   return {
-    ...baseMetadata,
-    title: t('title'),
-    description: t('description'),
+    title,
+    description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
-      title: t('title'),
-      description: t('description'),
+      title,
+      description,
       url: 'https://albionkit.com/about',
-      images: baseMetadata.openGraph?.images,
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
-      title: t('title'),
-      description: t('description'),
-      images: baseMetadata.twitter?.images,
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

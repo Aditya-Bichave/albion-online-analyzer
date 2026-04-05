@@ -277,38 +277,8 @@
     "zvzTrackerDesc": "追踪大规模开放世界战斗"
   },
   "AboutPage": {
-    "heroBadge": "终极伴侣",
-    "heroTitle": "助力你的 ",
-    "heroJourney": "Albion 之旅",
-    "heroSubtitle": "AlbionKit 是一套先进的工具，旨在为你提供 Albion Online 的竞争优势。从市场到 PvP 分析，我们都能满足你的需求。",
-    "missionTitle": "我们的使命",
-    "missionP1": "Albion Online 是一个复杂的沙盒 MMORPG，由玩家驱动的经济和全掠夺 PvP 驱动。成功需要知识、策略和正确的数据。",
-    "missionP2": "我们的使命是让每个人都能接触到高水平的游戏分析。我们相信每个玩家都值得拥有专业工具。",
-    "missionP3": "由玩家打造，为玩家服务。AlbionKit 不断发展以满足社区需求。",
-    "itemsTracked": "物品数",
-    "marketUpdates": "数据更新",
-    "coreFeatures": "核心功能",
-    "everythingYouNeed": "你所需的一切",
-    "marketFlipper": "市场搬砖",
-    "marketFlipperDesc": "全主城实时价格分析，寻找最佳套利机会。",
-    "pvpIntel": "PvP 情报",
-    "pvpIntelDesc": "深入研究击杀榜，分析公会表现并追踪个人 K/D。",
-    "killFeed": "Killboard",
-    "killFeedDesc": "实时玩家击杀流，包含即时活动图表和装备检查。",
-    "craftingCalc": "制作计算器",
-    "craftingCalcDesc": "使用最新价格计算制作、精炼和附魔的精确利润率。",
-    "metaBuilds": "Meta 配置",
-    "metaBuildsDesc": "发现适用于任何内容类型的最有效配置。",
-    "guildManagement": "公会管理",
-    "guildManagementDesc": "为公会会长提供的工具，用于管理名单、追踪出席率和分配装备。",
-    "globalSupport": "全球服务器支持",
-    "globalSupportDesc": "全面支持美服、亚服和欧服，提供各地区专属数据。",
-    "dataSources": "数据来源",
-    "dataSourcesDesc": "市场数据由 <strong>Albion Data Project</strong> 提供。",
-    "learnMoreADP": "了解更多关于 ADP",
-    "legalDisclaimer": "法律免责声明",
-    "joinCommunity": "加入社区",
-    "twitter": "Twitter"
+    "title": "关于 AlbionKit - 我们的使命和团队",
+    "description": "了解 AlbionKit、我们为 Albion Online 提供免费工具的使命以及团队。"
   },
   "MarketFlipper": {
     "itemsTracked": "{count} 个物品已追踪",
@@ -3603,38 +3573,8 @@
     "impact2": "开发"
   },
   "DonatePage": {
-    "heroBadge": "用心制作",
-    "heroTitle": "支持 AlbionKit",
-    "heroSubtitle": "您的支持让 AlbionKit 保持免费、无广告并持续改进。每一份贡献都很重要！",
-    "bmcTitle": "请我喝咖啡",
-    "bmcSubtitle": "一次性捐款",
-    "bmcDescription": "请我喝咖啡以表达您的赞赏！一次性捐款有助于支付服务器成本并保持项目运行。",
-    "bmcButton": "请喝咖啡",
-    "githubTitle": "GitHub 赞助商",
-    "githubSubtitle": "每月支持",
-    "githubDescription": "成为 GitHub 上的每月赞助商。经常性支持帮助我们规划长期改进和新功能。",
-    "githubButton": "在 GitHub 上赞助",
-    "impactTitle": "您的影响",
-    "impactSubtitle": "每份捐款都直接支持项目，帮助我们为社区构建更好的工具。",
-    "impact1Title": "服务器成本",
-    "impact1Desc": "托管、数据库和 API 访问，确保服务 24/7 运行。",
-    "impact2Title": "开发",
-    "impact2Desc": "用于构建新功能、修复错误和改进性能的时间。",
-    "impact3Title": "社区",
-    "impact3Desc": "支持社区活动、翻译和玩家资源。",
-    "otherWaysTitle": "其他帮助方式",
-    "way1Title": "宣传",
-    "way1Desc": "与您的朋友和公会成员分享 AlbionKit",
-    "way2Title": "点赞",
-    "way2Desc": "在 GitHub 上给我们点赞以示支持",
-    "way3Title": "贡献代码",
-    "way3Desc": "提交错误修复、功能或翻译",
-    "way4Title": "报告问题",
-    "way4Desc": "通过报告错误和提出建议帮助我们改进",
-    "thankYouTitle": "谢谢！",
-    "thankYouDesc": "每一份贡献，无论多么微小，都帮助我们保持 AlbionKit 免费并对所有玩家开放。我们一起构建最好的 Albion Online 辅助工具！",
-    "title": "支持 AlbionKit - 保持免费和无广告",
-    "description": "通过捐款支持 AlbionKit 开发。您的支持有助于保持项目免费和无广告。"
+    "title": "支持 AlbionKit - 捐款保持免费",
+    "description": "通过捐款支持 AlbionKit 开发。帮助我们保持项目免费和无广告。"
   },
   "Sidebar": {
     "silverFarming": "银币 farming",
@@ -4174,5 +4114,65 @@
     "metaInfo": "2026 元信息",
     "metaRating": "元评级",
     "lastUpdated": "最后更新"
+  },
+  "CraftingPage": {
+    "title": "制作计算器 - Albion Online",
+    "description": "在 Albion Online 中最大化制作收益。计算材料成本、专注力效率和市场利润。"
+  },
+  "EnchantingPage": {
+    "title": "附魔计算器 - Albion Online",
+    "description": "比较附魔成本与购买附魔装备。计算符文、灵魂和遗物成本。"
+  },
+  "WeaponsPage": {
+    "title": "武器循环指南 - 所有武器",
+    "description": "掌握 Albion Online 中所有武器类型的最佳循环。爆发伤害、持续 DPS 和机动性连招。"
+  },
+  "SettingsPage": {
+    "title": "账户设置 | AlbionKit",
+    "description": "管理你的 AlbionKit 账户设置、通知、语言和个人资料。"
+  },
+  "LoginPage": {
+    "title": "登录 AlbionKit",
+    "description": "登录 AlbionKit 以访问高级功能、保存 Build 和自定义体验。"
+  },
+  "NotFoundPage": {
+    "title": "页面未找到 - 404 | AlbionKit",
+    "description": "你查找的页面不存在。返回 AlbionKit 首页。"
+  },
+  "BuildsPage": {
+    "title": "Build 数据库 - Albion Online Meta Build",
+    "description": "浏览和分享所有武器类型的 meta build。找到 PvP、PvE 和 ZvZ 的最佳配置。"
+  },
+  "PrivacyPage": {
+    "title": "隐私政策",
+    "description": "AlbionKit 隐私政策 - 我们如何收集、使用和保护你的数据。"
+  },
+  "TermsPage": {
+    "title": "服务条款",
+    "description": "AlbionKit 服务条款和使用指南。"
+  },
+  "CookiesPage": {
+    "title": "Cookie 政策",
+    "description": "AlbionKit Cookie 政策 - 我们如何使用 Cookie 来改善你的体验。"
+  },
+  "MarketFlipperPage": {
+    "title": "市场翻转器 - 实时利润计算器",
+    "description": "在 Albion Online 中找到盈利的市场翻转。跨城市追踪价格并最大化利润。"
+  },
+  "GoldPricePage": {
+    "title": "金币价格计算器 - Albion Online",
+    "description": "比较所有服务器的金币价格。追踪高级转换率。"
+  },
+  "PvPIntelPage": {
+    "title": "PvP 情报 - Albion Online 玩家统计",
+    "description": "分析 Albion Online 玩家，追踪武器 meta，获取实时 PvP 情报统计。"
+  },
+  "KillboardPage": {
+    "title": "Killboard - Albion Online PvP 追踪器",
+    "description": "追踪 Albion Online 中的实时 PvP 战斗。Killboard 提供玩家统计、名望追踪和战斗分析。"
+  },
+  "ZvZTrackerPage": {
+    "title": "ZvZ 追踪器 - Albion Online 战斗追踪",
+    "description": "追踪 Albion Online 中的大规模 ZvZ 和 GvG 战斗。实时战斗统计、公会战分析和参与者追踪。"
   }
 }

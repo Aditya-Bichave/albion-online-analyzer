@@ -1,33 +1,36 @@
 import { Metadata } from 'next';
 import BuildsClient from './BuildsClient';
 import { getTranslations } from 'next-intl/server';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
-
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'builds-list',
-  'Builds Database - AlbionKit',
-  'Browse thousands of meta builds for all weapons and game modes in Albion Online. Filter by category, sort by popularity, and discover builds from top players.'
-);
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('Builds');
+  const t = await getTranslations('BuildsPage');
+  const title = t('title');
+  const description = t('description');
+  const screenshotKey = 'builds-list';
 
   return {
-    ...baseMetadata,
-    title: `${t('title')} | AlbionKit`,
-    description: t('description'),
+    title,
+    description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
-      title: `${t('title')} | AlbionKit`,
-      description: t('description'),
-      images: baseMetadata.openGraph?.images,
+      title,
+      description,
+      url: 'https://albionkit.com/builds',
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
-      title: `${t('title')} | AlbionKit`,
-      description: t('description'),
-      images: baseMetadata.twitter?.images,
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

@@ -2,19 +2,14 @@ import { Metadata } from 'next';
 import GoldPriceClient from './GoldPriceClient';
 import { getGoldHistory } from '@/lib/gold-service';
 import { getTranslations } from 'next-intl/server';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
-
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'gold-price',
-  'Gold Price Calculator - Albion Online Premium Tracker | AlbionKit',
-  'Compare gold prices across all Albion Online servers. Track premium conversion rates and find the best deals for gold trading.'
-);
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.goldPrice');
-  let title = t('title');
-  let description = t('description');
+  const tPage = await getTranslations('GoldPricePage');
+  let title = tPage('title');
+  let description = tPage('description');
+  const screenshotKey = 'gold-price';
 
   try {
     // Default to Americas for metadata snapshot
@@ -29,21 +24,27 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    ...baseMetadata,
     title,
     description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
       title,
       description,
       url: 'https://albionkit.com/tools/gold-price',
-      images: baseMetadata.openGraph?.images,
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
       title,
       description,
-      images: baseMetadata.twitter?.images,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

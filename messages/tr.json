@@ -282,38 +282,8 @@
     "zvzTrackerDesc": "Büyük açık dünya savaşlarını takip edin"
   },
   "AboutPage": {
-    "heroBadge": "En İyi Yardımcı",
-    "heroTitle": "Albion Yolculuğunu ",
-    "heroJourney": "Güçlendir",
-    "heroSubtitle": "AlbionKit, sana rekabet avantajı sağlamak için tasarlanmış gelişmiş araçlar sunar. Piyasadan PvP analizine kadar yanındayız.",
-    "missionTitle": "Misyonumuz",
-    "missionP1": "Albion Online, oyuncu odaklı ekonomi ve tam ganimetli PvP ile yürütülen karmaşık bir dünyadır. Başarı için strateji ve doğru veri şarttır.",
-    "missionP2": "Misyonumuz, üst düzey oyun analizlerine erişimi demokratikleştirmektir. Her oyuncunun profesyonel araçları hak ettiğine inanıyoruz.",
-    "missionP3": "Oyuncular tarafından oyuncular için geliştirilen AlbionKit, topluluğun ihtiyaçlarına göre sürekli evrimleşmektedir.",
-    "itemsTracked": "Takip Edilen Eşyalar",
-    "marketUpdates": "Piyasa Güncellemeleri",
-    "coreFeatures": "Temel Özellikler",
-    "everythingYouNeed": "İhtiyacın Olan Her Şey",
-    "marketFlipper": "Piyasa Al-Sat",
-    "marketFlipperDesc": "En iyi kar fırsatlarını bulmak için tüm kraliyet şehirlerinde gerçek zamanlı fiyat analizi.",
-    "pvpIntel": "PvP Bilgi",
-    "pvpIntelDesc": "Killboard verilerine dalın, lonca performansını analiz edin ve kişisel K/D oranınızı takip edin.",
-    "killFeed": "Killboard",
-    "killFeedDesc": "Anlık aktivite grafikleri ve build incelemesi ile oyuncu ölümlerinin gerçek zamanlı akışı.",
-    "craftingCalc": "Zanaat Hesaplayıcı",
-    "craftingCalcDesc": "Güncel fiyatlarla zanaat, işleme ve büyüleme için kesin kar marjlarını hesaplayın.",
-    "metaBuilds": "Meta Buildler",
-    "metaBuildsDesc": "Her içerik türü için en etkili buildleri keşfedin.",
-    "guildManagement": "Lonca Yönetimi",
-    "guildManagementDesc": "Lonca liderleri için kadro yönetimi, katılım takibi ve eşya dağıtım araçları.",
-    "globalSupport": "Küresel Sunucu Desteği",
-    "globalSupportDesc": "Amerika, Asya ve Avrupa sunucuları için tam destek ve bölgeye özel veriler.",
-    "dataSources": "Veri Kaynakları",
-    "dataSourcesDesc": "Piyasa verileri, topluluk tarafından desteklenen <strong>Albion Data Project</strong> tarafından sağlanmaktadır.",
-    "learnMoreADP": "ADP hakkında bilgi al",
-    "legalDisclaimer": "Yasal Uyarı",
-    "joinCommunity": "Topluluğa Katıl",
-    "twitter": "Twitter"
+    "title": "AlbionKit Hakkında - Misyonumuz ve Ekibimiz",
+    "description": "AlbionKit, Albion Online için ücretsiz araçlar sağlama misyonumuz ve ekibimiz hakkında bilgi edinin."
   },
   "MarketFlipper": {
     "itemsTracked": "{count} öğe izleniyor",
@@ -3592,38 +3562,8 @@
     "impact2": "Geliştirme"
   },
   "DonatePage": {
-    "heroBadge": "Sevgiyle yapıldı",
-    "heroTitle": "AlbionKit'i Destekle",
-    "heroSubtitle": "Desteğiniz AlbionKit'i ücretsiz, reklamsız ve sürekli gelişen tutuyor. Her katkı fark yaratır!",
-    "bmcTitle": "Kahve ısmarla",
-    "bmcSubtitle": "Tek seferlik bağış",
-    "bmcDescription": "Takdirinizi göstermek için bana bir kahve ısmarlayın! Tek seferlik bağışlar sunucu maliyetlerini karşılamaya ve projeyi ayakta tutmaya yardımcı olur.",
-    "bmcButton": "Kahve ısmarla",
-    "githubTitle": "GitHub Sponsorları",
-    "githubSubtitle": "Aylık destek",
-    "githubDescription": "GitHub'da aylık sponsor olun. Tekrarlayan destek, uzun vadeli iyileştirmeler ve yeni özellikler planlamamıza yardımcı olur.",
-    "githubButton": "GitHub'da sponsor ol",
-    "impactTitle": "Etkiniz",
-    "impactSubtitle": "Her katkı projeyi doğrudan destekler ve topluluk için daha iyi araçlar oluşturmamıza yardımcı olur.",
-    "impact1Title": "Sunucu maliyetleri",
-    "impact1Desc": "Hizmeti 7/24 çalışır durumda tutmak için barındırma, veritabanları ve API erişimi.",
-    "impact2Title": "Geliştirme",
-    "impact2Desc": "Yeni özellikler oluşturma, hataları düzeltme ve performansı iyileştirme için harcanan zaman.",
-    "impact3Title": "Topluluk",
-    "impact3Desc": "Topluluk etkinlikleri, çeviriler ve oyuncu kaynakları için destek.",
-    "otherWaysTitle": "Yardım etmenin diğer yolları",
-    "way1Title": "Duyurun",
-    "way1Desc": "AlbionKit'i arkadaşlarınızla ve lonca üyelerinizle paylaşın",
-    "way2Title": "Yıldız bırakın",
-    "way2Desc": "Desteğinizi göstermek için GitHub'da yıldız verin",
-    "way3Title": "Kod katkısı yapın",
-    "way3Desc": "Hata düzeltmeleri, özellikler veya çeviriler gönderin",
-    "way4Title": "Sorun bildirin",
-    "way4Desc": "Hataları bildirerek ve özellik önererek iyileştirmemize yardımcı olun",
-    "thankYouTitle": "Teşekkürler!",
-    "thankYouDesc": "Her katkı, ne kadar küçük olursa olsun, AlbionKit'i tüm oyuncular için ücretsiz ve erişilebilir tutmamıza yardımcı olur. Birlikte en iyi Albion Online yardımcı aracını inşa ediyoruz!",
-    "title": "AlbionKit'i Destekle - Ücretsiz ve Reklamsız",
-    "description": "Bağışlar yoluyla AlbionKit gelişimini destekle. Desteğin projeyi ücretsiz ve reklamsız tutmaya yardımcı olur."
+    "title": "AlbionKit'i Destekle - Bağış Yap",
+    "description": "Bağışlar yoluyla AlbionKit geliştirmesini destekle. Projeyi ücretsiz ve reklamsız tutmamıza yardım et."
   },
   "Sidebar": {
     "silverFarming": "Gümüş Farmı",
@@ -4166,5 +4106,65 @@
     "metaInfo": "2026 Meta Bilgileri",
     "metaRating": "Meta Değerlendirmesi",
     "lastUpdated": "Son Güncelleme"
+  },
+  "CraftingPage": {
+    "title": "Zanaat Hesaplayıcı - Albion Online",
+    "description": "Albion Online'da zanaat karını maksimize et. Malzeme maliyetlerini ve odak verimliliğini hesapla."
+  },
+  "EnchantingPage": {
+    "title": "Büyüleme Hesaplayıcı - Albion Online",
+    "description": "Büyüleme maliyetlerini vs satın alınan büyülenmiş eşyaları karşılaştır. Run, ruh ve rölik maliyetlerini hesapla."
+  },
+  "WeaponsPage": {
+    "title": "Silah Rotasyonları Rehberi - Tüm Silahlar",
+    "description": "Tüm silahlar için optimal rotasyonları ustalaş. Patlayıcı hasar, sürdürülen DPS ve mobilite kombo."
+  },
+  "SettingsPage": {
+    "title": "Hesap Ayarları | AlbionKit",
+    "description": "AlbionKit hesap ayarlarını, bildirimleri, dili ve profili yönet."
+  },
+  "LoginPage": {
+    "title": "AlbionKit'e Giriş Yap",
+    "description": "Premium özelliklere erişmek, buildleri kaydetmek ve özelleştirmek için AlbionKit'e giriş yap."
+  },
+  "NotFoundPage": {
+    "title": "Sayfa Bulunamadı - 404 | AlbionKit",
+    "description": "Aradığınız sayfa mevcut değil. AlbionKit ana sayfasına geri dönün."
+  },
+  "BuildsPage": {
+    "title": "Build Veritabanı - Meta Buildler",
+    "description": "Tüm silahlar için meta buildleri keşfet ve paylaş. PvP, PvE ve ZvZ için optimal kurulumları bul."
+  },
+  "PrivacyPage": {
+    "title": "Gizlilik Politikası",
+    "description": "AlbionKit gizlilik politikası - verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz."
+  },
+  "TermsPage": {
+    "title": "Kullanım Şartları",
+    "description": "AlbionKit kullanım şartları ve yönergeleri."
+  },
+  "CookiesPage": {
+    "title": "Çerez Politikası",
+    "description": "AlbionKit çerez politikası - deneyiminizi iyileştirmek için çerezleri nasıl kullandığımız."
+  },
+  "MarketFlipperPage": {
+    "title": "Market Flipper - Kar Hesaplayıcı",
+    "description": "Albion Online'da karlı market flip opportunities bulun. Fiyatları takip edin ve karı maksimize edin."
+  },
+  "GoldPricePage": {
+    "title": "Altın Fiyat Hesaplayıcı - Albion Online",
+    "description": "Tüm sunucularda altın fiyatlarını karşılaştır. Premium dönüşüm oranlarını takip et."
+  },
+  "PvPIntelPage": {
+    "title": "PvP İstihbaratı - Oyuncu İstatistikleri",
+    "description": "Albion Online oyuncularını analiz et, silah metasını takip et ve canlı istatistiklerle PvP istihbaratı al."
+  },
+  "KillboardPage": {
+    "title": "Killboard - PvP Takipçisi",
+    "description": "Albion Online'da gerçek zamanlı PvP savaşlarını takip et. Oyuncu istatistikleri ve savaş analizi ile Killboard."
+  },
+  "ZvZTrackerPage": {
+    "title": "ZvZ Takipçisi - Savaş Takibi",
+    "description": "Albion Online'da büyük ZvZ ve GvG savaşlarını takip et. Canlı savaş istatistikleri ve lonca savaşı analizi."
   }
 }

@@ -282,38 +282,8 @@
     "zvzTrackerDesc": "Track massive open-world battles"
   },
   "AboutPage": {
-    "heroBadge": "Free & Open Source",
-    "heroTitle": "Empowering Your ",
-    "heroJourney": "Albion Journey",
-    "heroSubtitle": "AlbionKit is a free, open-source suite of advanced tools designed to give you the competitive edge in Albion Online. From market flipping to PvP analytics, we've got you covered.",
-    "missionTitle": "Our Mission",
-    "missionP1": "Albion Online is a complex sandbox MMORPG driven by a player-driven economy and full-loot PvP. Success requires knowledge, strategy, and the right data.",
-    "missionP2": "Our mission is to democratize access to high-level game analytics. We believe every player, from solo wanderers to guild leaders, deserves professional-grade tools to maximize their efficiency and enjoyment.",
-    "missionP3": "Built by players, for players, AlbionKit is now open source under the MIT License. We're constantly evolving to meet the changing needs of the Albion community, with contributions from players worldwide.",
-    "itemsTracked": "Items Tracked",
-    "marketUpdates": "Market Updates",
-    "coreFeatures": "Always Free",
-    "everythingYouNeed": "Everything You Need",
-    "marketFlipper": "Market Flipper",
-    "marketFlipperDesc": "Real-time price analysis across all royal cities to find the best arbitrage opportunities.",
-    "pvpIntel": "PvP Intel",
-    "pvpIntelDesc": "Deep dive into killboards, analyze guild performance, and track your personal K/D stats.",
-    "killFeed": "Killboard",
-    "killFeedDesc": "Real-time stream of player kills with instant activity graphs and build inspection.",
-    "craftingCalc": "Crafting Calculator",
-    "craftingCalcDesc": "Calculate exact profit margins for crafting, refining, and enchanting with up-to-date prices.",
-    "metaBuilds": "Meta Builds",
-    "metaBuildsDesc": "Discover the most effective builds for any content type.",
-    "guildManagement": "Guild Management",
-    "guildManagementDesc": "Tools for guild leaders to manage rosters, track attendance, and distribute gear.",
-    "globalSupport": "Global Server Support",
-    "globalSupportDesc": "Full support for Americas, Asia, and Europe servers with region-specific data.",
-    "dataSources": "Data Sources",
-    "dataSourcesDesc": "Market data is powered by the <strong>Albion Data Project</strong>, a community-driven effort to collect and distribute game data. We encourage all users to contribute by running the Albion Data Client.",
-    "learnMoreADP": "Learn more about ADP",
-    "legalDisclaimer": "Legal Disclaimer",
-    "joinCommunity": "Join the Community",
-    "twitter": "Twitter"
+    "title": "About AlbionKit - Our Mission & Team",
+    "description": "Learn about AlbionKit, our mission to provide free Albion Online tools, and the team behind the project."
   },
   "MarketFlipper": {
     "title": "Market Flipper",
@@ -3583,38 +3553,8 @@
     "impact2": "Dev Time"
   },
   "DonatePage": {
-    "heroBadge": "Made with Love",
-    "heroTitle": "Support AlbionKit",
-    "heroSubtitle": "Your support keeps AlbionKit free, ad-free, and continuously improving. Every contribution makes a difference!",
-    "bmcTitle": "Buy Me a Coffee",
-    "bmcSubtitle": "One-time donation",
-    "bmcDescription": "Buy me a coffee to show your appreciation! One-time donations help cover server costs and keep the project running smoothly.",
-    "bmcButton": "Buy a Coffee",
-    "githubTitle": "GitHub Sponsors",
-    "githubSubtitle": "Monthly support",
-    "githubDescription": "Become a monthly sponsor on GitHub. Recurring support helps us plan long-term improvements and new features.",
-    "githubButton": "Sponsor on GitHub",
-    "impactTitle": "Your Impact",
-    "impactSubtitle": "Every contribution directly supports the project and helps us build better tools for the community.",
-    "impact1Title": "Server Costs",
-    "impact1Desc": "Hosting, databases, and API access to keep the service running 24/7.",
-    "impact2Title": "Development",
-    "impact2Desc": "Time spent building new features, fixing bugs, and improving performance.",
-    "impact3Title": "Community",
-    "impact3Desc": "Support for community events, translations, and player resources.",
-    "otherWaysTitle": "Other Ways to Help",
-    "way1Title": "Spread the Word",
-    "way1Desc": "Share AlbionKit with your friends and guild members",
-    "way2Title": "Leave a Star",
-    "way2Desc": "Star us on GitHub to show your support",
-    "way3Title": "Contribute Code",
-    "way3Desc": "Submit bug fixes, features, or translations",
-    "way4Title": "Report Issues",
-    "way4Desc": "Help us improve by reporting bugs and suggesting features",
-    "thankYouTitle": "Thank You!",
-    "thankYouDesc": "Every contribution, no matter how small, helps us keep AlbionKit free and accessible to all players. Together, we're building the best Albion Online companion tool!",
-    "title": "Support AlbionKit - Keep It Free & Ad-Free",
-    "description": "Support AlbionKit development through donations. Your support helps keep the project free and ad-free for everyone."
+    "title": "Support AlbionKit - Donate & Keep It Free",
+    "description": "Support AlbionKit development through donations. Help us keep the project free and ad-free for the community."
   },
   "SilverFarming": {
     "title": "Daily Silver Farming Guide",
@@ -4276,5 +4216,65 @@
     "metaInfo": "2026 Meta Information",
     "metaRating": "Meta Rating",
     "lastUpdated": "Last Updated"
+  },
+  "CraftingPage": {
+    "title": "Crafting Calculator - Albion Online",
+    "description": "Maximize your crafting profits in Albion Online. Calculate material costs, focus efficiency, and market profits."
+  },
+  "EnchantingPage": {
+    "title": "Enchanting Calculator - Albion Online",
+    "description": "Compare enchanting costs vs buying pre-enchanted items. Calculate rune, soul, and relic costs for all gear tiers."
+  },
+  "WeaponsPage": {
+    "title": "Weapon Rotations Guide - All Weapons",
+    "description": "Master optimal weapon rotations for all weapon types in Albion Online. Burst damage, sustained DPS, and mobility combos."
+  },
+  "SettingsPage": {
+    "title": "Account Settings | AlbionKit",
+    "description": "Manage your AlbionKit account preferences, notifications, language settings, and profile customization."
+  },
+  "LoginPage": {
+    "title": "Sign In to AlbionKit",
+    "description": "Sign in to AlbionKit to access premium features, save your builds, and customize your experience."
+  },
+  "NotFoundPage": {
+    "title": "Page Not Found - 404 | AlbionKit",
+    "description": "The page you are looking for does not exist. Return to AlbionKit homepage to explore our tools."
+  },
+  "BuildsPage": {
+    "title": "Builds Database - Albion Online Meta Builds",
+    "description": "Browse and share meta builds for all weapon types in Albion Online. Find optimal gear setups for PvP, PvE, and ZvZ."
+  },
+  "PrivacyPage": {
+    "title": "Privacy Policy",
+    "description": "AlbionKit privacy policy - how we collect, use, and protect your data."
+  },
+  "TermsPage": {
+    "title": "Terms of Service",
+    "description": "AlbionKit terms of service and usage guidelines."
+  },
+  "CookiesPage": {
+    "title": "Cookie Policy",
+    "description": "AlbionKit cookie policy - how we use cookies to improve your experience."
+  },
+  "MarketFlipperPage": {
+    "title": "Market Flipper - Real-Time Profit Calculator",
+    "description": "Find profitable market flips in Albion Online. Track prices across all cities and maximize profits with real-time market data."
+  },
+  "GoldPricePage": {
+    "title": "Gold Price Calculator - Albion Online",
+    "description": "Compare gold prices across all Albion Online servers. Track premium conversion rates and find the best deals."
+  },
+  "PvPIntelPage": {
+    "title": "PvP Intel - Albion Online Player Stats",
+    "description": "Analyze Albion Online players, track weapon meta, and get PvP intelligence with live statistics."
+  },
+  "KillboardPage": {
+    "title": "Killboard - Albion Online PvP Tracker",
+    "description": "Track real-time PvP battles in Albion Online. Killboard with player statistics, fame tracking, and battle analysis."
+  },
+  "ZvZTrackerPage": {
+    "title": "ZvZ Tracker - Albion Online Battle Tracker",
+    "description": "Track massive ZvZ and GvG battles in Albion Online. Live battle statistics, guild warfare analysis, and participant tracking."
   }
 }

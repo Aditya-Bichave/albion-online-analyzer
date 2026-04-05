@@ -348,6 +348,41 @@ export async function searchItemsMultilingual(query: string, locale: string = 'e
 }
 
 export async function searchItemsService(query: string, locale: string = 'en'): Promise<SimpleItem[]> {
-  // Use multilingual search by default
-  return await searchItemsMultilingual(query, locale);
+  try {
+    // Use multilingual search by default
+    return await searchItemsMultilingual(query, locale);
+  } catch (error) {
+    console.error('Search failed, using fallback:', error);
+    // Fallback: simple search without full index
+    return searchItemsSimple(query, locale);
+  }
+}
+
+async function searchItemsSimple(query: string, locale: string = 'en'): Promise<SimpleItem[]> {
+  // Simple fallback search - just fetch items and filter
+  if (!query || query.length < 2) return [];
+  
+  try {
+    const rawItems = await getRawItems();
+    const localeKey = LOCALE_MAP[locale] || 'EN-US';
+    const lowerQuery = query.toLowerCase();
+    
+    return rawItems
+      .filter(item => {
+        if (!item.UniqueName || !/^T\d+_/.test(item.UniqueName)) return false;
+        if (item.UniqueName.includes('@') || item.UniqueName.includes('_LEVEL')) return false;
+        
+        const name = item.LocalizedNames?.[localeKey] || item.LocalizedNames?.['EN-US'] || '';
+        return name.toLowerCase().includes(lowerQuery) || item.UniqueName.toLowerCase().includes(lowerQuery);
+      })
+      .slice(0, 50) // Limit results
+      .map(item => ({
+        id: item.UniqueName,
+        name: item.LocalizedNames?.[localeKey] || item.LocalizedNames?.['EN-US'] || 'Unknown',
+        twoHanded: item.UniqueName.includes('_2H_')
+      }));
+  } catch (e) {
+    console.error('Simple search also failed:', e);
+    return [];
+  }
 }

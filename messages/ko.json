@@ -282,38 +282,8 @@
     "zvzTrackerDesc": "대규모 오픈 월드 전투를 추적하세요"
   },
   "AboutPage": {
-    "heroBadge": "최고의 동반자",
-    "heroTitle": "당신의 ",
-    "heroJourney": "알비온 여정",
-    "heroSubtitle": "AlbionKit은 알비온 온라인에서 경쟁 우위를 점할 수 있도록 설계된 고급 도구 세트입니다. 시장 분석부터 PvP 데이터까지 모두 제공합니다.",
-    "missionTitle": "우리의 미션",
-    "missionP1": "알비온 온라인은 유저 주도 경제와 풀 루팅 PvP가 특징인 복잡한 샌드박스 MMORPG입니다. 성공을 위해서는 지식과 전략, 그리고 정확한 데이터가 필요합니다.",
-    "missionP2": "우리의 미션은 고수준의 게임 분석 데이터에 대한 접근을 대중화하는 것입니다. 모든 플레이어가 효율을 극대화할 수 있는 전문적인 도구를 사용할 자격이 있다고 믿습니다.",
-    "missionP3": "플레이어에 의해, 플레이어를 위해 만들어진 AlbionKit은 커뮤니티의 니즈에 맞춰 지속적으로 발전하고 있습니다.",
-    "itemsTracked": "추적 아이템",
-    "marketUpdates": "데이터 업데이트",
-    "coreFeatures": "핵심 기능",
-    "everythingYouNeed": "필요한 모든 것",
-    "marketFlipper": "시장 시세 차익",
-    "marketFlipperDesc": "최적의 차익 거래 기회를 찾기 위해 모든 대도시의 실시간 가격을 분석합니다.",
-    "pvpIntel": "PvP 정보",
-    "pvpIntelDesc": "킬보드를 심층 분석하고, 길드 성과를 파악하며 개인 K/D 스탯을 관리하세요.",
-    "killFeed": "Killboard",
-    "killFeedDesc": "플레이어 처치 현황을 실시간으로 확인하고 즉각적인 활동 그래프와 빌드를 검사하세요.",
-    "craftingCalc": "제작 계산기",
-    "craftingCalcDesc": "최신 가격을 바탕으로 제작, 제련, 마법 부여의 정확한 수익률을 계산하세요.",
-    "metaBuilds": "메타 빌드",
-    "metaBuildsDesc": "모든 콘텐츠 유형에 대해 가장 효과적인 빌드를 발견하세요.",
-    "guildManagement": "길드 관리",
-    "guildManagementDesc": "길드장을 위한 명단 관리, 참여도 추적 및 장비 분배 도구입니다.",
-    "globalSupport": "전 세계 서버 지원",
-    "globalSupportDesc": "아메리카, 아시아, 유럽 서버를 완벽 지원하며 지역별 맞춤 데이터를 제공합니다.",
-    "dataSources": "데이터 소스",
-    "dataSourcesDesc": "시장 데이터는 커뮤니티 주도의 데이터 수집 프로젝트인 <strong>Albion Data Project</strong>를 통해 제공됩니다.",
-    "learnMoreADP": "ADP에 대해 알아보기",
-    "legalDisclaimer": "법적 면책 조항",
-    "joinCommunity": "커뮤니티 가입",
-    "twitter": "Twitter"
+    "title": "AlbionKit 소개 - 미션 및 팀",
+    "description": "AlbionKit, Albion Online 무료 도구 제공 미션 및 팀에 대해 알아보세요."
   },
   "MarketFlipper": {
     "itemsTracked": "{count}개 아이템 추적 중",
@@ -3592,38 +3562,8 @@
     "impact2": "개발"
   },
   "DonatePage": {
-    "heroBadge": "사랑을 담아 만들었습니다",
-    "heroTitle": "AlbionKit 지원하기",
-    "heroSubtitle": "여러분의 지원은 AlbionKit 을 무료로, 광고 없이, 지속적으로 개선되도록 합니다. 모든 기여가 차이를 만듭니다!",
-    "bmcTitle": "커피 한 잔 사기",
-    "bmcSubtitle": "일회성 기부",
-    "bmcDescription": "감사를 표하기 위해 커피 한 잔을 사주세요! 일회성 기부는 서버 비용을 충당하고 프로젝트를 운영하는 데 도움이 됩니다.",
-    "bmcButton": "커피 사기",
-    "githubTitle": "GitHub 스폰서",
-    "githubSubtitle": "월간 후원",
-    "githubDescription": "GitHub 에서 월간 스폰서가 되세요. 정기적인 후원은 장기적인 개선과 새로운 기능 계획에 도움이 됩니다.",
-    "githubButton": "GitHub 에서 후원하기",
-    "impactTitle": "여러분의 영향",
-    "impactSubtitle": "모든 기여는 프로젝트를 직접 지원하며 커뮤니티를 위한 더 나은 도구를 만드는 데 도움이 됩니다.",
-    "impact1Title": "서버 비용",
-    "impact1Desc": "서비스를 24/7 로 운영하기 위한 호스팅, 데이터베이스 및 API 액세스.",
-    "impact2Title": "개발",
-    "impact2Desc": "새로운 기능 구축, 버그 수정 및 성능 개선에 소요된 시간.",
-    "impact3Title": "커뮤니티",
-    "impact3Desc": "커뮤니티 이벤트, 번역 및 플레이어 리소스 지원.",
-    "otherWaysTitle": "도움의 다른 방법",
-    "way1Title": "소문 내기",
-    "way1Desc": "친구와 길드 멤버에게 AlbionKit 공유하기",
-    "way2Title": "별 남기기",
-    "way2Desc": "GitHub 에서 별을 눌러 지원 표시하기",
-    "way3Title": "코드 기여",
-    "way3Desc": "버그 수정, 기능 또는 번역 제출하기",
-    "way4Title": "문제 보고",
-    "way4Desc": "버그를 보고하고 기능을 제안하여 개선에 도움주기",
-    "thankYouTitle": "감사합니다!",
-    "thankYouDesc": "모든 기여는 아무리 작아도 AlbionKit 을 무료로 모든 플레이어가 이용할 수 있도록 하는 데 도움이 됩니다. 함께 최고의 Albion Online 보조 도구를 만들고 있습니다!",
     "title": "AlbionKit 후원 - 무료로 유지하기",
-    "description": "후원을 통해 AlbionKit 개발을 지원하세요. 당신의 지원은 프로젝트를 무료로 광고 없이 유지합니다."
+    "description": "후원을 통해 AlbionKit 개발을 지원하세요. 프로젝트를 무료로 광고 없이 유지하도록 도와주세요."
   },
   "Sidebar": {
     "silverFarming": "실버 파밍",
@@ -4163,5 +4103,65 @@
     "metaInfo": "2026 메타 정보",
     "metaRating": "메타 등급",
     "lastUpdated": "최종 업데이트"
+  },
+  "CraftingPage": {
+    "title": "제작 계산기 - Albion Online",
+    "description": "Albion Online 에서 제작 수익을 극대화하세요. 재료 비용, 집중력 효율 및 시장 수익을 계산합니다."
+  },
+  "EnchantingPage": {
+    "title": "마법 부여 계산기 - Albion Online",
+    "description": "마법 부여 비용과 마법 부여된 아이템 구매 비용 비교. 룬, 영혼, 유물 비용 계산."
+  },
+  "WeaponsPage": {
+    "title": "무기 로테이션 가이드 - 모든 무기",
+    "description": "Albion Online 의 모든 무기 유형에 대한 최적의 로테이션을 마스터하세요. 폭발력, 지속 DPS 및 기동성 콤보."
+  },
+  "SettingsPage": {
+    "title": "계정 설정 | AlbionKit",
+    "description": "AlbionKit 계정 설정, 알림, 언어 및 프로필을 관리합니다."
+  },
+  "LoginPage": {
+    "title": "AlbionKit 로그인",
+    "description": "AlbionKit 에 로그인하여 프리미엄 기능에 액세스하고 빌드를 저장하며 경험을 맞춤 설정합니다."
+  },
+  "NotFoundPage": {
+    "title": "페이지를 찾을 수 없음 - 404 | AlbionKit",
+    "description": "찾고 있는 페이지가 존재하지 않습니다. AlbionKit 홈페이지로 돌아가세요."
+  },
+  "BuildsPage": {
+    "title": "빌드 데이터베이스 - Albion Online 메타 빌드",
+    "description": "모든 무기 유형에 대한 메타 빌드를 찾아보세요. PvP, PvE, ZvZ 에 최적화된 장비 설정을 찾으세요."
+  },
+  "PrivacyPage": {
+    "title": "개인정보 처리방침",
+    "description": "AlbionKit 개인정보 처리방침 - 데이터를 어떻게 수집, 사용 및 보호하는지."
+  },
+  "TermsPage": {
+    "title": "이용약관",
+    "description": "AlbionKit 이용약관 및 사용 지침."
+  },
+  "CookiesPage": {
+    "title": "쿠키 정책",
+    "description": "AlbionKit 쿠키 정책 - 환경을 개선하기 위해 쿠키를 사용하는 방법."
+  },
+  "MarketFlipperPage": {
+    "title": "마켓 플리퍼 - 실시간 수익 계산기",
+    "description": "Albion Online 에서 수익성 있는 마켓 플립을 찾으세요. 도시 간 가격을 추적하고 수익을 극대화하세요."
+  },
+  "GoldPricePage": {
+    "title": "골드 가격 계산기 - Albion Online",
+    "description": "모든 Albion Online 서버의 골드 가격을 비교하세요. 프리미엄 전환율을 추적하세요."
+  },
+  "PvPIntelPage": {
+    "title": "PvP 정보 - Albion Online 플레이어 통계",
+    "description": "Albion Online 플레이어를 분석하고, 무기 메타를 추적하며, 실시간 통계로 PvP 정보를 얻으세요."
+  },
+  "KillboardPage": {
+    "title": "킬보드 - Albion Online PvP 추적기",
+    "description": "Albion Online 에서 실시간 PvP 전투를 추적하세요. 플레이어 통계, 명성 추적 및 전투 분석을 제공하는 킬보드."
+  },
+  "ZvZTrackerPage": {
+    "title": "ZvZ 추적기 - Albion Online 전투 추적",
+    "description": "Albion Online 에서 대규모 ZvZ 및 GvG 전투를 추적하세요. 실시간 전투 통계, 길드전 분석 및 참가자 추적."
   }
 }

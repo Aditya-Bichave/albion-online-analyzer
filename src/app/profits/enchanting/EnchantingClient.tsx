@@ -168,20 +168,32 @@ export default function EnchantingClient() {
     }
     let cancelled = false;
     setIsSearching(true);
+    
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
+    }, 10000); // 10 second timeout
+    
     searchItemsService(searchQuery, locale)
       .then((items: SimpleItem[]) => {
         if (!cancelled) setSearchResults(items || []);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Search error:', err);
         if (!cancelled) setSearchResults([]);
       })
       .finally(() => {
+        clearTimeout(timeoutId);
         if (!cancelled) setIsSearching(false);
       });
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
-  }, [searchQuery, isSelectOpen]);
+  }, [searchQuery, isSelectOpen, locale]);
   const loadData = async () => {
     if (!selectedItem) return;
     if (targetTier <= currentTier) return;

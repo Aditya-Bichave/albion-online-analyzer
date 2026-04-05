@@ -1,22 +1,19 @@
 import { Metadata } from 'next';
 import PvpIntelClient from './PvpIntelClient';
 import { getPlayerStats, searchPlayer } from './actions';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
-
-// Base metadata with screenshot
-const baseMetadata = createPageMetadata(
-  'pvp-intel',
-  'PvP Intel - Albion Online Player & Guild Stats | AlbionKit',
-  'Analyze Albion Online PvP stats with precision. Search players, guilds, and battles to view kill fame, K/D ratios, and recent combat history.'
-);
+import { getTranslations } from 'next-intl/server';
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  let title = 'Albion Online PvP Intel - Player & Guild Stats | AlbionKit';
-  let description = 'Analyze Albion Online PvP stats with precision. Search players, guilds, and battles to view kill fame, K/D ratios, and recent combat history.';
+  const t = await getTranslations('Pages.pvpIntel');
+  const tPage = await getTranslations('PvPIntelPage');
+  let title = tPage('title');
+  let description = tPage('description');
+  const screenshotKey = 'pvp-intel';
 
   const resolvedSearchParams = await searchParams;
   const playerQuery = resolvedSearchParams?.player;
@@ -42,21 +39,27 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 
   return {
-    ...baseMetadata,
     title,
     description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
       title,
       description,
       url: 'https://albionkit.com/tools/pvp-intel',
-      images: baseMetadata.openGraph?.images,
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
       title,
       description,
-      images: baseMetadata.twitter?.images,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }

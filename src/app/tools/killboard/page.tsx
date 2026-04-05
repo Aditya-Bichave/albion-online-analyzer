@@ -1,38 +1,38 @@
 import { Metadata } from 'next';
 import KillboardClient from './KillboardClient';
 import { getTranslations } from 'next-intl/server';
-import { createPageMetadata } from '@/lib/screenshot-metadata';
+import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/screenshot-metadata';
 
 export const revalidate = 30;
-
-// Base metadata
-const baseMetadata = createPageMetadata(
-  'killboard',
-  'Killboard - Albion Online PvP Tracker | AlbionKit',
-  'Track real-time PvP battles in Albion Online. Killboard with player statistics, fame tracking, and battle analysis across all servers.'
-);
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Pages.killFeed');
   const title = t('title');
   const description = t('description');
+  const screenshotKey = 'killboard';
 
   return {
-    ...baseMetadata,
     title,
     description,
+    keywords: getScreenshot(screenshotKey).keywords.join(', '),
     openGraph: {
-      ...baseMetadata.openGraph,
       title,
       description,
       url: 'https://albionkit.com/tools/killboard',
-      images: baseMetadata.openGraph?.images,
+      type: 'website',
+      images: [{
+        url: getFullScreenshotUrl(screenshotKey),
+        width: 1200,
+        height: 630,
+        alt: getScreenshot(screenshotKey).alt,
+        type: 'image/png'
+      }],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
       title,
       description,
-      images: baseMetadata.twitter?.images,
+      images: [getScreenshotUrl(screenshotKey)],
     }
   };
 }
