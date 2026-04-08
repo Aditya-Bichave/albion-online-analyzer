@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Piyasa Al-Sat",
-      "description": "Albion Online'da Kraliyet Şehirleri ile Kara Borsa arasında karlı ticaret fırsatları bul. Vergi hesaplamaları ve kar marjı analizleri ile gerçek zamanlı fiyat verileri."
+      "description": "Albion Online'da Kraliyet Şehirleri ile Kara Borsa arasında karlı ticaret fırsatları bul. Vergi hesaplamaları ve kar marjı analizleri ile gerçek zamanlı fiyat verileri.",
+      "descriptionDynamic": "{itemName} için piyasa verileri. Vergi hesaplamalarıyla karlı al-sat fırsatları bulmak için tüm Kraliyet Şehirleri ve Kara Borsa'daki gerçek zamanlı alım/satım fiyatlarını karşılaştırın."
     },
     "killFeed": {
       "title": "Killboard - Gerçek Zamanlı PvP Takibi",

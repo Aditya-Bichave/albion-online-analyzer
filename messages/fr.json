@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Market Flipper",
-      "description": "Trouvez des routes commerciales rentables et des opportunités de flipping d'objets dans les Villes Royales et le Marché Noir d'Albion Online. Données de prix en temps réel, calculs de taxes et marges bénéficiaires pour maximiser vos gains d'argent."
+      "description": "Trouvez des routes commerciales rentables et des opportunités de flipping d'objets dans les Villes Royales et le Marché Noir d'Albion Online. Données de prix en temps réel, calculs de taxes et marges bénéficiaires pour maximiser vos gains d'argent.",
+      "descriptionDynamic": "Données de marché pour {itemName}. Comparez les prix d'achat/vente en temps réel dans toutes les Villes Royales et le Marché Noir pour trouver des flips rentables avec calculs de taxes."
     },
     "killFeed": {
       "title": "Killboard - Suivi PvP en Temps Réel",

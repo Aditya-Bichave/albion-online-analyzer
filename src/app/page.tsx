@@ -41,7 +41,8 @@ import { createPageMetadata } from '@/lib/screenshot-metadata';
 const baseMetadata = createPageMetadata(
   'homepage',
   'AlbionKit - The Ultimate Albion Online Companion',
-  'Your all-in-one Albion Online companion. Market flipper, build database, PvP tracker, profit calculators, and more.'
+  'Your all-in-one Albion Online companion. Market flipper, build database, PvP tracker, profit calculators, and more.',
+  { canonicalUrl: 'https://albionkit.com/' }
 );
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -85,11 +86,48 @@ export default async function Home() {
     }
   };
 
+  // FAQPage schema for rich snippets
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: t('faq.q1'),
+        acceptedAnswer: { '@type': 'Answer', text: t('faq.a1') }
+      },
+      {
+        '@type': 'Question',
+        name: t('faq.q2'),
+        acceptedAnswer: { '@type': 'Answer', text: t('faq.a2') }
+      },
+      {
+        '@type': 'Question',
+        name: t('faq.q3'),
+        acceptedAnswer: { '@type': 'Answer', text: t('faq.a3') }
+      },
+      {
+        '@type': 'Question',
+        name: t('faq.q4'),
+        acceptedAnswer: { '@type': 'Answer', text: t('faq.a4') }
+      },
+      {
+        '@type': 'Question',
+        name: t('faq.q5'),
+        acceptedAnswer: { '@type': 'Answer', text: t('faq.a5') }
+      },
+    ]
+  };
+
   return (
     <div className="flex flex-col w-full overflow-hidden bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
       {/* Hero Section */}
@@ -155,7 +193,7 @@ export default async function Home() {
       </section>
 
       {/* Feature Sections */}
-      <div className="flex flex-col">
+      <div className="flex flex-col p-4 space-y-4">
         <FeatureSection
           title={t('marketTitle')}
           description={t('marketDescription')}

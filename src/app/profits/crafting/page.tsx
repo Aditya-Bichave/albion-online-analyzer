@@ -5,6 +5,7 @@ import { getScreenshotUrl, getFullScreenshotUrl, getScreenshot } from '@/lib/scr
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('CraftingPage');
+  const tNav = await getTranslations('Navbar');
   const title = t('title');
   const description = t('description');
   const screenshotKey = 'crafting-calc';
@@ -13,6 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
+    alternates: {
+      canonical: 'https://albionkit.com/profits/crafting',
+    },
     openGraph: {
       title,
       description,

@@ -39,26 +39,6 @@ export function FeatureSection({
       {/* Gradient Overlay Layer */}
       <div className="absolute inset-0 z-10 rounded-2xl bg-gradient-to-r from-background via-background/90 to-background/70 dark:from-background dark:via-background/85 dark:to-background/60" />
 
-      {/* Screenshot Overlay Layer
-      <div
-        className="absolute inset-0 z-0 rounded-2xl opacity-50"
-        style={{
-          backgroundImage: `url(${previewImageLight})`,
-          backgroundPosition: 'center right',
-          backgroundSize: 'cover',
-        }}
-      /> */}
-
-      {/* Dark Mode Screenshot */}
-      {/* <div
-        className="absolute inset-0 z-0 hidden dark:block rounded-2xl opacity-80"
-        style={{
-          backgroundImage: `url(${previewImageDark})`,
-          backgroundPosition: 'center right',
-          backgroundSize: 'cover',
-        }}
-      /> */}
-
       <div className="container relative z-20 px-6 md:px-8 py-12">
         <div className="max-w-2xl space-y-6">
           {/* Title */}

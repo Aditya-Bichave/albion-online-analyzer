@@ -32,6 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
+    alternates: {
+      canonical: 'https://albionkit.com/about',
+    },
     openGraph: {
       title,
       description,

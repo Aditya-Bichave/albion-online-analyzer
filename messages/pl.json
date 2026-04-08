@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Flipper Rynkowy",
-      "description": "Znajdź dochodowe możliwości handlu między Miastami Królewskimi a Czarnym Rynkiem w Albion Online. Analiza cen w czasie rzeczywistym z obliczeniami podatków i marż."
+      "description": "Znajdź dochodowe możliwości handlu między Miastami Królewskimi a Czarnym Rynkiem w Albion Online. Analiza cen w czasie rzeczywistym z obliczeniami podatków i marż.",
+      "descriptionDynamic": "Dane rynkowe dla {itemName}. Porównaj ceny kupna/sprzedaży w czasie rzeczywistym we wszystkich Miastach Królewskich i Czarnym Rynku, aby znaleźć dochodowe flipy z obliczeniami podatków."
     },
     "killFeed": {
       "title": "Killboard - Śledzenie PvP na Żywo",

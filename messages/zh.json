@@ -948,7 +948,8 @@
     },
     "marketFlipper": {
       "title": "市场搬砖",
-      "description": "在 Albion Online 的皇家城市与黑市之间寻找盈利的贸易机会。实时价格分析，包含税费计算和利润率分析。"
+      "description": "在 Albion Online 的皇家城市与黑市之间寻找盈利的贸易机会。实时价格分析，包含税费计算和利润率分析。",
+      "descriptionDynamic": "{itemName} 的市场数据。比较所有皇家城市和黑市的实时买卖价格，找到包含税费计算的盈利倒卖机会。"
     },
     "killFeed": {
       "title": "Killboard - 实时 PvP 追踪器",

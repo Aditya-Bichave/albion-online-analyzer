@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Afacad, Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { MainLayout } from "@/components/MainLayout";
 import { AuthProvider } from "@/context/AuthContext";
@@ -25,6 +25,11 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const afacad = Afacad({
+  variable: "--font-afacad",
+  subsets: ["latin"],
+})
+
 export const viewport: Viewport = {
   themeColor: "#f59e0b",
   width: "device-width",
@@ -46,6 +51,17 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: "AlbionKit Team" }],
     creator: "AlbionKit",
     publisher: "AlbionKit",
+    alternates: {
+      canonical: 'https://albionkit.com',
+      languages: {
+        'en': 'https://albionkit.com',
+        'de': 'https://albionkit.com/de',
+        'fr': 'https://albionkit.com/fr',
+        'es': 'https://albionkit.com/es',
+        'ru': 'https://albionkit.com/ru',
+        'pt': 'https://albionkit.com/pt',
+      },
+    },
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
@@ -126,7 +142,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300`}
+        className={`${afacad.variable} ${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300`}
       >
         <noscript>
           <iframe

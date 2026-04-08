@@ -33,10 +33,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title: `${build.title} | AlbionKit`,
         description: description,
+        alternates: {
+            canonical: `https://albionkit.com/builds/${id}`,
+        },
         openGraph: {
             title: build.title,
             description: description,
             type: 'article',
+            url: `https://albionkit.com/builds/${id}`,
             images: images.map(url => ({ url })),
             authors: [build.authorName || 'Unknown'],
         },

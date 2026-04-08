@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Market Flipper",
-      "description": "Find profitable trade routes and item flipping opportunities across Albion Online's Royal Cities and Black Market. Real-time price data, tax calculations, and profit margins to maximize your silver earnings."
+      "description": "Find profitable trade routes and item flipping opportunities across Albion Online's Royal Cities and Black Market. Real-time price data, tax calculations, and profit margins to maximize your silver earnings.",
+      "descriptionDynamic": "Market data for {itemName}. Compare real-time buy/sell prices across Royal Cities and Black Market to find profitable flips with tax calculations."
     },
     "killFeed": {
       "title": "Killboard - Real-time PvP Tracker",

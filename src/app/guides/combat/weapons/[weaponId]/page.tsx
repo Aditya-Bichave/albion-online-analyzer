@@ -25,6 +25,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title: `${weapon.name} - ${t('guide')}`,
     description: `${t('description')} ${weapon.rotation.tips.join(' ')}`,
+    alternates: {
+      canonical: `https://albionkit.com/guides/combat/weapons/${weaponId}`,
+    },
     openGraph: {
       title: `${weapon.name} - ${t('guide')}`,
       description: `${weapon.name} ${t('for')} ${weapon.bestFor.join(', ')}`,

@@ -101,14 +101,14 @@ export function createTwitterImage(key: ScreenshotKey) {
 
 /**
  * Create complete metadata object for a page
- * 
+ *
  * @example
  * export const metadata = createPageMetadata(
  *   'market-flipper',
  *   'Market Flipper - AlbionKit',
  *   'Find profitable market flips in real-time...'
  * );
- * 
+ *
  * @param key - Screenshot key
  * @param title - Page title
  * @param description - Page description
@@ -125,7 +125,7 @@ export function createPageMetadata(
 ) {
   const { includeTwitter = true, canonicalUrl } = options;
   const screenshot = getScreenshot(key);
-  
+
   const metadata: any = {
     title,
     description,
@@ -140,8 +140,11 @@ export function createPageMetadata(
     }
   };
 
+  // Use correct Next.js canonical URL property
   if (canonicalUrl) {
-    metadata.alternateUrls = [canonicalUrl];
+    metadata.alternates = {
+      canonical: canonicalUrl,
+    };
   }
 
   if (includeTwitter) {

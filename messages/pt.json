@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Flipper de Mercado",
-      "description": "Encontre oportunidades lucrativas de comércio entre as Cidades Reais e o Mercado Negro em Albion Online. Análise de preços em tempo real com cálculos de impostos e margens de lucro."
+      "description": "Encontre oportunidades lucrativas de comércio entre as Cidades Reais e o Mercado Negro em Albion Online. Análise de preços em tempo real com cálculos de impostos e margens de lucro.",
+      "descriptionDynamic": "Dados de mercado para {itemName}. Compare preços de compra/venda em tempo real em todas as Cidades Reais e Mercado Negro para encontrar flips lucrativos com cálculos de impostos."
     },
     "killFeed": {
       "title": "Killboard - Rastreador PvP em Tempo Real",

@@ -7,8 +7,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 1. Core Pages (Highest Priority)
   const corePages = [
     { route: '', priority: 1, changeFrequency: 'daily' as const },
-    { route: '/builds', priority: 0.95, changeFrequency: 'daily' as const },
-    { route: '/guides', priority: 0.95, changeFrequency: 'daily' as const },
+    { route: '/builds', priority: 1, changeFrequency: 'daily' as const },
+    { route: '/guides', priority: 1, changeFrequency: 'daily' as const },
   ].map(({ route, priority, changeFrequency }) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.9,
+    priority: 1,
   }));
 
   // 3. Profit Calculators (High Priority)
@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.85,
+    priority: 1,
   }));
 
   // 4. Guide Pages (High Priority - SEO Content)
@@ -59,31 +59,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'daily' as const,
-    priority: 0.85,
+    priority: 0.95,
   }));
 
-  // 5. Community & Info Pages
+  // 5. Community & Info Pages (exclude low-value pages from sitemap)
   const infoPages = [
     '/about',
     '/donate',
-    '/privacy',
-    '/terms',
-    '/cookies',
-    '/settings',
-    '/login',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.7,
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
   }));
 
   // 6. Dynamic Routes (Builds) - Top 100 by likes
   const builds = await getAllBuildsForSitemap();
-  const buildRoutes = builds.map((build) => ({
+  const buildRoutes = builds.slice(0, 50).map((build) => ({
     url: `${baseUrl}/builds/${build.id}`,
-    lastModified: build.updatedAt,
-    changeFrequency: 'daily' as const,
+    lastModified: build.updatedAt ? new Date(build.updatedAt) : new Date(),
+    changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 

@@ -8,6 +8,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: 'https://albionkit.com/guides/combat/rotations',
+    },
     openGraph: {
       title: t('title'),
       description: t('description'),

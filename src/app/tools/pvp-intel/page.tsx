@@ -42,6 +42,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     title,
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
+    alternates: {
+      canonical: 'https://albionkit.com/tools/pvp-intel',
+    },
     openGraph: {
       title,
       description,

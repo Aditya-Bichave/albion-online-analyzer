@@ -37,7 +37,6 @@ export function Breadcrumbs({ lastSegmentLabel }: BreadcrumbsProps) {
     }
 
     // Format label (capitalize and replace hyphens)
-    // If segment looks like a UUID or long random string, label it as "Detail"
     let label = segment;
 
     if (isLast && lastSegmentLabel) {
@@ -50,7 +49,6 @@ export function Breadcrumbs({ lastSegmentLabel }: BreadcrumbsProps) {
       // Pure alphanumeric 16+ chars (UUIDs, build IDs)
       /^[A-Za-z0-9]{16,}$/.test(segment)
     ) {
-      // UUIDs and random strings should not be translated
       label = 'Detail';
     } else {
       // Try to get translated label first, fallback to formatted segment
@@ -69,20 +67,13 @@ export function Breadcrumbs({ lastSegmentLabel }: BreadcrumbsProps) {
 
   if (breadcrumbs.length === 0) return null;
 
-  // Always use production URL for Schema.org (Google crawls production, not localhost)
+  // Always use production URL for Schema.org
   const baseUrl = 'https://albionkit.com';
-
-  // Create Schema.org JSON-LD for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: t('home'),
-        item: baseUrl
-      },
+      { '@type': 'ListItem', position: 1, name: t('home'), item: baseUrl },
       ...breadcrumbs.map((crumb, index) => ({
         '@type': 'ListItem' as const,
         position: index + 2,
@@ -98,30 +89,61 @@ export function Breadcrumbs({ lastSegmentLabel }: BreadcrumbsProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <nav className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">
+      <nav className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2 overflow-hidden whitespace-nowrap">
+        {/* Home */}
         <Link
           href="/"
-          className="hover:text-primary transition-colors flex items-center gap-1"
+          className="hover:text-primary transition-colors flex items-center gap-1 shrink-0"
         >
           <Home className="h-3 w-3" />
           {t('home')}
         </Link>
 
-        {breadcrumbs.map((crumb, index) => (
-          <React.Fragment key={`${index}-${crumb.href}`}>
-            <ChevronRight className="h-3 w-3 opacity-40" />
-            {index === breadcrumbs.length - 1 ? (
-              <span className="text-primary/80 font-black">{crumb.label}</span>
-            ) : (
-              <Link
-                href={crumb.href}
-                className="hover:text-primary transition-colors"
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </React.Fragment>
-        ))}
+        {breadcrumbs.map((crumb, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+          const isSecondToLast = index === breadcrumbs.length - 2;
+          const length = breadcrumbs.length;
+
+          // 1. Handle Middle Items (Hide if path is deep)
+          // We want to keep Home, Parent, and Current visible.
+          const isMiddle = !isLast && index > 0 && !isSecondToLast;
+          const shouldHideMiddle = length > 3 && isMiddle;
+
+          if (shouldHideMiddle) {
+            // Show "..." only once for the first hidden item
+            if (index === 1) {
+              return (
+                <React.Fragment key="ellipsis">
+                  <ChevronRight className="h-3 w-3 opacity-40 shrink-0" />
+                  <span className="text-muted-foreground/40 shrink-0">...</span>
+                </React.Fragment>
+              );
+            }
+            return null;
+          }
+
+          // 2. Render Parent or Current
+          return (
+            <React.Fragment key={`${index}-${crumb.href}`}>
+              <ChevronRight className="h-3 w-3 opacity-40 shrink-0" />
+              {isLast ? (
+                // Current Page: Truncate with ellipsis if too long on mobile
+                <span className="text-primary/80 font-black truncate max-w-[6rem] sm:max-w-none" title={crumb.label}>
+                  {crumb.label}
+                </span>
+              ) : (
+                // Parent Page: Truncate with ellipsis if too long on mobile
+                <Link
+                  href={crumb.href}
+                  className="hover:text-primary transition-colors truncate max-w-[4rem] sm:max-w-none"
+                  title={crumb.label}
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </React.Fragment>
+          );
+        })}
       </nav>
     </>
   );

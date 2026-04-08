@@ -953,7 +953,8 @@
     },
     "marketFlipper": {
       "title": "Markt-Flipper",
-      "description": "Finde profitable Handelsrouten und Item-Flipping-Möglichkeiten in Albion Online's königlichen Städten und Schwarzmarkt. Echtzeit-Preisdaten, Steuerberechnungen und Gewinnmargen zur Maximierung deiner Silbereinnahmen."
+      "description": "Finde profitable Handelsrouten und Item-Flipping-Möglichkeiten in Albion Online's königlichen Städten und Schwarzmarkt. Echtzeit-Preisdaten, Steuerberechnungen und Gewinnmargen zur Maximierung deiner Silbereinnahmen.",
+      "descriptionDynamic": "Marktdaten für {itemName}. Vergleiche Echtzeit-Kauf-/Verkaufspreise in allen Königlichen Städten und dem Schwarzmarkt, um profitable Flips mit Steuerberechnungen zu finden."
     },
     "killFeed": {
       "title": "Killboard - Echtzeit-PvP-Tracker",

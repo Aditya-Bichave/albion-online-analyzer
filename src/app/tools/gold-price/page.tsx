@@ -27,6 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
+    alternates: {
+      canonical: 'https://albionkit.com/tools/gold-price',
+    },
     openGraph: {
       title,
       description,

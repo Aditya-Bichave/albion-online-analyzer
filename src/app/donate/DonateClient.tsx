@@ -1,66 +1,13 @@
-import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import { DonateCard } from '@/components/DonateCard';
-import { Heart, Coffee, Github, Sparkles, Shield, Zap, Users } from 'lucide-react';
-import Link from 'next/link';
+'use client';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('DonatePage');
+import { useTranslations } from 'next-intl';
+import { Coffee, Github, Heart, Sparkles, Shield, Users, Zap } from 'lucide-react';
 
-  return {
-    title: t('title'),
-    description: t('description'),
-    alternates: {
-      canonical: 'https://albionkit.com/donate',
-    },
-    openGraph: {
-      title: t('title'),
-      description: t('description'),
-      url: 'https://albionkit.com/donate',
-      type: 'website',
-      images: [{
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'AlbionKit Preview',
-        type: 'image/jpeg'
-      }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: t('title'),
-      description: t('description'),
-      images: ['/og-image.jpg'],
-    }
-  };
-}
-
-export default async function DonatePage() {
-  const t = await getTranslations('DonatePage');
+export default function DonateClient() {
+  const t = useTranslations('DonatePage');
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative py-20 px-4 overflow-hidden bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-600/10">
-        <div className="absolute inset-0 bg-[url('/bg-2.jpg')] bg-cover bg-center opacity-5" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-amber-500/20 rounded-[100%] blur-3xl" />
-
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 text-sm font-medium mb-6">
-            <Heart className="h-4 w-4 fill-amber-500" />
-            <span>{t('heroBadge')}</span>
-          </div>
-
-          <h1 className="text-5xl font-bold mb-6 text-foreground">
-            {t('heroTitle')}
-          </h1>
-
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {t('heroSubtitle')}
-          </p>
-        </div>
-      </div>
-
+    <>
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Main Donate Cards */}
         <div className="grid md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
@@ -83,7 +30,7 @@ export default async function DonatePage() {
               </p>
 
               <a
-                href="https://buymeacoffee.com/cosmic_fi"
+                href="https://buymeacoffee.com/albionkit"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:shadow-xl hover:-translate-y-0.5"
@@ -207,7 +154,7 @@ export default async function DonatePage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
