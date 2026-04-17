@@ -43,6 +43,10 @@ const ProfitTreeCalculator = () => {
             Object.keys(itemRecipe.ingredients).forEach(mat => {
                 if (mat.startsWith('T1_FACTION_')) {
                     itemsToFetch.push(mat);
+                } else if (mat === 'CAPE') {
+                    itemsToFetch.push(`T${tier}_CAPE`);
+                } else if (mat.endsWith('_BP')) {
+                    itemsToFetch.push(`T${tier}_${mat}`);
                 } else {
                     itemsToFetch.push(`T${tier}_${mat}`);
                 }
@@ -58,8 +62,11 @@ const ProfitTreeCalculator = () => {
                 const allItems = [];
                 items.forEach(item => {
                     allItems.push(item);
-                    for (let i = 1; i <= 4; i++) {
-                        allItems.push(`${item}@${i}`);
+                    // Faction tokens and blueprints do not have enchantments
+                    if (!item.startsWith('T1_FACTION_') && !item.endsWith('_BP')) {
+                        for (let i = 1; i <= 4; i++) {
+                            allItems.push(`${item}@${i}`);
+                        }
                     }
                 });
 
@@ -131,8 +138,11 @@ const ProfitTreeCalculator = () => {
             const allItems = [];
             items.forEach(item => {
                 allItems.push(item);
-                for (let i = 1; i <= 4; i++) {
-                    allItems.push(`${item}@${i}`);
+                // Faction tokens and blueprints do not have enchantments
+                if (!item.startsWith('T1_FACTION_') && !item.endsWith('_BP')) {
+                    for (let i = 1; i <= 4; i++) {
+                        allItems.push(`${item}@${i}`);
+                    }
                 }
             });
 
@@ -194,6 +204,10 @@ const ProfitTreeCalculator = () => {
             Object.keys(recipe.ingredients).forEach(mat => {
                 if (mat.startsWith('T1_FACTION_')) {
                     itemsToFetch.push(mat);
+                } else if (mat === 'CAPE') {
+                    itemsToFetch.push(`T${tier}_CAPE`);
+                } else if (mat.endsWith('_BP')) {
+                    itemsToFetch.push(`T${tier}_${mat}`);
                 } else {
                     itemsToFetch.push(`T${tier}_${mat}`);
                 }
@@ -224,6 +238,10 @@ const ProfitTreeCalculator = () => {
             Object.keys(itemRecipe.ingredients).forEach(mat => {
                 if (mat.startsWith('T1_FACTION_')) {
                     itemsToFetch.push(mat);
+                } else if (mat === 'CAPE') {
+                    itemsToFetch.push(`T${tier}_CAPE`);
+                } else if (mat.endsWith('_BP')) {
+                    itemsToFetch.push(`T${tier}_${mat}`);
                 } else {
                     itemsToFetch.push(`T${tier}_${mat}`);
                 }

@@ -69,6 +69,10 @@ const OpportunityScanner = ({ settings, onSelectOpportunity }) => {
                         Object.keys(recipe.ingredients).forEach(mat => {
                             if (mat.startsWith('T1_FACTION_')) {
                                 itemsToFetch.push(mat);
+                            } else if (mat === 'CAPE') {
+                                itemsToFetch.push(`T${tier}_CAPE`);
+                            } else if (mat.endsWith('_BP')) {
+                                itemsToFetch.push(`T${tier}_${mat}`);
                             } else {
                                 itemsToFetch.push(`T${tier}_${mat}`);
                             }
@@ -83,9 +87,11 @@ const OpportunityScanner = ({ settings, onSelectOpportunity }) => {
             const fullItemsToFetch = [];
             itemsToFetch.forEach(item => {
                 fullItemsToFetch.push(item);
-                for(let e=1; e<=4; e++) {
-                    if (e >= filters.minEnchant && e <= filters.maxEnchant) {
-                        fullItemsToFetch.push(`${item}@${e}`);
+                if (!item.startsWith('T1_FACTION_') && !item.endsWith('_BP')) {
+                    for(let e=1; e<=4; e++) {
+                        if (e >= filters.minEnchant && e <= filters.maxEnchant) {
+                            fullItemsToFetch.push(`${item}@${e}`);
+                        }
                     }
                 }
             });

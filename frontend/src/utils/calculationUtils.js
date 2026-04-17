@@ -31,13 +31,22 @@ export const calculateProfit = (itemName, tier, enchantLevel, settings, prices, 
     // Check if material is an artifact or special item that might not follow the exact tier/enchant pattern for everything
     let matId = `T${tier}_${mat}${enchantSuffix}`;
 
-    // For specific items like faction tokens that don't scale by tier the same way:
+    // For specific items like faction tokens or untiered base items:
     if (mat.startsWith('T1_FACTION_')) {
         matId = mat; // T1_FACTION_ tokens are exactly named
+    } else if (mat === 'CAPE') {
+        matId = `T${tier}_CAPE${enchantSuffix}`; // T4_CAPE, T5_CAPE, etc.
+    } else if (mat.endsWith('_BP')) {
+        matId = `T${tier}_${mat}`; // Blueprint items
     }
 
-    const matPriceData = prices[matId] || {};
-    const matPrice = settings.useAveragePrice ? (matPriceData.average_price || 0) : (matPriceData.sell_price_min || 0);
+    let matPrice = 0;
+    // Check for exact quality/enchant in the API response or use default prices
+    const matPriceData = prices[matId];
+    if (matPriceData) {
+       matPrice = settings.useAveragePrice ? (matPriceData.average_price || 0) : (matPriceData.sell_price_min || 0);
+    }
+
     totalMaterialCost += matPrice * qty;
   });
 
