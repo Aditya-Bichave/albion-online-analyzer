@@ -815,7 +815,11 @@ class PacketSniffer {
             [value.X, value.Y],
             [value.posX ?? value.posx, value.posY ?? value.posy],
             [value.worldX ?? value.worldx, value.worldY ?? value.worldy],
-            [value[0], value[1]]
+            [value[0], value[1]],
+            // Some packets might pass array position explicitly or via z-axis logic
+            [value.x, value.z],
+            [value.X, value.Z],
+            [value.posX ?? value.posx, value.posZ ?? value.posz]
         ];
 
         for (const [rawX, rawY] of candidatePairs) {

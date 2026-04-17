@@ -322,7 +322,7 @@ wss.on('connection', (ws) => {
 });
 
 logger.info('websocket_server_started', {
-    url: `ws://localhost:${PORT}`,
+    url: `ws://127.0.0.1:${PORT}`,
     sessionId: loggingConfig.sessionId,
     uiStreamLevel: loggingConfig.uiStreamLevel
 });

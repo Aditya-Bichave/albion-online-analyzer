@@ -13,11 +13,11 @@ let isQuitting = false;
 let loggingSession = null;
 let logger = null;
 
-const FRONTEND_URL = 'http://localhost:5173';
+const FRONTEND_URL = 'http://127.0.0.1:5173';
 const FRONTEND_HEALTHCHECK_URL = 'http://127.0.0.1:5173';
 const FRONTEND_READY_TIMEOUT_MS = 30000;
 const FRONTEND_READY_INTERVAL_MS = 500;
-const FRONTEND_DEV_ARGS = ['run', 'dev', '--', '--port', '5173', '--strictPort'];
+const FRONTEND_DEV_ARGS = ['run', 'dev', '--', '--host', '127.0.0.1', '--port', '5173', '--strictPort'];
 
 function getNpmCommand() {
     return process.platform === 'win32' ? 'npm.cmd' : 'npm';

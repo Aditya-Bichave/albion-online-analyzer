@@ -17,9 +17,19 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
     const zoomOut = () => setZoom(prev => clampZoom(prev / calibration.zoom.step));
     const resetZoom = () => setZoom(1);
 
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
+
     const playerX = getCoord(playerPos?.x);
     const playerY = getCoord(playerPos?.y);
     const scale = calibration.scaleAtZoomOne * zoom;
+
+    // Reset pan if player moves significantly
+    const resetZoomAndPan = () => {
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+    };
 
     const renderedNodes = useMemo(() => {
         return nodes.map(node => {
@@ -29,7 +39,7 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
             return {
                 ...node,
                 dx: nodeX - playerX,
-                dy: nodeY - playerY,
+                dy: -(nodeY - playerY), // Negate dy because DOM y goes down, game y goes up
                 distance: Math.hypot(nodeX - playerX, nodeY - playerY)
             };
         });
@@ -48,10 +58,31 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
         zoomOut();
     };
 
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setLastMouse({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - lastMouse.x;
+        const dy = e.clientY - lastMouse.y;
+        setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+        setLastMouse({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
     return (
         <div
             onWheel={handleWheel}
-            style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: '#090a0d' }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{ flex: 1, position: 'relative', overflow: 'hidden', backgroundColor: '#090a0d', cursor: isDragging ? 'grabbing' : 'grab' }}
         >
             
             {/* Moving Grid Background to give infinite-scroll feel */}
@@ -59,8 +90,8 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                 position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                 backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
                 backgroundSize: `${8 * zoom}vmin ${8 * zoom}vmin`,
-                backgroundPosition: `${-playerX * scale}vmin ${-playerY * scale}vmin`,
-                transition: 'background-position 0.2s linear',
+                backgroundPosition: `calc(${-playerX * scale}vmin + ${pan.x}px) calc(${playerY * scale}vmin + ${pan.y}px)`,
+                transition: isDragging ? 'none' : 'background-position 0.2s linear',
                 zIndex: 0
             }}></div>
 
@@ -170,13 +201,14 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                     key={size}
                     style={{
                         position: 'absolute',
-                        top: '50%',
-                        left: '50%',
+                        top: `calc(50% + ${pan.y}px)`,
+                        left: `calc(50% + ${pan.x}px)`,
                         width: `${size}vmin`,
                         height: `${size}vmin`,
                         transform: 'translate(-50%, -50%)',
                         borderRadius: '50%',
                         border: '1px solid rgba(255,255,255,0.06)',
+                        transition: isDragging ? 'none' : 'top 0.2s linear, left 0.2s linear',
                         pointerEvents: 'none',
                         zIndex: 1
                     }}
@@ -185,12 +217,13 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
 
             {/* World Container (Centered at Player) */}
             <div style={{
-                position: 'absolute', top: '50%', left: '50%',
+                position: 'absolute', top: `calc(50% + ${pan.y}px)`, left: `calc(50% + ${pan.x}px)`,
+                transition: isDragging ? 'none' : 'top 0.2s linear, left 0.2s linear',
                 zIndex: 5
             }}>
                 {playerTrail.map((point, index) => {
                     const dx = (point.x - playerX) * scale;
-                    const dy = (point.y - playerY) * scale;
+                    const dy = -(point.y - playerY) * scale;
                     const progress = (index + 1) / Math.max(playerTrail.length, 1);
 
                     return (
@@ -263,8 +296,8 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
             {/* Static Player Blip perfectly locked to the absolute center of screen */}
             <div style={{
                     position: 'absolute',
-                    top: '50%',
-                    left: '50%',
+                    top: `calc(50% + ${pan.y}px)`,
+                    left: `calc(50% + ${pan.x}px)`,
                     width: '16px',
                     height: '16px',
                     borderRadius: '50%',
@@ -272,6 +305,7 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                     border: '3px solid var(--accent-cyan)',
                     boxShadow: '0 0 20px var(--accent-cyan)',
                     transform: 'translate(-50%, -50%)',
+                    transition: isDragging ? 'none' : 'top 0.2s linear, left 0.2s linear',
                     zIndex: 100
             }}></div>
             
@@ -284,6 +318,31 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                 position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
                 width: '20px', height: '1px', backgroundColor: 'rgba(255,255,255,0.2)', pointerEvents: 'none'
             }}/>
+
+            {/* Reset pan crosshair indicator */}
+            {(pan.x !== 0 || pan.y !== 0) && (
+                <button
+                    onClick={resetZoomAndPan}
+                    style={{
+                        position: 'absolute',
+                        bottom: '40px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        padding: '8px 16px',
+                        background: 'rgba(34, 211, 238, 0.12)',
+                        border: '1px solid var(--accent-cyan)',
+                        color: 'var(--accent-cyan)',
+                        borderRadius: '999px',
+                        cursor: 'pointer',
+                        zIndex: 15,
+                        fontFamily: '"Space Mono", monospace',
+                        fontWeight: 700,
+                        backdropFilter: 'blur(4px)'
+                    }}
+                >
+                    RECENTER
+                </button>
+            )}
         </div>
     );
 };

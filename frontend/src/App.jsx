@@ -135,7 +135,7 @@ function App() {
                 return;
             }
 
-            const socket = new WebSocket('ws://localhost:8080');
+            const socket = new WebSocket('ws://127.0.0.1:8080');
             ws.current = socket;
 
             socket.onopen = () => {
@@ -147,7 +147,7 @@ function App() {
                 setIsConnected(true);
                 setStatusMessage('Connected to Radar System');
                 rendererLogger.current?.info('websocket_open', {
-                    url: 'ws://localhost:8080'
+                    url: 'ws://127.0.0.1:8080'
                 });
                 rendererLogger.current?.flush();
             };
