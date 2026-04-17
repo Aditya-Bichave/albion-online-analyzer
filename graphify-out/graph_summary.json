@@ -1,0 +1,144 @@
+{
+  "detection": {
+    "files": {
+      "code": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\main.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\albionPacketDecoder.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\models.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\photonParser.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\server.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\simulator.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\backend\\sniffer.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\eslint.config.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\vite.config.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\App.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\main.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\mapCalibration.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\utils.js",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\components\\ConsoleLogger.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\components\\InteractiveMap.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\components\\ResourceIcon.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\components\\ResourceSidebar.jsx",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py"
+      ],
+      "document": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\README.md",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\README.md",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay-notes.md",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\README.md",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\requirements.txt"
+      ],
+      "paper": [],
+      "image": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\public\\favicon.svg",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\public\\icons.svg",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\assets\\hero.png",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\assets\\react.svg",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\frontend\\src\\assets\\vite.svg",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\misc\\image.png",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\misc\\region_logo.jpg"
+      ],
+      "video": []
+    },
+    "total_files": 30,
+    "total_words": 21831,
+    "needs_graph": false,
+    "warning": "Corpus is ~21,831 words - fits in a single context window. You may not need a graph.",
+    "skipped_sensitive": [],
+    "graphifyignore_patterns": 0
+  },
+  "code_files": 18,
+  "nodes": 187,
+  "edges": 391,
+  "communities": 25,
+  "top_gods": [
+    {
+      "id": "sniffer_packetsniffer",
+      "label": "PacketSniffer",
+      "edges": 36
+    },
+    {
+      "id": "photonparser_photonprotocol18deserializer",
+      "label": "PhotonProtocol18Deserializer",
+      "edges": 22
+    },
+    {
+      "id": "photonparser_buffercursor",
+      "label": "BufferCursor",
+      "edges": 16
+    },
+    {
+      "id": "sniffer_isfinitenumber",
+      "label": "isFiniteNumber()",
+      "edges": 10
+    },
+    {
+      "id": "albion_minimap_overlay_mapdatasource",
+      "label": "MapDataSource",
+      "edges": 9
+    }
+  ],
+  "top_surprises": [
+    {
+      "source": "main()",
+      "target": "Configuration",
+      "source_files": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 12 \u2192 community 10"
+    },
+    {
+      "source": "main()",
+      "target": "SystemTrayIcon",
+      "source_files": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 13 \u2192 community 10"
+    },
+    {
+      "source": "main()",
+      "target": "ImageProcessor",
+      "source_files": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 11 \u2192 community 10"
+    },
+    {
+      "source": "main()",
+      "target": "MapDataSource",
+      "source_files": [
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py",
+        "C:\\Aditya\\Projects\\Games ALbion\\Alalyzer\\third_party\\albion-minimap-overlay\\albion-minimap-overlay.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "note": "Bridges community 4 \u2192 community 10"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `MapDataSource` connect `Community 4` to `Community 10`, `Community 3`?",
+      "why": "High betweenness centrality (0.014) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `BufferCursor` connect `Community 2` to `Community 1`?",
+      "why": "High betweenness centrality (0.011) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "alalyzer",
+  "version": "1.0.0",
+  "description": "Albion Online analysis tooling with an Electron shell, WebSocket backend, React frontend, structured logging, and committed graphify outputs.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check main.js && node --check backend/server.js && node --check backend/sniffer.js && node --check backend/simulator.js && npm --prefix frontend run build && npm --prefix frontend run lint",
+    "graphify:refresh": "python scripts/run_graphify_refresh.py",
+    "graphify:refresh:force": "python scripts/run_graphify_refresh.py --force-code-only",
+    "test": "npm run check"
+  },
+  "keywords": [
+    "albion-online",
+    "electron",
+    "react",
+    "websocket",
+    "graphify"
+  ],
+  "author": "Aditya Bichave",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aditya-Bichave/albion-online-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Aditya-Bichave/albion-online-analyzer/issues"
+  },
+  "homepage": "https://github.com/Aditya-Bichave/albion-online-analyzer",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^41.2.1",
+    "wait-on": "^9.0.5"
+  }
+}

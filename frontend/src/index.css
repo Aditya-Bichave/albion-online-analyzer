@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --bg-primary: #0f1115;
+  --bg-surface: #191c24;
+  --bg-surface-glass: rgba(25, 28, 36, 0.7);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 255, 255, 0.2);
+  
+  --text-primary: #f0f2f5;
+  --text-secondary: #a1a5b5;
+  
+  --accent-cyan: #22d3ee;
+  --accent-purple: #c084fc;
+  
+  /* Resources Base Colors */
+  --res-wood: #a16207; /* dark golden rod / brown */
+  --res-ore: #ef4444; /* red outline / grey base */
+  --res-fiber: #eab308; /* yellow / light green */
+  --res-hide: #f97316; /* orange */
+  --res-stone: #94a3b8; /* slate */
+  
+  /* Enchantment Rarity Colors */
+  --ench-0: transparent;
+  --ench-1: #4ade80; /* Uncommon Green */
+  --ench-2: #60a5fa; /* Rare Blue */
+  --ench-3: #c084fc; /* Exceptional Purple */
+  --ench-4: #fbbf24; /* Pristine Gold */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dot blip animation */
+@keyframes ping-radar {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(3); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.radar-ping::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  border: 1.5px solid inherit;
+  animation: ping-radar 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

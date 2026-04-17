@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+
+# Runtime logs
+logs/
+logs-smoketest/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Graphify transient working files
+.graphify_detect.json
+.graphify_ast.json
+.graphify_cached.json
+.graphify_uncached.txt
+graphify-out/.graphify_python
+graphify-out/*.tmp
+
+# Keep committed graphify outputs, including cache, report, json, and html
+!graphify-out/
+!graphify-out/**
