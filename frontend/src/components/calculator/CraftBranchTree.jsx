@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CRAFT_BRANCHES } from '../../utils/recipeData';
+import { getItemName } from '../../utils/itemNames';
 
 const TreeItem = ({ label, isSelectable, isSelected, onSelect, children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +74,7 @@ const CraftBranchTree = ({ selectedItem, onSelectItem }) => {
                                 {items.map(item => (
                                     <TreeItem
                                         key={item}
-                                        label={item}
+                                        label={getItemName(item)}
                                         isSelectable
                                         isSelected={selectedItem === item}
                                         onSelect={() => onSelectItem(item)}

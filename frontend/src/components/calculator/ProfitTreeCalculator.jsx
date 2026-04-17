@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import SettingsPanel from './SettingsPanel';
 import CraftBranchTree from './CraftBranchTree';
 import ProfitTable from './ProfitTable';
+import OpportunityScanner from './OpportunityScanner';
 import { RECIPES, CITIES } from '../../utils/recipeData';
 
-const AODP_API_BASE = 'https://www.albion-online-data.com/api/v2/stats/prices/';
+import { SERVERS } from '../../utils/constants';
+
 
 const ProfitTreeCalculator = () => {
     // Settings State
@@ -14,15 +16,18 @@ const ProfitTreeCalculator = () => {
         useMultipleCities: false,
         numberSold: 1,
         useAveragePrice: false,
+        server: 'west',
         feeNutrition: 500,
         mainCity: 'Caerleon'
     });
 
     // Selection State
     const [selectedItem, setSelectedItem] = useState('Broadsword');
+    const [activeView, setActiveView] = useState('selected'); // 'selected' | 'scanner'
 
     // Data State
     const [prices, setPrices] = useState({});
+    const [history, setHistory] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
     // Extract updateCurrentItem to avoid dependency warning or hoist it
@@ -56,12 +61,20 @@ const ProfitTreeCalculator = () => {
 
                 const itemsQuery = allItems.join(',');
                 const locationsQuery = settings.useMultipleCities ? '' : `?locations=${settings.mainCity}`;
-                const url = `${AODP_API_BASE}${itemsQuery}${locationsQuery}`;
+                const serverConfig = SERVERS.find(s => s.id === settings.server) || SERVERS[0];
 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to fetch prices');
+                const url = `${serverConfig.url}prices/${itemsQuery}${locationsQuery}`;
+                const historyUrl = `${serverConfig.url}history/${itemsQuery}?locations=${settings.mainCity}&time-scale=24&qualities=1`;
 
-                const data = await response.json();
+                const [priceRes, historyRes] = await Promise.all([
+                    fetch(url).catch(() => null),
+                    fetch(historyUrl).catch(() => null)
+                ]);
+
+                let data = [];
+                let historyData = [];
+                if (priceRes && priceRes.ok) data = await priceRes.json();
+                if (historyRes && historyRes.ok) historyData = await historyRes.json();
 
                 // Note: We need a functional state update here to not depend on `prices` in the effect
                 setPrices(prevPrices => {
@@ -79,6 +92,18 @@ const ProfitTreeCalculator = () => {
                     });
                     return newPrices;
                 });
+
+                setHistory(prevHistory => {
+                    const newHistory = { ...prevHistory };
+                    if (Array.isArray(historyData)) {
+                        historyData.forEach(entry => {
+                           if (entry.location === settings.mainCity && entry.data) {
+                               newHistory[entry.item_id] = entry.data;
+                           }
+                        });
+                    }
+                    return newHistory;
+                });
             } catch (error) {
                 console.error('Error fetching prices:', error);
             } finally {
@@ -89,7 +114,7 @@ const ProfitTreeCalculator = () => {
         if (selectedItem) {
             fetchPricesInline(itemsToFetch);
         }
-    }, [selectedItem, settings.mainCity, settings.useMultipleCities, settings.useJournals]);
+    }, [selectedItem, settings.mainCity, settings.useMultipleCities, settings.useJournals, settings.server]);
 
     const handleSettingChange = (key, value) => {
         setSettings(prev => ({ ...prev, [key]: value }));
@@ -109,12 +134,19 @@ const ProfitTreeCalculator = () => {
 
             const itemsQuery = allItems.join(',');
             const locationsQuery = settings.useMultipleCities ? '' : `?locations=${settings.mainCity}`;
-            const url = `${AODP_API_BASE}${itemsQuery}${locationsQuery}`;
+            const serverConfig = SERVERS.find(s => s.id === settings.server) || SERVERS[0];
+            const url = `${serverConfig.url}prices/${itemsQuery}${locationsQuery}`;
+            const historyUrl = `${serverConfig.url}history/${itemsQuery}?locations=${settings.mainCity}&time-scale=24&qualities=1`;
 
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Failed to fetch prices');
+            const [priceRes, historyRes] = await Promise.all([
+                fetch(url).catch(() => null),
+                fetch(historyUrl).catch(() => null)
+            ]);
 
-            const data = await response.json();
+            let data = [];
+            let historyData = [];
+            if (priceRes && priceRes.ok) data = await priceRes.json();
+            if (historyRes && historyRes.ok) historyData = await historyRes.json();
 
             const newPrices = { ...prices };
             data.forEach(entry => {
@@ -130,7 +162,17 @@ const ProfitTreeCalculator = () => {
                 }
             });
 
+            const newHistory = { ...history };
+            if (Array.isArray(historyData)) {
+                historyData.forEach(entry => {
+                    if (entry.location === settings.mainCity && entry.data) {
+                        newHistory[entry.item_id] = entry.data;
+                    }
+                });
+            }
+
             setPrices(newPrices);
+            setHistory(newHistory);
         } catch (error) {
             console.error('Error fetching prices:', error);
         } finally {
@@ -191,7 +233,29 @@ const ProfitTreeCalculator = () => {
 
     return (
         <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#090a0d', color: 'white' }}>
-            <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-active)', overflowY: 'auto' }}>
+            <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-active)', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ padding: '20px 20px 0', display: 'flex', gap: '8px' }}>
+                    <button
+                        onClick={() => setActiveView('selected')}
+                        style={{
+                            flex: 1, padding: '8px', border: 'none', borderRadius: '4px', cursor: 'pointer',
+                            background: activeView === 'selected' ? 'rgba(34, 211, 238, 0.18)' : 'transparent',
+                            color: activeView === 'selected' ? 'white' : 'var(--text-secondary)'
+                        }}
+                    >
+                        Selected Item
+                    </button>
+                    <button
+                        onClick={() => setActiveView('scanner')}
+                        style={{
+                            flex: 1, padding: '8px', border: 'none', borderRadius: '4px', cursor: 'pointer',
+                            background: activeView === 'scanner' ? 'rgba(34, 211, 238, 0.18)' : 'transparent',
+                            color: activeView === 'scanner' ? 'white' : 'var(--text-secondary)'
+                        }}
+                    >
+                        Scanner
+                    </button>
+                </div>
                 <SettingsPanel
                     settings={settings}
                     onSettingChange={handleSettingChange}
@@ -202,20 +266,31 @@ const ProfitTreeCalculator = () => {
                 />
             </div>
 
-            <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-active)', overflowY: 'auto' }}>
+            <div style={{ width: '280px', flexShrink: 0, borderRight: '1px solid var(--border-active)', overflowY: 'auto', opacity: activeView === 'scanner' ? 0.5 : 1, pointerEvents: activeView === 'scanner' ? 'none' : 'auto' }}>
                 <CraftBranchTree
                     selectedItem={selectedItem}
                     onSelectItem={setSelectedItem}
                 />
             </div>
 
-            <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
-                <ProfitTable
-                    selectedItem={selectedItem}
-                    settings={settings}
-                    prices={prices}
-                    isLoading={isLoading}
-                />
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+                {activeView === 'selected' ? (
+                    <ProfitTable
+                        selectedItem={selectedItem}
+                        settings={settings}
+                        prices={prices}
+                        history={history}
+                        isLoading={isLoading}
+                    />
+                ) : (
+                    <OpportunityScanner
+                        settings={settings}
+                        onSelectOpportunity={(itemName) => {
+                            setSelectedItem(itemName);
+                            setActiveView('selected');
+                        }}
+                    />
+                )}
             </div>
         </div>
     );
