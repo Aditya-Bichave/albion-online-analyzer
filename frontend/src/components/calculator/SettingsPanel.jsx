@@ -1,61 +1,60 @@
 import React from 'react';
 import { CITIES } from '../../utils/recipeData';
 
-const SettingsPanel = ({ settings, onSettingChange, onUpdateCurrent, onUpdateResources, onUpdateJournals, isLoading }) => {
+const Checkbox = ({ label, checked, onChange }) => (
+    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '8px' }}>
+        <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => onChange(e.target.checked)}
+            style={{ cursor: 'pointer' }}
+        />
+        <span style={{ fontSize: '14px' }}>{label}</span>
+    </label>
+);
 
-    const Checkbox = ({ label, checked, onChange }) => (
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '8px' }}>
-            <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => onChange(e.target.checked)}
-                style={{ cursor: 'pointer' }}
-            />
-            <span style={{ fontSize: '14px' }}>{label}</span>
-        </label>
-    );
-
-    const NumberInput = ({ label, value, onChange }) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{label}</span>
-            <input
-                type="number"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                style={{
-                    background: 'transparent',
-                    border: 'none',
-                    borderBottom: '1px solid var(--border-active)',
-                    color: 'white',
-                    padding: '4px',
-                    outline: 'none'
-                }}
-            />
-        </div>
-    );
-
-    const Button = ({ label, onClick, icon }) => (
-        <button
-            onClick={onClick}
-            disabled={isLoading}
+const NumberInput = ({ label, value, onChange }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{label}</span>
+        <input
+            type="number"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
             style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
                 background: 'transparent',
                 border: 'none',
+                borderBottom: '1px solid var(--border-active)',
                 color: 'white',
-                cursor: isLoading ? 'default' : 'pointer',
-                padding: '6px 0',
-                opacity: isLoading ? 0.5 : 1,
-                fontSize: '14px'
+                padding: '4px',
+                outline: 'none'
             }}
-        >
-            <span>{icon || '↻'}</span>
-            <span>{label}</span>
-        </button>
-    );
+        />
+    </div>
+);
 
+const Button = ({ label, onClick, icon, isLoading }) => (
+    <button
+        onClick={onClick}
+        disabled={isLoading}
+        style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'transparent',
+            border: 'none',
+            color: 'white',
+            cursor: isLoading ? 'default' : 'pointer',
+            padding: '6px 0',
+            opacity: isLoading ? 0.5 : 1,
+            fontSize: '14px'
+        }}
+    >
+        <span>{icon || '↻'}</span>
+        <span>{label}</span>
+    </button>
+);
+
+const SettingsPanel = ({ settings, onSettingChange, onUpdateCurrent, onUpdateResources, onUpdateJournals, isLoading }) => {
     return (
         <div style={{ padding: '20px', color: 'white', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -73,9 +72,9 @@ const SettingsPanel = ({ settings, onSettingChange, onUpdateCurrent, onUpdateRes
             <Checkbox label="Use average price" checked={settings.useAveragePrice} onChange={(v) => onSettingChange('useAveragePrice', v)} />
 
             <div style={{ margin: '10px 0', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <Button label="Update current item" onClick={onUpdateCurrent} />
-                <Button label="Update resource prices" onClick={onUpdateResources} />
-                <Button label="Update journal prices" onClick={onUpdateJournals} />
+                <Button label="Update current item" onClick={onUpdateCurrent} isLoading={isLoading} />
+                <Button label="Update resource prices" onClick={onUpdateResources} isLoading={isLoading} />
+                <Button label="Update journal prices" onClick={onUpdateJournals} isLoading={isLoading} />
             </div>
 
             <NumberInput label="Fee for 100 nutrition" value={settings.feeNutrition} onChange={(v) => onSettingChange('feeNutrition', v)} />

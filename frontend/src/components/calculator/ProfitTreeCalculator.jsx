@@ -25,12 +25,71 @@ const ProfitTreeCalculator = () => {
     const [prices, setPrices] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
+    // Extract updateCurrentItem to avoid dependency warning or hoist it
+    // Moving it into a useCallback or simply fetching directly here:
     // Initial load and when selected item/city changes
     useEffect(() => {
+        const itemRecipe = RECIPES[selectedItem];
+        if (!itemRecipe) return;
+
+        const itemsToFetch = [];
+        itemRecipe.tiers.forEach(tier => {
+            itemsToFetch.push(`T${tier}_${itemRecipe.itemSuffix}`);
+            Object.keys(itemRecipe.ingredients).forEach(mat => {
+                itemsToFetch.push(`T${tier}_${mat}`);
+            });
+            if (settings.useJournals && itemRecipe.journal) {
+                itemsToFetch.push(`T${tier}_JOURNAL_${itemRecipe.journal}_EMPTY`, `T${tier}_JOURNAL_${itemRecipe.journal}_FULL`);
+            }
+        });
+
+        const fetchPricesInline = async (items) => {
+            setIsLoading(true);
+            try {
+                const allItems = [];
+                items.forEach(item => {
+                    allItems.push(item);
+                    for (let i = 1; i <= 4; i++) {
+                        allItems.push(`${item}@${i}`);
+                    }
+                });
+
+                const itemsQuery = allItems.join(',');
+                const locationsQuery = settings.useMultipleCities ? '' : `?locations=${settings.mainCity}`;
+                const url = `${AODP_API_BASE}${itemsQuery}${locationsQuery}`;
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch prices');
+
+                const data = await response.json();
+
+                // Note: We need a functional state update here to not depend on `prices` in the effect
+                setPrices(prevPrices => {
+                    const newPrices = { ...prevPrices };
+                    data.forEach(entry => {
+                        if (settings.useMultipleCities) {
+                            if (!newPrices[entry.item_id] ||
+                                (entry.sell_price_min > 0 &&
+                                 (newPrices[entry.item_id].sell_price_min === 0 || entry.sell_price_min < newPrices[entry.item_id].sell_price_min))) {
+                                newPrices[entry.item_id] = entry;
+                            }
+                        } else if (entry.city === settings.mainCity) {
+                            newPrices[entry.item_id] = entry;
+                        }
+                    });
+                    return newPrices;
+                });
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         if (selectedItem) {
-            updateCurrentItem();
+            fetchPricesInline(itemsToFetch);
         }
-    }, [selectedItem, settings.mainCity]);
+    }, [selectedItem, settings.mainCity, settings.useMultipleCities, settings.useJournals]);
 
     const handleSettingChange = (key, value) => {
         setSettings(prev => ({ ...prev, [key]: value }));
