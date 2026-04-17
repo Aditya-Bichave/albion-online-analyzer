@@ -3,7 +3,17 @@ import { getMapCalibration, MAP_VIEW_CALIBRATION } from '../mapCalibration';
 import { getResourceColor, getEnchantColor } from '../utils';
 import ResourceIcon from './ResourceIcon';
 
-const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
+import { useNodeScoring } from './hooks/useNodeScoring';
+import { useHotspotDetection } from './hooks/useHotspotDetection';
+import { useBestFarmingRoute } from './hooks/useBestFarmingRoute';
+import HotspotLayer from './map/HotspotLayer';
+import RouteOverlay from './map/RouteOverlay';
+import HeatmapLayer from './map/HeatmapLayer';
+import { getValueColor } from '../utils/mapScoringUtils';
+import { PRESETS } from '../utils/presetConfig';
+
+
+const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo, activePreset = PRESETS[0], showRoute = true, showHotspots = true, showHeatmap = true }) => {
     const [zoom, setZoom] = useState(1);
 
     const getCoord = (val) => {
@@ -21,19 +31,29 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
     const playerY = getCoord(playerPos?.y);
     const scale = calibration.scaleAtZoomOne * zoom;
 
+
+    const { scoredNodes, minVal, maxVal, minSpm, maxSpm } = useNodeScoring(nodes, activePreset);
+    const hotspots = useHotspotDetection(scoredNodes, playerPos);
+    const route = useBestFarmingRoute(scoredNodes, playerPos, activePreset.routeWeights);
+
     const renderedNodes = useMemo(() => {
-        return nodes.map(node => {
+        return scoredNodes.map(node => {
             const nodeX = getCoord(node.x);
             const nodeY = getCoord(node.y);
+
+            // Check if node is in route
+            const routeIndex = route.path.findIndex(n => n.id === node.id);
 
             return {
                 ...node,
                 dx: nodeX - playerX,
                 dy: nodeY - playerY,
-                distance: Math.hypot(nodeX - playerX, nodeY - playerY)
+                distance: Math.hypot(nodeX - playerX, nodeY - playerY),
+                routeIndex
             };
         });
-    }, [nodes, playerX, playerY]);
+    }, [scoredNodes, playerX, playerY, route.path]);
+
 
     const formatCoord = (value) => value.toFixed(1);
     const mapSize = calibration.mapSize;
@@ -188,7 +208,21 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                 position: 'absolute', top: '50%', left: '50%',
                 zIndex: 5
             }}>
-                {playerTrail.map((point, index) => {
+                {showHeatmap && (
+                <HeatmapLayer playerTrail={playerTrail} scale={scale} playerX={playerX} playerY={playerY} />
+            )}
+
+            {showHotspots && (
+                <HotspotLayer hotspots={hotspots} scale={scale} playerX={playerX} playerY={playerY} />
+            )}
+
+            {showRoute && (
+                <RouteOverlay route={route} scale={scale} playerX={playerX} playerY={playerY} />
+            )}
+
+            {/* Old player trail mapped here, we just comment it out to disable since we use HeatmapLayer */}
+            {/* disabled player trail: */
+            /* playerTrail.map((point, index) => {
                     const dx = (point.x - playerX) * scale;
                     const dy = (point.y - playerY) * scale;
                     const progress = (index + 1) / Math.max(playerTrail.length, 1);
@@ -212,11 +246,32 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                             }}
                         />
                     );
-                })}
+                }) */}
+
 
                 {renderedNodes.map(node => {
-                    const baseColor = getResourceColor(node.type);
-                    const enchColor = getEnchantColor(node.enchant);
+                    let baseColor = getResourceColor(node.type);
+                    let borderColor = node.enchant > 0 ? getEnchantColor(node.enchant) : 'rgba(255,255,255,0.14)';
+                    let glowColor = baseColor;
+
+                    const cm = activePreset.colorMode;
+                    if (cm === 'profit' && node.value) {
+                        glowColor = getValueColor(node.value, minVal, maxVal);
+                        baseColor = glowColor;
+                    } else if (cm === 'spm' && node.spm) {
+                        glowColor = getValueColor(node.spm, minSpm, maxSpm);
+                        baseColor = glowColor;
+                    }
+
+                    // Route priority highlight
+                    if (cm === 'route' && node.routeIndex >= 0) {
+                        glowColor = '#22d3ee';
+                        baseColor = '#22d3ee';
+                    } else if (cm === 'route') {
+                        glowColor = 'rgba(255,255,255,0.1)';
+                        baseColor = 'rgba(255,255,255,0.2)';
+                        borderColor = 'rgba(255,255,255,0.05)';
+                    }
 
                     return (
                         <div key={node.id} 
@@ -229,19 +284,21 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                                 height: '30px',
                                 borderRadius: '50%',
                                 background: 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.16), rgba(6,10,14,0.94))',
-                                border: `2px solid ${node.enchant > 0 ? enchColor : 'rgba(255,255,255,0.14)'}`,
-                                boxShadow: `0 0 16px ${baseColor}`,
+                                border: `2px solid ${borderColor}`,
+                                boxShadow: `0 0 ${node.routeIndex >= 0 ? '24px' : '16px'} ${glowColor}`,
                                 transform: 'translate(-50%, -50%)',
-                                borderColor: node.enchant > 0 ? enchColor : undefined,
                                 transition: 'top 0.5s ease-out, left 0.5s ease-out',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backdropFilter: 'blur(4px)'
+                                backdropFilter: 'blur(4px)',
+                                zIndex: node.routeIndex >= 0 ? 10 : 5
                              }}
-                             title={`T${node.tier} ${node.type} ${node.enchant > 0 ? `.${node.enchant}` : ''} // ${Math.round(node.distance)}u // ${node.charges} charges`}
+                             title={`T${node.tier} ${node.type} ${node.enchant > 0 ? `.${node.enchant}` : ''} // ${Math.round(node.distance)}u // ${node.charges} charges
+Value: ${Math.round(node.value || 0)} // SPM: ${Math.round(node.spm || 0)}${node.routeIndex >= 0 ? `
+Route Step: ${node.routeIndex + 1}` : ''}`}
                         >
-                            <ResourceIcon type={node.type} size={18} />
+                            <ResourceIcon type={node.type} size={18} color={cm === 'type' ? undefined : baseColor} />
                             {node.enchant > 0 && (
                                 <div style={{
                                     position: 'absolute',
@@ -249,15 +306,16 @@ const InteractiveMap = ({ nodes, playerPos, playerTrail = [], zoneInfo }) => {
                                     right: '3px',
                                     width: '7px',
                                     height: '7px',
-                                    background: enchColor,
+                                    background: getEnchantColor(node.enchant),
                                     borderRadius: '50%',
-                                    boxShadow: `0 0 8px ${enchColor}`,
+                                    boxShadow: `0 0 8px ${getEnchantColor(node.enchant)}`,
                                     border: '1px solid rgba(255,255,255,0.75)'
                                 }} />
                             )}
                         </div>
                     );
                 })}
+
             </div>
 
             {/* Static Player Blip perfectly locked to the absolute center of screen */}

@@ -5,6 +5,10 @@ import ConsoleLogger from './components/ConsoleLogger';
 import ProfitTreeCalculator from './components/calculator/ProfitTreeCalculator';
 import { createRendererLogger } from './logger';
 
+import { PRESETS } from './utils/presetConfig';
+
+
+
 function App() {
     const [nodes, setNodes] = useState([]);
     const [playerPos, setPlayerPos] = useState({ x: 0, y: 0 });
@@ -22,6 +26,23 @@ function App() {
         types: ['wood', 'ore', 'fiber', 'hide', 'stone'],
         minEnchant: 0
     });
+
+    // Farming Assistant States
+    const [activePresetId, setActivePresetId] = useState('default');
+    const [showRoute, setShowRoute] = useState(true);
+    const [showHotspots, setShowHotspots] = useState(true);
+    const [showHeatmap, setShowHeatmap] = useState(true);
+
+    const activePreset = PRESETS.find(p => p.id === activePresetId) || PRESETS[0];
+
+    // Override active filters when preset changes
+    useEffect(() => {
+        if (activePresetId !== 'custom') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setFilters(activePreset.filters);
+        }
+    }, [activePresetId, activePreset]);
+
     
     // UI State
     const [activeTab, setActiveTab] = useState('map');
@@ -485,7 +506,16 @@ function App() {
                             <ResourceSidebar 
                                 nodes={nodes} 
                                 filters={filters} 
-                                setFilters={setFilters} 
+                                setFilters={setFilters}
+                                activePresetId={activePresetId}
+                                setActivePresetId={setActivePresetId}
+                                showRoute={showRoute}
+                                setShowRoute={setShowRoute}
+                                showHotspots={showHotspots}
+                                setShowHotspots={setShowHotspots}
+                                showHeatmap={showHeatmap}
+                                setShowHeatmap={setShowHeatmap}
+                                activePreset={activePreset}
                             />
                         </div>
                         
@@ -495,6 +525,10 @@ function App() {
                             playerPos={playerPos}
                             playerTrail={playerTrail}
                             zoneInfo={zoneInfo}
+                            activePreset={activePreset}
+                            showRoute={showRoute}
+                            showHotspots={showHotspots}
+                            showHeatmap={showHeatmap}
                         />
                     </>
                 ) : activeTab === 'console' ? (

@@ -1,18 +1,32 @@
 import React, { useMemo } from 'react';
 import { getResourceColor, getEnchantColor } from '../utils';
+import { PRESETS, getColorModeLabel } from '../utils/presetConfig';
+import { useNodeScoring } from './hooks/useNodeScoring';
+import { useHotspotDetection } from './hooks/useHotspotDetection';
+import { useBestFarmingRoute } from './hooks/useBestFarmingRoute';
 import ResourceIcon from './ResourceIcon';
 
-const ResourceSidebar = ({ nodes, filters, setFilters }) => {
+const ResourceSidebar = ({ nodes, filters, setFilters, activePresetId = "default", setActivePresetId = () => {}, showRoute = true, setShowRoute = () => {}, showHotspots = true, setShowHotspots = () => {}, showHeatmap = true, setShowHeatmap = () => {}, activePreset = PRESETS[0] }) => {
     
     // Toggle Helpers
+
+    const setCustomPreset = () => {
+        if (activePresetId !== 'custom') {
+            setActivePresetId('custom');
+        }
+    };
+
     const toggleType = (type) => {
+        setCustomPreset();
         setFilters(prev => ({
+
             ...prev,
             types: prev.types.includes(type) ? prev.types.filter(t => t !== type) : [...prev.types, type]
         }));
     };
 
     const toggleTier = (tier) => {
+        setCustomPreset();
         setFilters(prev => ({
             ...prev,
             tiers: prev.tiers.includes(tier) ? prev.tiers.filter(t => t !== tier) : [...prev.tiers, tier]
@@ -20,9 +34,17 @@ const ResourceSidebar = ({ nodes, filters, setFilters }) => {
     };
 
     const toggleEnchant = (lvl) => {
+        setCustomPreset();
         setFilters(prev => ({ ...prev, minEnchant: prev.minEnchant === lvl ? 0 : lvl }));
     };
+
+    // Compute hotspots and route for the sidebar
+    const { scoredNodes } = useNodeScoring(nodes, activePreset);
+    const hotspots = useHotspotDetection(scoredNodes, null);
+    const route = useBestFarmingRoute(scoredNodes, null, activePreset.routeWeights);
+
     // Generate counts
+
     const stats = useMemo(() => {
         const aggr = {};
         for (const n of nodes) {
@@ -53,10 +75,84 @@ const ResourceSidebar = ({ nodes, filters, setFilters }) => {
             flexDirection: 'column',
             gap: '24px'
         }}>
+
             <div>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 600, paddingBottom: '12px', borderBottom: '1px solid var(--border-active)' }}>
-                    RESOURCE SCANNER
+                    FARMING ASSISTANT
                 </h2>
+
+                <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {/* Presets */}
+                    <div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>MAP PRESET:</div>
+                        <select
+                            value={activePresetId}
+                            onChange={(e) => setActivePresetId(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '8px',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border-subtle)',
+                                color: 'var(--text-primary)',
+                                borderRadius: '4px',
+                                outline: 'none'
+                            }}
+                        >
+                            {PRESETS.map(p => (
+                                <option key={p.id} value={p.id} style={{ background: 'var(--bg-surface)' }}>{p.label}</option>
+                            ))}
+                            <option value="custom" style={{ background: 'var(--bg-surface)' }}>Custom</option>
+                        </select>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>COLOR MODE: <strong style={{color: 'var(--accent-cyan)'}}>{getColorModeLabel(activePreset.colorMode)}</strong></span>
+                        </div>
+                    </div>
+
+                    {/* Overlays */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
+                        <button
+                            onClick={() => setShowRoute(!showRoute)}
+                            style={{
+                                flex: 1,
+                                background: showRoute ? 'rgba(34, 211, 238, 0.2)' : 'rgba(255,255,255,0.05)',
+                                color: showRoute ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                                border: `1px solid ${showRoute ? 'rgba(34, 211, 238, 0.5)' : 'transparent'}`,
+                                padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem',
+                                cursor: 'pointer', fontWeight: showRoute ? 700 : 400
+                            }}
+                        >
+                            Best Route
+                        </button>
+                        <button
+                            onClick={() => setShowHotspots(!showHotspots)}
+                            style={{
+                                flex: 1,
+                                background: showHotspots ? 'rgba(234, 179, 8, 0.2)' : 'rgba(255,255,255,0.05)',
+                                color: showHotspots ? '#eab308' : 'var(--text-secondary)',
+                                border: `1px solid ${showHotspots ? 'rgba(234, 179, 8, 0.5)' : 'transparent'}`,
+                                padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem',
+                                cursor: 'pointer', fontWeight: showHotspots ? 700 : 400
+                            }}
+                        >
+                            Hotspots
+                        </button>
+                        <button
+                            onClick={() => setShowHeatmap(!showHeatmap)}
+                            style={{
+                                flex: 1,
+                                background: showHeatmap ? 'rgba(192, 132, 252, 0.2)' : 'rgba(255,255,255,0.05)',
+                                color: showHeatmap ? 'var(--accent-purple)' : 'var(--text-secondary)',
+                                border: `1px solid ${showHeatmap ? 'rgba(192, 132, 252, 0.5)' : 'transparent'}`,
+                                padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem',
+                                cursor: 'pointer', fontWeight: showHeatmap ? 700 : 400
+                            }}
+                        >
+                            Heatmap
+                        </button>
+                    </div>
+                </div>
+
+
                 
                 {filters && (
                     <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -128,7 +224,36 @@ const ResourceSidebar = ({ nodes, filters, setFilters }) => {
                 )}
             </div>
             
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+                {/* Farming Intel Summary */}
+                {(route.path.length > 0 || hotspots.length > 0) && (
+                    <div style={{
+                        background: 'rgba(34, 211, 238, 0.05)',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(34, 211, 238, 0.2)',
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px'
+                    }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)', fontWeight: 700, letterSpacing: '1px' }}>FARMING INTEL</div>
+                        {route.path.length > 0 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>Suggested Route:</span>
+                                <strong>{Math.round(route.totalValue)} Val / {route.path.length} Nodes</strong>
+                            </div>
+                        )}
+                        {hotspots.length > 0 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                                <span style={{ color: 'var(--text-secondary)' }}>Top Hotspot:</span>
+                                <strong>#{1} - {hotspots[0].nodeCount} {hotspots[0].dominantType}</strong>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {Object.keys(stats).length === 0 && (
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                         Scanning for resources...
