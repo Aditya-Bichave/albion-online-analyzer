@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import InteractiveMap from './components/InteractiveMap';
 import ResourceSidebar from './components/ResourceSidebar';
 import ConsoleLogger from './components/ConsoleLogger';
+import ProfitTreeCalculator from './components/calculator/ProfitTreeCalculator';
 import { createRendererLogger } from './logger';
 
 function App() {
@@ -463,6 +464,16 @@ function App() {
                 >
                     Network Console
                 </button>
+                <button
+                    onClick={() => setActiveTab('calculator')}
+                    style={{
+                        background: activeTab === 'calculator' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                        border: 'none', color: activeTab === 'calculator' ? '#fff' : 'var(--text-secondary)',
+                        padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600
+                    }}
+                >
+                    Profit Calculator
+                </button>
             </div>
 
             {/* Main Application Body */}
@@ -486,10 +497,16 @@ function App() {
                             zoneInfo={zoneInfo}
                         />
                     </>
-                ) : (
+                ) : activeTab === 'console' ? (
                     <div style={{ flex: 1, display: 'flex', background: '#090a0d', padding: '24px', justifyContent: 'center' }}>
                         <div style={{ width: '100%', maxWidth: '1200px' }}>
                             <ConsoleLogger logs={logs} />
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{ flex: 1, display: 'flex', background: '#090a0d', overflow: 'hidden' }}>
+                        <div style={{ width: '100%', height: '100%' }}>
+                            <ProfitTreeCalculator />
                         </div>
                     </div>
                 )}
