@@ -67,7 +67,11 @@ const OpportunityScanner = ({ settings, onSelectOpportunity }) => {
                     if (tier >= filters.minTier && tier <= filters.maxTier) {
                         itemsToFetch.push(`T${tier}_${recipe.itemSuffix}`);
                         Object.keys(recipe.ingredients).forEach(mat => {
-                            itemsToFetch.push(`T${tier}_${mat}`);
+                            if (mat.startsWith('T1_FACTION_')) {
+                                itemsToFetch.push(mat);
+                            } else {
+                                itemsToFetch.push(`T${tier}_${mat}`);
+                            }
                         });
                         if (settings.useJournals && recipe.journal) {
                             itemsToFetch.push(`T${tier}_JOURNAL_${recipe.journal}_EMPTY`, `T${tier}_JOURNAL_${recipe.journal}_FULL`);

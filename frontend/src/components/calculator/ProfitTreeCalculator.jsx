@@ -41,7 +41,11 @@ const ProfitTreeCalculator = () => {
         itemRecipe.tiers.forEach(tier => {
             itemsToFetch.push(`T${tier}_${itemRecipe.itemSuffix}`);
             Object.keys(itemRecipe.ingredients).forEach(mat => {
-                itemsToFetch.push(`T${tier}_${mat}`);
+                if (mat.startsWith('T1_FACTION_')) {
+                    itemsToFetch.push(mat);
+                } else {
+                    itemsToFetch.push(`T${tier}_${mat}`);
+                }
             });
             if (settings.useJournals && itemRecipe.journal) {
                 itemsToFetch.push(`T${tier}_JOURNAL_${itemRecipe.journal}_EMPTY`, `T${tier}_JOURNAL_${itemRecipe.journal}_FULL`);
@@ -188,7 +192,11 @@ const ProfitTreeCalculator = () => {
             itemsToFetch.push(`T${tier}_${recipe.itemSuffix}`);
 
             Object.keys(recipe.ingredients).forEach(mat => {
-                itemsToFetch.push(`T${tier}_${mat}`);
+                if (mat.startsWith('T1_FACTION_')) {
+                    itemsToFetch.push(mat);
+                } else {
+                    itemsToFetch.push(`T${tier}_${mat}`);
+                }
             });
 
             if (settings.useJournals && recipe.journal) {
@@ -214,7 +222,11 @@ const ProfitTreeCalculator = () => {
         const itemsToFetch = [];
         itemRecipe.tiers.forEach(tier => {
             Object.keys(itemRecipe.ingredients).forEach(mat => {
-                itemsToFetch.push(`T${tier}_${mat}`);
+                if (mat.startsWith('T1_FACTION_')) {
+                    itemsToFetch.push(mat);
+                } else {
+                    itemsToFetch.push(`T${tier}_${mat}`);
+                }
             });
         });
         fetchPrices(itemsToFetch);

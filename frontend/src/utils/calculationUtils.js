@@ -28,7 +28,14 @@ export const calculateProfit = (itemName, tier, enchantLevel, settings, prices, 
   // Material Cost
   let totalMaterialCost = 0;
   Object.entries(recipe.ingredients).forEach(([mat, qty]) => {
-    const matId = `T${tier}_${mat}${enchantSuffix}`;
+    // Check if material is an artifact or special item that might not follow the exact tier/enchant pattern for everything
+    let matId = `T${tier}_${mat}${enchantSuffix}`;
+
+    // For specific items like faction tokens that don't scale by tier the same way:
+    if (mat.startsWith('T1_FACTION_')) {
+        matId = mat; // T1_FACTION_ tokens are exactly named
+    }
+
     const matPriceData = prices[matId] || {};
     const matPrice = settings.useAveragePrice ? (matPriceData.average_price || 0) : (matPriceData.sell_price_min || 0);
     totalMaterialCost += matPrice * qty;
