@@ -73,7 +73,8 @@ const InteractiveMap = ({
                 ...node,
                 dx: nodeX - playerX,
                 dy: -(nodeY - playerY), // Negate dy because DOM y goes down, game y goes up
-                distance: Math.hypot(nodeX - playerX, nodeY - playerY)
+                distance: Math.hypot(nodeX - playerX, nodeY - playerY),
+                routeIndex
             };
         });
     }, [playerX, playerY, route.path, scoredNodes]);
