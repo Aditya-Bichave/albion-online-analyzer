@@ -2,7 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import InteractiveMap from './components/InteractiveMap';
 import ResourceSidebar from './components/ResourceSidebar';
 import ConsoleLogger from './components/ConsoleLogger';
+import ProfitTreeCalculator from './components/calculator/ProfitTreeCalculator';
 import { createRendererLogger } from './logger';
+
+import { PRESETS } from './utils/presetConfig';
+
+
 
 function App() {
     const [nodes, setNodes] = useState([]);
@@ -21,6 +26,23 @@ function App() {
         types: ['wood', 'ore', 'fiber', 'hide', 'stone'],
         minEnchant: 0
     });
+
+    // Farming Assistant States
+    const [activePresetId, setActivePresetId] = useState('default');
+    const [showRoute, setShowRoute] = useState(true);
+    const [showHotspots, setShowHotspots] = useState(true);
+    const [showHeatmap, setShowHeatmap] = useState(true);
+
+    const activePreset = PRESETS.find(p => p.id === activePresetId) || PRESETS[0];
+
+    // Override active filters when preset changes
+    useEffect(() => {
+        if (activePresetId !== 'custom') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setFilters(activePreset.filters);
+        }
+    }, [activePresetId, activePreset]);
+
     
     // UI State
     const [activeTab, setActiveTab] = useState('map');
@@ -463,6 +485,16 @@ function App() {
                 >
                     Network Console
                 </button>
+                <button
+                    onClick={() => setActiveTab('calculator')}
+                    style={{
+                        background: activeTab === 'calculator' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                        border: 'none', color: activeTab === 'calculator' ? '#fff' : 'var(--text-secondary)',
+                        padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600
+                    }}
+                >
+                    Profit Calculator
+                </button>
             </div>
 
             {/* Main Application Body */}
@@ -474,7 +506,16 @@ function App() {
                             <ResourceSidebar 
                                 nodes={nodes} 
                                 filters={filters} 
-                                setFilters={setFilters} 
+                                setFilters={setFilters}
+                                activePresetId={activePresetId}
+                                setActivePresetId={setActivePresetId}
+                                showRoute={showRoute}
+                                setShowRoute={setShowRoute}
+                                showHotspots={showHotspots}
+                                setShowHotspots={setShowHotspots}
+                                showHeatmap={showHeatmap}
+                                setShowHeatmap={setShowHeatmap}
+                                activePreset={activePreset}
                             />
                         </div>
                         
@@ -484,12 +525,22 @@ function App() {
                             playerPos={playerPos}
                             playerTrail={playerTrail}
                             zoneInfo={zoneInfo}
+                            activePreset={activePreset}
+                            showRoute={showRoute}
+                            showHotspots={showHotspots}
+                            showHeatmap={showHeatmap}
                         />
                     </>
-                ) : (
+                ) : activeTab === 'console' ? (
                     <div style={{ flex: 1, display: 'flex', background: '#090a0d', padding: '24px', justifyContent: 'center' }}>
                         <div style={{ width: '100%', maxWidth: '1200px' }}>
                             <ConsoleLogger logs={logs} />
+                        </div>
+                    </div>
+                ) : (
+                    <div style={{ flex: 1, display: 'flex', background: '#090a0d', overflow: 'hidden' }}>
+                        <div style={{ width: '100%', height: '100%' }}>
+                            <ProfitTreeCalculator />
                         </div>
                     </div>
                 )}
