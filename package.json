@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "check": "node --check main.js && node --check backend/server.js && node --check backend/sniffer.js && node --check backend/simulator.js && node --test backend/test/worldEntityExtractors.test.js && npm --prefix frontend run build && npm --prefix frontend run lint",
+    "check": "node --check main.js && node --check backend/server.js && node --check backend/sniffer.js && node --check backend/simulator.js && npm --prefix frontend run build && npm --prefix frontend run lint",
     "graphify:refresh": "python scripts/run_graphify_refresh.py",
     "graphify:refresh:force": "python scripts/run_graphify_refresh.py --force-code-only",
     "test": "npm run check"

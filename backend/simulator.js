@@ -19,12 +19,9 @@ class Simulator {
         this.posX = 0;
         this.posY = 0;
         this.zoneInfo = {
-            zoneId: '0314',
-            name: '0314',
-            mapSize: 1000,
-            pvpType: 'yellow',
-            tier: 5,
-            mapAsset: '0314'
+            zoneId: 'zone_fort_sterling',
+            name: 'Fort Sterling Tundra',
+            mapSize: 1000
         };
         this.logger?.info('simulation_started', {
             zoneInfo: this.zoneInfo
@@ -79,8 +76,6 @@ class Simulator {
         return {
             mode: 'simulation',
             nodes: Array.from(this.nodes.values()),
-            players: [],
-            worldEntities: [],
             playerPos: { x: this.posX, y: this.posY },
             zoneInfo: this.zoneInfo
         };

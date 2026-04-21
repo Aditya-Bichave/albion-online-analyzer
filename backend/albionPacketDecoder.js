@@ -2,10 +2,7 @@ const EVENT_NAMES = {
     1: 'Leave',
     2: 'JoinFinished',
     3: 'Move',
-    6: 'HealthUpdate',
-    7: 'HealthUpdates',
     4: 'Teleport',
-    29: 'NewCharacter',
     38: 'NewSimpleHarvestableObject',
     39: 'NewSimpleHarvestableObjectList',
     40: 'NewHarvestableObject',
@@ -13,42 +10,31 @@ const EVENT_NAMES = {
     59: 'HarvestStart',
     60: 'HarvestCancel',
     61: 'HarvestFinished',
-    91: 'RegenerationHealthChanged',
     98: 'NewLoot',
     106: 'GuildMemberWorldUpdate',
     123: 'NewMob',
     140: 'ClusterInfoUpdate',
     193: 'MiniMapOwnedBuildingsPositions',
-    323: 'NewRandomDungeonExit',
     325: 'PlayerMovementRateUpdate',
-    356: 'FishingFinished',
-    359: 'NewFishingZoneObject',
     390: 'RandomDungeonPositionInfo',
-    391: 'NewLootChest',
     442: 'NewRandomResourceBlocker',
     446: 'MinimapPositionMarkers',
-    477: 'RedZoneWorldMapEvent',
-    523: 'NewMistsWispSpawn',
-    524: 'MistsWispSpawnStateChange',
-    530: 'NewCagedObject',
-    531: 'CagedObjectStateUpdated'
+    477: 'RedZoneWorldMapEvent'
 };
 
 const REQUEST_NAMES = {
-    21: 'PlayerMoving',
-    22: 'Move'
+    21: 'PlayerMoving'
 };
 
 const RESPONSE_NAMES = {
-    2: 'JoinFinished',
+    2: 'PlayerJoiningMap',
     35: 'PlayerChangeCluster',
-    41: 'ChangeCluster',
     137: 'GetCharacterStats'
 };
 
-const RELEVANT_EVENT_CODES = new Set([3, 6, 7, 29, 38, 39, 40, 46, 59, 60, 61, 91, 123, 140, 323, 356, 359, 391, 446, 523, 524, 530, 531]);
-const RELEVANT_REQUEST_CODES = new Set([21, 22]);
-const RELEVANT_RESPONSE_CODES = new Set([2, 35, 41]);
+const RELEVANT_EVENT_CODES = new Set([3, 29, 38, 39, 40, 46, 59, 60, 61, 123, 140, 446]);
+const RELEVANT_REQUEST_CODES = new Set([21]);
+const RELEVANT_RESPONSE_CODES = new Set([2, 35]);
 
 function isPlainObject(value) {
     return value !== null && typeof value === 'object' && !Array.isArray(value) && !Buffer.isBuffer(value);
