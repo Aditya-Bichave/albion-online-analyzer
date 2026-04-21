@@ -16,6 +16,9 @@ const initialMode = process.env.RADAR_MODE && process.env.RADAR_MODE.toLowerCase
 let currentMode = initialMode;
 let currentEngine = null;
 let nextClientId = 1;
+const snifferConfig = {
+    preferredAdapterIp: process.env.RADAR_CAPTURE_IP || null
+};
 
 function summarizeValue(value, depth = 0) {
     if (value === null || value === undefined) {
@@ -112,10 +115,27 @@ const broadcast = (data) => {
     broadcastRaw(payload);
 };
 
+const getCaptureMetadata = () => {
+    if (typeof currentEngine?.getCaptureMetadata === 'function') {
+        return currentEngine.getCaptureMetadata();
+    }
+
+    return {
+        preferredAdapterIp: snifferConfig.preferredAdapterIp,
+        selectedAdapter: null,
+        adapters: PacketSniffer.listAdapters()
+    };
+};
+
 const createEngine = (mode) => {
     if (mode === 'sniffer') {
-        logger.info('create_engine', { mode: 'sniffer' });
-        return new PacketSniffer(broadcast, logger);
+        logger.info('create_engine', {
+            mode: 'sniffer',
+            preferredAdapterIp: snifferConfig.preferredAdapterIp
+        });
+        return new PacketSniffer(broadcast, logger, {
+            preferredAdapterIp: snifferConfig.preferredAdapterIp
+        });
     }
 
     logger.info('create_engine', { mode: 'simulation' });
@@ -173,20 +193,21 @@ const stopCurrentEngine = () => {
     currentEngine = null;
 };
 
-const switchMode = (nextMode) => {
+const switchMode = (nextMode, forceRestart = false) => {
     if (!['simulation', 'sniffer'].includes(nextMode)) {
         logger.warning('unsupported_mode_requested', { nextMode });
         return { ok: false, message: `Unsupported mode: ${nextMode}` };
     }
 
-    if (nextMode === currentMode && currentEngine) {
+    if (!forceRestart && nextMode === currentMode && currentEngine) {
         logger.info('mode_switch_noop', { mode: currentMode });
         return { ok: true, mode: currentMode, message: `Already running in ${currentMode} mode.` };
     }
 
     logger.info('mode_switch_requested', {
         currentMode,
-        nextMode
+        nextMode,
+        forceRestart
     });
     stopCurrentEngine();
     const result = startMode(nextMode);
@@ -207,6 +228,7 @@ const switchMode = (nextMode) => {
             event: 'MODE_CHANGED',
             data: {
                 mode: currentMode,
+                capture: getCaptureMetadata(),
                 message: `Failed to start live mode. Fell back to simulation mode. ${result.message || ''}`.trim()
             }
         });
@@ -222,6 +244,7 @@ const switchMode = (nextMode) => {
         event: 'MODE_CHANGED',
         data: {
             mode: currentMode,
+            capture: getCaptureMetadata(),
             message: `Switched to ${currentMode === 'sniffer' ? 'live mode' : 'simulation mode'}.`
         }
     });
@@ -253,7 +276,8 @@ wss.on('connection', (ws) => {
             sessionId: loggingConfig.sessionId,
             logLevel: loggingConfig.logLevel,
             logUiStreamLevel: loggingConfig.uiStreamLevel,
-            packetVerbose: loggingConfig.packetVerbose
+            packetVerbose: loggingConfig.packetVerbose,
+            capture: getCaptureMetadata()
         }
     });
     sendStateSnapshot(ws);
@@ -275,9 +299,44 @@ wss.on('connection', (ws) => {
                     event: result.ok ? 'MODE_SWITCH_ACK' : 'MODE_SWITCH_ERROR',
                     data: {
                         mode: currentMode,
+                        capture: getCaptureMetadata(),
                         message: result.message
                     }
                 });
+                sendStateSnapshot(ws);
+            }
+            if (message.command === 'SET_CAPTURE_ADAPTER') {
+                const nextAdapterIp = typeof message.data?.adapterIp === 'string' ? message.data.adapterIp.trim() : '';
+                snifferConfig.preferredAdapterIp = nextAdapterIp || null;
+                logger.info('capture_adapter_requested', {
+                    clientId: ws.__clientId,
+                    preferredAdapterIp: snifferConfig.preferredAdapterIp
+                });
+
+                if (currentMode === 'sniffer') {
+                    const result = switchMode('sniffer', true);
+                    sendToClient(ws, {
+                        event: result.ok ? 'CAPTURE_ADAPTER_ACK' : 'CAPTURE_ADAPTER_ERROR',
+                        data: {
+                            mode: currentMode,
+                            capture: getCaptureMetadata(),
+                            message: result.ok
+                                ? 'Capture adapter updated.'
+                                : result.message
+                        }
+                    });
+                } else {
+                    sendToClient(ws, {
+                        event: 'CAPTURE_ADAPTER_ACK',
+                        data: {
+                            mode: currentMode,
+                            capture: getCaptureMetadata(),
+                            message: snifferConfig.preferredAdapterIp
+                                ? 'Capture adapter saved for the next live session.'
+                                : 'Capture adapter preference cleared. Live mode will auto-select an adapter.'
+                        }
+                    });
+                }
                 sendStateSnapshot(ws);
             }
             if (message.command === 'CLIENT_LOG') {

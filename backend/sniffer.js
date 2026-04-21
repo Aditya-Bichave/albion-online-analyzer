@@ -3,14 +3,22 @@ const decoders = require('cap').decoders;
 const PROTOCOL = decoders.PROTOCOL;
 const { PhotonPacketParser, PACKET_STATUS } = require('./photonParser');
 const { decodeAlbionPacket } = require('./albionPacketDecoder');
+const { getZoneCatalog, getMobCatalog } = require('./albionData');
+const {
+    createWorldEntityKey,
+    extractMobEntity,
+    extractDungeonEntity,
+    extractChestEntity,
+    extractFishingEntity,
+    extractCageEntity,
+    extractWispEntity,
+    extractPlayerMoveRequest: extractPlayerMoveRequestFixture,
+    extractPlayerJoinInfo: extractPlayerJoinInfoFixture,
+    extractHealthState
+} = require('./worldEntityExtractors');
 
-const ALBION_SERVER_NETS = [
-    'net 5.188.125.0 mask 255.255.255.0',
-    'net 5.45.187.0 mask 255.255.255.0',
-    'net 193.169.238.0 mask 255.255.255.0'
-];
-
-const ALBION_CAPTURE_FILTER = `udp and (${ALBION_SERVER_NETS.join(' or ')})`;
+const ALBION_UDP_PORT = 5056;
+const ALBION_CAPTURE_FILTER = `udp and (src port ${ALBION_UDP_PORT} or dst port ${ALBION_UDP_PORT})`;
 const BYTE_MOVE_LONG_LENGTH = 30;
 const BYTE_MOVE_SHORT_LENGTH = 22;
 
@@ -29,9 +37,53 @@ function reverseFloat32Endian(value) {
     return reversed.readFloatBE(0);
 }
 
+function isUsableIpv4(value) {
+    return typeof value === 'string' && /^\d{1,3}(\.\d{1,3}){3}$/.test(value);
+}
+
+function isLoopbackAddress(value) {
+    return isUsableIpv4(value) && value.startsWith('127.');
+}
+
+function isLinkLocalAddress(value) {
+    return isUsableIpv4(value) && value.startsWith('169.254.');
+}
+
+function isPrivateAddress(value) {
+    if (!isUsableIpv4(value)) {
+        return false;
+    }
+
+    return value.startsWith('10.')
+        || value.startsWith('192.168.')
+        || /^172\.(1[6-9]|2\d|3[01])\./.test(value);
+}
+
+function getAdapterPriority(adapter) {
+    const ip = adapter?.ip ?? '';
+
+    if (isPrivateAddress(ip)) {
+        return 0;
+    }
+
+    if (isUsableIpv4(ip) && !isLoopbackAddress(ip) && !isLinkLocalAddress(ip)) {
+        return 1;
+    }
+
+    if (isLoopbackAddress(ip)) {
+        return 3;
+    }
+
+    if (isLinkLocalAddress(ip)) {
+        return 4;
+    }
+
+    return 5;
+}
+
 // Note: To capture packets successfully, Npcap (on Windows) or libpcap must be installed.
 class PacketSniffer {
-    constructor(broadcastCallback, logger = null) {
+    constructor(broadcastCallback, logger = null, options = {}) {
         this.broadcast = broadcastCallback;
         this.logger = logger || {
             verbose() {},
@@ -42,6 +94,9 @@ class PacketSniffer {
             error() {}
         };
         this.filter = ALBION_CAPTURE_FILTER;
+        this.preferredAdapterIp = typeof options.preferredAdapterIp === 'string' && options.preferredAdapterIp.trim()
+            ? options.preferredAdapterIp.trim()
+            : null;
         this.bufSize = 10 * 1024 * 1024;
         this.captureHandles = [];
         this.running = false;
@@ -66,8 +121,64 @@ class PacketSniffer {
         this.playerEntityId = null;
         this.lastRequestedPlayerMove = null;
         this.moveCandidates = new Map();
+        this.availableAdapters = [];
+        this.selectedAdapter = null;
+        this.observedPlayers = new Map();
+        this.worldEntities = new Map();
+        this.pendingWorldEntityUpserts = new Map();
+        this.pendingWorldEntityRemovals = new Set();
+        this.worldEntityFlushTimer = null;
+        this.cleanupInterval = null;
         this.debugCounters = new Map();
         this.packetVerboseEnabled = String(process.env.LOG_PACKET_VERBOSE || '').toLowerCase() === 'true';
+        this.zoneCatalog = getZoneCatalog(this.logger);
+        this.mobCatalog = getMobCatalog(this.logger);
+    }
+
+    static listAdapters() {
+        const allDevices = Cap.deviceList();
+        if (!Array.isArray(allDevices) || allDevices.length === 0) {
+            return [];
+        }
+
+        const adapters = [];
+
+        allDevices.forEach((deviceInfo, deviceIndex) => {
+            const addresses = Array.isArray(deviceInfo.addresses) ? deviceInfo.addresses : [];
+
+            addresses.forEach((addressInfo, addressIndex) => {
+                const ip = addressInfo?.addr;
+                if (!isUsableIpv4(ip)) {
+                    return;
+                }
+
+                const description = deviceInfo.description || deviceInfo.name || `Adapter ${deviceIndex + 1}`;
+                adapters.push({
+                    id: `${deviceInfo.name || 'adapter'}:${addressIndex}`,
+                    name: description,
+                    description,
+                    device: deviceInfo.name,
+                    ip,
+                    priority: getAdapterPriority({ ip })
+                });
+            });
+        });
+
+        return adapters.sort((left, right) => {
+            if (left.priority !== right.priority) {
+                return left.priority - right.priority;
+            }
+
+            return `${left.name} ${left.ip}`.localeCompare(`${right.name} ${right.ip}`);
+        });
+    }
+
+    setPreferredAdapterIp(nextIp) {
+        const normalized = typeof nextIp === 'string' && nextIp.trim() ? nextIp.trim() : null;
+        this.preferredAdapterIp = normalized;
+        this.logger.info('capture_adapter_preference_updated', {
+            preferredAdapterIp: this.preferredAdapterIp
+        });
     }
 
     start() {
@@ -79,16 +190,18 @@ class PacketSniffer {
 
             this.logger.info('sniffer_start_requested', {
                 filter: this.filter,
+                preferredAdapterIp: this.preferredAdapterIp,
                 packetVerboseEnabled: this.packetVerboseEnabled
             });
 
+            this.availableAdapters = PacketSniffer.listAdapters();
             const devices = this.getCandidateDevices();
             if (devices.length === 0) {
                 throw new Error('No active IPv4 network capture devices found.');
             }
 
             for (const deviceInfo of devices) {
-                const deviceName = deviceInfo.name;
+                const deviceName = deviceInfo.device;
                 if (!deviceName) {
                     continue;
                 }
@@ -103,7 +216,8 @@ class PacketSniffer {
                         cap,
                         buffer,
                         device: deviceName,
-                        description: deviceInfo.description || deviceName,
+                        description: deviceInfo.description || deviceInfo.name || deviceName,
+                        ip: deviceInfo.ip,
                         linkType,
                         packetHandler: (nbytes) => {
                             if (linkType !== 'ETHERNET') {
@@ -120,13 +234,15 @@ class PacketSniffer {
                     this.logger.info('capture_handle_opened', {
                         device: deviceName,
                         description: handle.description,
+                        ip: handle.ip,
                         linkType
                     });
                 } catch {
                     // Ignore interfaces that cannot be opened or filtered.
                     this.logger.warning('capture_handle_open_failed', {
                         device: deviceName,
-                        description: deviceInfo.description || deviceName
+                        description: deviceInfo.description || deviceInfo.name || deviceName,
+                        ip: deviceInfo.ip
                     });
                 }
             }
@@ -146,17 +262,23 @@ class PacketSniffer {
             this.playerEntityId = null;
             this.lastRequestedPlayerMove = null;
             this.moveCandidates.clear();
+            this.observedPlayers.clear();
+            this.worldEntities.clear();
+            this.pendingWorldEntityUpserts.clear();
+            this.pendingWorldEntityRemovals.clear();
             this.debugCounters.clear();
             this.decodedCodeCounts.clear();
             for (const key of Object.keys(this.statusCounts)) {
                 this.statusCounts[key] = 0;
             }
 
+            this.selectedAdapter = devices[0] || null;
             const activeDevices = this.captureHandles.map(handle => handle.description);
 
             this.logger.info('sniffer_started', {
                 deviceCount: activeDevices.length,
                 devices: activeDevices,
+                selectedAdapter: this.selectedAdapter,
                 filter: this.filter
             });
             this.broadcast({
@@ -164,8 +286,11 @@ class PacketSniffer {
                 data: {
                     state: 'listening',
                     device: activeDevices.join(', '),
+                    adapterIp: this.selectedAdapter?.ip ?? null,
+                    adapterName: this.selectedAdapter?.name ?? null,
                     filter: this.filter,
-                    message: 'Live capture started. Listening for Albion traffic, player movement, and harvestable nodes.'
+                    capture: this.getCaptureMetadata(),
+                    message: 'Live capture started. Listening for Albion traffic, movement, players, harvestables, mobs, and world objects.'
                 }
             });
 
@@ -175,11 +300,14 @@ class PacketSniffer {
                     data: {
                         state: 'listening',
                         device: activeDevices.join(', '),
+                        adapterIp: this.selectedAdapter?.ip ?? null,
                         filter: this.filter,
                         packetsSeen: this.packetCount,
                         decodedPhotonPackets: this.decodedPacketCount,
                         relevantAlbionPackets: this.relevantDecodedCount,
                         trackedNodes: this.nodeState.size,
+                        trackedPlayers: this.observedPlayers.size,
+                        trackedWorldEntities: this.worldEntities.size,
                         trackedPlayerName: this.currentPlayerName,
                         trackedPlayerEntityId: this.playerEntityId,
                         decoder: 'protocol18-photon',
@@ -187,6 +315,9 @@ class PacketSniffer {
                     }
                 });
             }, 1000);
+            this.cleanupInterval = setInterval(() => {
+                this.cleanupStaleWorldEntities();
+            }, 15000);
 
             return { ok: true };
         } catch (error) {
@@ -218,6 +349,14 @@ class PacketSniffer {
             clearInterval(this.statsInterval);
             this.statsInterval = null;
         }
+        if (this.cleanupInterval) {
+            clearInterval(this.cleanupInterval);
+            this.cleanupInterval = null;
+        }
+        if (this.worldEntityFlushTimer) {
+            clearTimeout(this.worldEntityFlushTimer);
+            this.worldEntityFlushTimer = null;
+        }
 
         for (const handle of this.captureHandles) {
             try {
@@ -243,6 +382,12 @@ class PacketSniffer {
         this.playerEntityId = null;
         this.lastRequestedPlayerMove = null;
         this.moveCandidates.clear();
+        this.availableAdapters = [];
+        this.selectedAdapter = null;
+        this.observedPlayers.clear();
+        this.worldEntities.clear();
+        this.pendingWorldEntityUpserts.clear();
+        this.pendingWorldEntityRemovals.clear();
         this.debugCounters.clear();
         this.decodedCodeCounts.clear();
         this.logger.info('sniffer_stopped', {
@@ -254,33 +399,45 @@ class PacketSniffer {
         return {
             mode: 'sniffer',
             nodes: Array.from(this.nodeState.values()),
+            players: Array.from(this.observedPlayers.values()),
+            worldEntities: Array.from(this.worldEntities.values()),
             playerPos: this.playerPosition,
-            zoneInfo: this.currentZoneInfo
+            zoneInfo: this.currentZoneInfo,
+            capture: this.getCaptureMetadata()
         };
     }
 
     getCandidateDevices() {
-        const allDevices = Cap.deviceList();
-        if (!Array.isArray(allDevices) || allDevices.length === 0) {
+        if (!Array.isArray(this.availableAdapters) || this.availableAdapters.length === 0) {
             return [];
         }
 
-        const activeIpv4Devices = allDevices.filter(deviceInfo => {
-            const addresses = Array.isArray(deviceInfo.addresses) ? deviceInfo.addresses : [];
-            return addresses.some(address => {
-                if (typeof address?.addr !== 'string') {
-                    return false;
-                }
+        if (this.preferredAdapterIp) {
+            const exactMatch = this.availableAdapters.find(adapter => adapter.ip === this.preferredAdapterIp);
+            if (exactMatch) {
+                return [exactMatch];
+            }
 
-                if (!address.addr.includes('.')) {
-                    return false;
-                }
-
-                return !address.addr.startsWith('127.') && !address.addr.startsWith('169.254.');
+            this.logger.warning('preferred_capture_adapter_missing', {
+                preferredAdapterIp: this.preferredAdapterIp
             });
-        });
+        }
 
-        return activeIpv4Devices.length > 0 ? activeIpv4Devices : allDevices;
+        const ranked = this.availableAdapters
+            .filter(adapter => !isLoopbackAddress(adapter.ip) && !isLinkLocalAddress(adapter.ip));
+        if (ranked.length > 0) {
+            return [ranked[0]];
+        }
+
+        return [this.availableAdapters[0]];
+    }
+
+    getCaptureMetadata() {
+        return {
+            preferredAdapterIp: this.preferredAdapterIp,
+            selectedAdapter: this.selectedAdapter,
+            adapters: this.availableAdapters
+        };
     }
 
     handleCapturedPacket(buffer, nbytes) {
@@ -366,7 +523,7 @@ class PacketSniffer {
     }
 
     handleAlbionPacket(packet, decoded) {
-        if (decoded.kind === 'request' && decoded.code === 21) {
+        if (decoded.kind === 'request' && (decoded.code === 21 || decoded.code === 22)) {
             const moveMatch = this.extractPlayerMoveRequest(packet.parameters);
             if (moveMatch) {
                 const move = moveMatch.position;
@@ -380,7 +537,7 @@ class PacketSniffer {
                     at: Date.now(),
                     source: moveMatch.source
                 };
-                this.broadcastPlayerMove(move, 'request_21', {
+                this.broadcastPlayerMove(move, `request_${decoded.code}`, {
                     source: moveMatch.source,
                     shape: moveMatch.shape
                 });
@@ -392,13 +549,49 @@ class PacketSniffer {
             return;
         }
 
-        if (decoded.kind === 'response' && (decoded.code === 2 || decoded.code === 35)) {
+        if (decoded.kind === 'response' && (decoded.code === 2 || decoded.code === 35 || decoded.code === 41)) {
             const previousPlayerName = this.currentPlayerName;
             this.nodeState.clear();
+            this.observedPlayers.clear();
+            this.worldEntities.clear();
+            this.pendingWorldEntityUpserts.clear();
+            this.pendingWorldEntityRemovals.clear();
             this.currentZoneInfo = null;
             this.playerEntityId = null;
             this.lastRequestedPlayerMove = null;
             this.moveCandidates.clear();
+
+            if (decoded.code === 41) {
+                const nextZoneId = typeof packet?.parameters?.[0] === 'string'
+                    ? packet.parameters[0].trim()
+                    : null;
+
+                if (nextZoneId) {
+                    this.updateZoneInfo({
+                        zoneId: nextZoneId,
+                        name: this.formatZoneName(nextZoneId)
+                    });
+                }
+
+                this.logger.info('cluster_change_response_processed', this.buildPacketContext(packet, decoded, {
+                    previousPlayerName,
+                    nextZoneId
+                }));
+                this.broadcast({
+                    event: 'MAP_RESET',
+                    data: {
+                        reason: decoded.name
+                    }
+                });
+                this.broadcast({
+                    event: 'PLAYER_LIST_RESET',
+                    data: {
+                        reason: decoded.name
+                    }
+                });
+                return;
+            }
+
             const joinInfo = this.extractPlayerJoinInfo(packet.parameters);
             this.logger.info('join_response_processed', this.buildPacketContext(packet, decoded, {
                 previousPlayerName,
@@ -431,6 +624,12 @@ class PacketSniffer {
                     reason: decoded.name
                 }
             });
+            this.broadcast({
+                event: 'PLAYER_LIST_RESET',
+                data: {
+                    reason: decoded.name
+                }
+            });
             return;
         }
 
@@ -459,6 +658,11 @@ class PacketSniffer {
                 this.broadcastPlayerMove(position, 'event_3', {
                     entityId
                 });
+            } else if (this.observedPlayers.has(String(entityId))) {
+                this.upsertObservedPlayer({
+                    id: String(entityId),
+                    position
+                }, 'movement');
             } else {
                 this.logger.debug('move_event_not_bound_to_player', this.buildPacketContext(packet, decoded, {
                     entityId,
@@ -479,12 +683,22 @@ class PacketSniffer {
 
         if (decoded.code === 29) {
             this.maybeIdentifyPlayerCharacter(packet.parameters);
+            this.handleObservedPlayer(packet.parameters);
             this.emitDebug('new_character', {
                 entityId: this.coerceNumber(packet?.parameters?.[0]),
                 name: typeof packet?.parameters?.[1] === 'string' ? packet.parameters[1] : null,
                 currentPlayerName: this.currentPlayerName,
                 trackedPlayerEntityId: this.playerEntityId
             }, 12);
+            return;
+        }
+
+        if (decoded.code === 1) {
+            const entityId = this.coerceNumber(packet?.parameters?.[0]);
+            if (isFiniteNumber(entityId)) {
+                this.removeObservedPlayer(String(entityId), 'leave_event');
+                this.removeWorldEntityById(entityId, ['mob', 'mist', 'wisp', 'cage', 'fishing'], 'leave_event');
+            }
             return;
         }
 
@@ -505,6 +719,11 @@ class PacketSniffer {
 
         if (decoded.code === 59 || decoded.code === 60 || decoded.code === 61) {
             this.considerAutoBindFromActorEvent(packet.parameters, decoded.code);
+            return;
+        }
+
+        if (decoded.code === 6 || decoded.code === 7 || decoded.code === 91) {
+            this.applyMobHealthState(packet.parameters, decoded.code);
             return;
         }
 
@@ -545,7 +764,84 @@ class PacketSniffer {
                 parameters: this.summarizeValue(packet.parameters)
             }));
             this.applyHarvestableStateChange(packet.parameters);
+            return;
         }
+
+        if (decoded.code === 123) {
+            const worldEntity = extractMobEntity(packet.parameters, this.mobCatalog);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_mob');
+            }
+            return;
+        }
+
+        if (decoded.code === 323) {
+            const worldEntity = extractDungeonEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_dungeon');
+            }
+            return;
+        }
+
+        if (decoded.code === 391) {
+            const worldEntity = extractChestEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_chest');
+            }
+            return;
+        }
+
+        if (decoded.code === 359) {
+            const worldEntity = extractFishingEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_fishing_zone');
+            }
+            return;
+        }
+
+        if (decoded.code === 356) {
+            this.removeWorldEntityById(packet?.parameters?.[0], ['fishing'], 'fishing_finished');
+            return;
+        }
+
+        if (decoded.code === 530) {
+            const worldEntity = extractCageEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_cage');
+            }
+            return;
+        }
+
+        if (decoded.code === 531) {
+            this.removeWorldEntityById(packet?.parameters?.[0], ['cage'], 'cage_state_updated');
+            return;
+        }
+
+        if (decoded.code === 523) {
+            const worldEntity = extractWispEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'new_mists_wisp');
+            }
+            return;
+        }
+
+        if (decoded.code === 524) {
+            const worldEntity = extractWispEntity(packet.parameters);
+            if (worldEntity) {
+                this.upsertWorldEntity(worldEntity, 'mists_wisp_state_change');
+            } else {
+                this.removeWorldEntityById(packet?.parameters?.[0], ['wisp'], 'mists_wisp_state_change');
+            }
+        }
+    }
+
+    handleObservedPlayer(parameters) {
+        const player = this.extractObservedPlayer(parameters);
+        if (!player) {
+            return;
+        }
+
+        this.upsertObservedPlayer(player, 'new_character');
     }
 
     maybeIdentifyPlayerEntity(entityId, position) {
@@ -715,6 +1011,132 @@ class PacketSniffer {
         }, 10);
     }
 
+    applyMobHealthState(parameters, code) {
+        const healthState = extractHealthState(parameters);
+        if (!healthState?.id) {
+            return;
+        }
+
+        const existingMob = this.worldEntities.get(createWorldEntityKey('mob', healthState.id));
+        if (!existingMob) {
+            return;
+        }
+
+        if (code === 6 && (healthState.currentHealth === null || healthState.currentHealth <= 0)) {
+            this.removeWorldEntityById(healthState.id, ['mob'], 'mob_health_zero');
+            return;
+        }
+
+        const nextHealthPercent = healthState.normalizedHealth !== null
+            ? Math.round((healthState.normalizedHealth / 255) * 100)
+            : existingMob.healthPercent;
+
+        this.upsertWorldEntity({
+            ...existingMob,
+            healthPercent: nextHealthPercent,
+            currentHealth: healthState.currentHealth ?? existingMob.currentHealth ?? null
+        }, 'mob_health_update');
+    }
+
+    upsertWorldEntity(entity, source = 'unknown') {
+        if (!entity?.uid || !entity?.kind || !entity?.position) {
+            return;
+        }
+
+        const normalizedPosition = this.validatePosition(entity.position);
+        if (!normalizedPosition) {
+            return;
+        }
+
+        const existing = this.worldEntities.get(entity.uid);
+        const next = {
+            ...existing,
+            ...entity,
+            position: normalizedPosition,
+            uid: entity.uid,
+            id: String(entity.id),
+            kind: entity.kind,
+            lastSeenAt: Date.now()
+        };
+
+        this.worldEntities.set(next.uid, next);
+        this.pendingWorldEntityUpserts.set(next.uid, next);
+        this.pendingWorldEntityRemovals.delete(next.uid);
+        this.scheduleWorldEntityFlush();
+        this.logger.debug('world_entity_upserted', {
+            source,
+            uid: next.uid,
+            kind: next.kind,
+            label: next.label,
+            trackedWorldEntities: this.worldEntities.size
+        });
+    }
+
+    removeWorldEntityById(id, kinds, source = 'unknown') {
+        const rawId = this.coerceNumber(id);
+        if (!isFiniteNumber(rawId)) {
+            return;
+        }
+
+        for (const kind of kinds) {
+            this.removeWorldEntity(createWorldEntityKey(kind, rawId), source);
+        }
+    }
+
+    removeWorldEntity(uid, source = 'unknown') {
+        if (!uid || !this.worldEntities.has(uid)) {
+            return;
+        }
+
+        this.worldEntities.delete(uid);
+        this.pendingWorldEntityUpserts.delete(uid);
+        this.pendingWorldEntityRemovals.add(uid);
+        this.scheduleWorldEntityFlush();
+        this.logger.debug('world_entity_removed', {
+            source,
+            uid,
+            trackedWorldEntities: this.worldEntities.size
+        });
+    }
+
+    scheduleWorldEntityFlush() {
+        if (this.worldEntityFlushTimer) {
+            return;
+        }
+
+        this.worldEntityFlushTimer = setTimeout(() => {
+            this.worldEntityFlushTimer = null;
+            this.flushWorldEntityPatch();
+        }, 100);
+    }
+
+    flushWorldEntityPatch() {
+        if (this.pendingWorldEntityUpserts.size === 0 && this.pendingWorldEntityRemovals.size === 0) {
+            return;
+        }
+
+        this.broadcast({
+            event: 'WORLD_ENTITIES_PATCH',
+            data: {
+                upserts: Array.from(this.pendingWorldEntityUpserts.values()),
+                removals: Array.from(this.pendingWorldEntityRemovals.values())
+            }
+        });
+
+        this.pendingWorldEntityUpserts.clear();
+        this.pendingWorldEntityRemovals.clear();
+    }
+
+    cleanupStaleWorldEntities() {
+        const now = Date.now();
+        for (const entity of this.worldEntities.values()) {
+            const ttlMs = Number.isFinite(entity.ttlMs) ? entity.ttlMs : 180000;
+            if ((now - (entity.lastSeenAt || now)) > ttlMs) {
+                this.removeWorldEntity(entity.uid, 'stale_cleanup');
+            }
+        }
+    }
+
     summarizeValue(value, depth = 0) {
         if (value === null || value === undefined) {
             return value ?? null;
@@ -779,11 +1201,11 @@ class PacketSniffer {
 
         const previousZoneInfo = this.currentZoneInfo;
 
-        const nextZoneInfo = {
+        const nextZoneInfo = this.zoneCatalog.enrichZone({
             zoneId: zoneInfo.zoneId || this.toZoneId(zoneInfo.name) || null,
             name: zoneInfo.name || zoneInfo.zoneId,
             mapSize: Number.isInteger(zoneInfo.mapSize) && zoneInfo.mapSize > 0 ? zoneInfo.mapSize : 1000
-        };
+        });
 
         const hasChanged = !previousZoneInfo
             || previousZoneInfo.zoneId !== nextZoneInfo.zoneId
@@ -798,11 +1220,70 @@ class PacketSniffer {
         });
 
         if (hasChanged) {
+            this.observedPlayers.clear();
+            this.worldEntities.clear();
+            this.pendingWorldEntityUpserts.clear();
+            this.pendingWorldEntityRemovals.clear();
             this.broadcast({
                 event: 'ZONE_ENTER',
                 data: nextZoneInfo
             });
+            this.broadcast({
+                event: 'PLAYER_LIST_RESET',
+                data: {
+                    reason: 'zone_changed',
+                    zoneInfo: nextZoneInfo
+                }
+            });
+            this.broadcast({
+                event: 'MAP_RESET',
+                data: {
+                    reason: 'zone_changed',
+                    zoneInfo: nextZoneInfo
+                }
+            });
         }
+    }
+
+    getThreatStatus(flagId) {
+        if (flagId === 255) {
+            return 'hostile';
+        }
+
+        if (flagId >= 1 && flagId <= 6) {
+            return 'faction';
+        }
+
+        return 'passive';
+    }
+
+    extractObservedPlayer(parameters) {
+        const entityId = this.coerceNumber(parameters?.[0]);
+        const name = typeof parameters?.[1] === 'string' ? parameters[1].trim() : '';
+
+        if (!isFiniteNumber(entityId) || !name || name === this.currentPlayerName) {
+            return null;
+        }
+
+        if (this.playerEntityId !== null && entityId === this.playerEntityId) {
+            return null;
+        }
+
+        const positionMatch = this.findPositionCandidate(parameters?.[9], 'parameters.9')
+            || this.findPositionCandidate(parameters?.[8], 'parameters.8')
+            || this.findPositionCandidate(parameters, 'parameters');
+        const flagId = this.coerceNumber(parameters?.[53], 0);
+
+        return {
+            id: String(entityId),
+            name,
+            guildName: typeof parameters?.[8] === 'string' ? parameters[8] : '',
+            allianceName: typeof parameters?.[51] === 'string' ? parameters[51] : '',
+            flagId,
+            threat: this.getThreatStatus(flagId),
+            position: positionMatch?.position ?? null,
+            lastSeenAt: Date.now()
+        };
     }
 
     extractCoordinateObject(value) {
@@ -886,31 +1367,18 @@ class PacketSniffer {
     }
 
     extractPlayerMoveRequest(parameters) {
+        const fixtureMatch = extractPlayerMoveRequestFixture(parameters);
+        if (fixtureMatch) {
+            return fixtureMatch;
+        }
+
         if (!parameters || typeof parameters !== 'object') {
             return null;
         }
 
         const preferredKeys = [1, 2, 0, 3, 4];
-        const visitedKeys = new Set();
-
         for (const key of preferredKeys) {
-            if (!Object.prototype.hasOwnProperty.call(parameters, key)) {
-                continue;
-            }
-
-            visitedKeys.add(String(key));
             const match = this.findPositionCandidate(parameters[key], `parameters.${key}`);
-            if (match) {
-                return match;
-            }
-        }
-
-        for (const [key, value] of Object.entries(parameters).slice(0, 12)) {
-            if (visitedKeys.has(String(key))) {
-                continue;
-            }
-
-            const match = this.findPositionCandidate(value, `parameters.${key}`);
             if (match) {
                 return match;
             }
@@ -920,6 +1388,11 @@ class PacketSniffer {
     }
 
     extractPlayerJoinInfo(parameters) {
+        const fixtureInfo = extractPlayerJoinInfoFixture(parameters);
+        if (fixtureInfo?.position) {
+            return fixtureInfo;
+        }
+
         if (!parameters || typeof parameters !== 'object') {
             return null;
         }
@@ -1155,6 +1628,73 @@ class PacketSniffer {
         });
     }
 
+    upsertObservedPlayer(player, source = 'unknown') {
+        if (!player?.id) {
+            return;
+        }
+
+        const existing = this.observedPlayers.get(player.id);
+        const next = {
+            id: player.id,
+            name: player.name ?? existing?.name ?? 'Unknown',
+            guildName: player.guildName ?? existing?.guildName ?? '',
+            allianceName: player.allianceName ?? existing?.allianceName ?? '',
+            flagId: isFiniteNumber(player.flagId) ? player.flagId : (existing?.flagId ?? 0),
+            threat: player.threat ?? existing?.threat ?? this.getThreatStatus(player.flagId ?? existing?.flagId ?? 0),
+            position: player.position ?? existing?.position ?? null,
+            lastSeenAt: player.lastSeenAt ?? Date.now()
+        };
+
+        this.observedPlayers.set(player.id, next);
+        this.logger.debug('observed_player_upserted', {
+            source,
+            playerId: next.id,
+            name: next.name,
+            threat: next.threat,
+            hasPosition: Boolean(next.position),
+            trackedPlayers: this.observedPlayers.size
+        });
+
+        this.broadcast({
+            event: 'PLAYER_SPOTTED',
+            data: next
+        });
+
+        const becameHostile = next.threat === 'hostile' && existing?.threat !== 'hostile';
+        if (becameHostile) {
+            this.broadcast({
+                event: 'HOSTILE_ALERT',
+                data: {
+                    id: next.id,
+                    name: next.name,
+                    guildName: next.guildName,
+                    allianceName: next.allianceName,
+                    flagId: next.flagId,
+                    zoneInfo: this.currentZoneInfo
+                }
+            });
+        }
+    }
+
+    removeObservedPlayer(id, source = 'unknown') {
+        if (!id || !this.observedPlayers.has(id)) {
+            return;
+        }
+
+        const existing = this.observedPlayers.get(id);
+        this.observedPlayers.delete(id);
+        this.logger.debug('observed_player_removed', {
+            source,
+            playerId: id,
+            name: existing?.name ?? null,
+            trackedPlayers: this.observedPlayers.size
+        });
+        this.broadcast({
+            event: 'PLAYER_LEFT',
+            data: { id }
+        });
+    }
+
     removeNode(id) {
         if (!this.nodeState.has(id)) {
             this.logger.debug('node_remove_noop', { nodeId: id });
@@ -1328,7 +1868,7 @@ class PacketSniffer {
             return true;
         }
 
-        if (decoded.kind === 'request' && decoded.code === 21) {
+        if (decoded.kind === 'request' && (decoded.code === 21 || decoded.code === 22)) {
             return currentCount % 10 === 0;
         }
 
