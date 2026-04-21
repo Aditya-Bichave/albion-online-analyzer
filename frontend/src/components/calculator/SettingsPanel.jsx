@@ -1,5 +1,6 @@
 import React from 'react';
 import { CITIES } from '../../utils/recipeData';
+import { SERVERS } from '../../utils/constants';
 
 const Checkbox = ({ label, checked, onChange }) => (
     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '8px' }}>
@@ -61,6 +62,26 @@ const SettingsPanel = ({ settings, onSettingChange, onUpdateCurrent, onUpdateRes
                 <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Settings</span>
                 <span>💾</span>
                 <span>🔄</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Server</span>
+                <select
+                    value={settings.server}
+                    onChange={(e) => onSettingChange('server', e.target.value)}
+                    style={{
+                        background: 'white',
+                        color: 'black',
+                        padding: '4px',
+                        borderRadius: '2px',
+                        border: 'none',
+                        outline: 'none'
+                    }}
+                >
+                    {SERVERS.map(server => (
+                        <option key={server.id} value={server.id}>{server.name}</option>
+                    ))}
+                </select>
             </div>
 
             <Checkbox label="Use journals" checked={settings.useJournals} onChange={(v) => onSettingChange('useJournals', v)} />
