@@ -19,7 +19,7 @@ export function SocialShare({ url, title, description, className = '' }: SocialS
     setCurrentUrl(url || (typeof window !== 'undefined' ? window.location.href : ''));
   }, [url]);
 
-  const shareTitle = title || 'AlbionKit - The Ultimate Albion Online Companion';
+  const shareTitle = title || 'Albion Online Analyzer - The Ultimate Albion Online Companion';
   const shareDescription = description || 'Master Albion Online with real-time market data, PvP intel, and powerful tools.';
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(currentUrl)}`;

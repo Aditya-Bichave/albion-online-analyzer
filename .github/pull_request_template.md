@@ -1,4 +1,4 @@
-<!-- Thank you for contributing to AlbionKit! Please fill out the information below -->
+<!-- Thank you for contributing to Albion Online Analyzer! Please fill out the information below -->
 
 ## Description
 <!-- Describe your changes in detail -->

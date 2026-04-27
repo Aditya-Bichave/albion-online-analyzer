@@ -421,7 +421,7 @@ export default function KillFeedPage() {
       {/* Social Share */}
       <div className="flex justify-center py-6">
         <SocialShare
-          title="AlbionKit Killboard - Real-Time PvP Tracker"
+          title="Albion Online Analyzer Killboard - Real-Time PvP Tracker"
           description="Monitor real-time PvP activity across all Albion Online servers. Track kills, analyze combat logs, and stay informed about battles."
         />
       </div>

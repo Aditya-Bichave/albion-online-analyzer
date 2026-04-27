@@ -33,12 +33,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/about',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/about',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/about',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/about',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),
@@ -218,7 +218,7 @@ export default async function AboutPage() {
           <h2 className="text-2xl font-bold mb-8 text-foreground">{t('joinCommunity')}</h2>
           <div className="flex justify-center gap-6">
             <a 
-              href="https://twitter.com/Albion_Kit" 
+              href="https://github.com/Aditya-Bichave/albion-online-analyzer" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-6 py-3 bg-info/10 hover:bg-info/20 text-info rounded-lg transition-all border border-info/20 hover:border-info/40"

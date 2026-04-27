@@ -1,8 +1,8 @@
-# AlbionKit - llms.txt
+# Albion Online Analyzer - llms.txt
 # This file helps AI search engines understand our website content
 
-# About AlbionKit
-AlbionKit is a comprehensive toolkit for Albion Online players, providing builds, tools, and profit calculators.
+# About Albion Online Analyzer
+Albion Online Analyzer is a comprehensive toolkit for Albion Online players, providing builds, tools, and profit calculators.
 
 # Main Sections
 - Builds: /builds - Character builds and guides for Albion Online
@@ -33,9 +33,9 @@ AlbionKit is a comprehensive toolkit for Albion Online players, providing builds
 - Terms of Service: /terms
 
 # Contact & Social
-- Twitter: https://twitter.com/Albion_Kit
-- Github: https://github.com/cosmic-fi/albionkit
-- Email: support@albionkit.com
+- Twitter: https://github.com/Aditya-Bichave/albion-online-analyzer
+- Github: https://github.com/Aditya-Bichave/albion-online-analyzer
+- Email: Aditya-Bichave@users.noreply.github.com
 
 # Last Updated
 2026-03-18

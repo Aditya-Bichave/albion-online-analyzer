@@ -3,7 +3,7 @@ description: Ask a question about the project
 title: "[Question]: "
 labels: ["question", "needs triage"]
 assignees:
-  - cosmic-fi
+  - Aditya-Bichave
 body:
   - type: markdown
     attributes:

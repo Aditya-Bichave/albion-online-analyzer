@@ -5,13 +5,17 @@ import { adminDb } from './firebase-admin';
  */
 export async function getAllBuildsForSitemap() {
   try {
+    if (!adminDb) {
+      return [];
+    }
+
     const snapshot = await adminDb.collection('builds')
       .select('updatedAt', 'title', 'likes')
       .orderBy('likes', 'desc')
       .limit(100) // Limit to top 100 builds
       .get();
 
-    return snapshot.docs.map(doc => {
+    return snapshot.docs.map((doc: any) => {
       const data = doc.data();
       return {
         id: doc.id,

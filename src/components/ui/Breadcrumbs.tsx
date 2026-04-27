@@ -68,7 +68,7 @@ export function Breadcrumbs({ lastSegmentLabel }: BreadcrumbsProps) {
   if (breadcrumbs.length === 0) return null;
 
   // Always use production URL for Schema.org
-  const baseUrl = 'https://albionkit.com';
+  const baseUrl = 'https://aditya-bichave.github.io/albion-online-analyzer';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',

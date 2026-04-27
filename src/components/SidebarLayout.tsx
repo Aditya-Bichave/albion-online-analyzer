@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
-import { useLoginModal } from '@/context/LoginModalContext';
 import { useCommandMenu } from '@/context/CommandMenuContext';
 import { NotificationDropdown } from '@/components/notifications/NotificationDropdown';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -35,7 +34,6 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   
   const { user, profile, logout } = useAuth();
   const { setTheme, resolvedTheme } = useTheme();
-  const { openLoginModal } = useLoginModal();
   const { setIsOpen } = useCommandMenu();
   const pathname = usePathname();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
@@ -158,7 +156,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   <div className="relative p-2 w-full">
                     <img
                       src="/logo.png"
-                      alt="AlbionKit"
+                      alt="Albion Online Analyzer"
                       className="h-full w-auto object-contain"
                     />
                   </div>
@@ -166,12 +164,12 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   <div className="relative h-6 w-auto">
                     <img
                       src="/logo-dark.svg"
-                      alt="AlbionKit"
+                      alt="Albion Online Analyzer"
                       className="h-full w-auto object-contain dark:hidden"
                     />
                     <img
                       src="/logo-light.svg"
-                      alt="AlbionKit"
+                      alt="Albion Online Analyzer"
                       className="h-full w-auto object-contain hidden dark:block"
                     />
                   </div>
@@ -416,13 +414,13 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 )}
               </div>
             ) : (
-              <button
-                onClick={() => openLoginModal()}
+              <Link
+                href="/settings"
                 className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors"
               >
                 <UserIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('login')}</span>
-              </button>
+                <span className="hidden sm:inline">Guest Mode</span>
+              </Link>
             )}
           </div>
         </header>

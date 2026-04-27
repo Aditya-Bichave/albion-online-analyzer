@@ -13,14 +13,19 @@ if (!getApps().length) {
   if (!serviceAccount.clientEmail) console.warn('[FirebaseAdmin] Missing FIREBASE_CLIENT_EMAIL');
   if (!serviceAccount.privateKey) console.warn('[FirebaseAdmin] Missing FIREBASE_PRIVATE_KEY');
 
-  try {
-    initializeApp({
-      credential: cert(serviceAccount),
-    });
-  } catch (error) {
-    console.error('[FirebaseAdmin] Initialization failed:', error);
+  if (serviceAccount.projectId && serviceAccount.clientEmail && serviceAccount.privateKey) {
+    try {
+      initializeApp({
+        credential: cert(serviceAccount),
+      });
+    } catch (error) {
+      console.error('[FirebaseAdmin] Initialization failed:', error);
+    }
   }
 }
 
-export const adminDb = getFirestore();
-export const adminAuth = getAuth();
+const adminApp = getApps()[0];
+
+export const isFirebaseAdminEnabled = Boolean(adminApp);
+export const adminDb = (adminApp ? getFirestore(adminApp) : null) as any;
+export const adminAuth = (adminApp ? getAuth(adminApp) : null) as any;

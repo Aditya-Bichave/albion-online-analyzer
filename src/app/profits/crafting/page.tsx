@@ -15,12 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/profits/crafting',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/profits/crafting',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/profits/crafting',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/profits/crafting',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),

@@ -9,16 +9,16 @@
 
 ### Tools Folder (6 files + 2 backups)
 ```
-✅ gold-price.png              (was: AlbionKit-Gold-Price.png)
-✅ kill-feed.png               (was: kf 1AlbionKit Live KillFeed.png)
-   └─ kill-feed-backup-1.png   (was: kf2 1AlbionKit Live KillFeed.png)
-   └─ kill-feed-backup-2.png   (was: kf3 1AlbionKit Live KillFeed.png)
-✅ market-flipper.png          (was: mflipper 1AlbionKit Market Flipper.png)
-   └─ market-flipper-backup-1.png (was: mflipper1 1AlbionKit Market Flipper.png)
-✅ pvp-intel.png               (was: pvpintel 1AlbionKit Pvp Intel.png)
-   └─ pvp-intel-backup-1.png   (was: pvpintel 2AlbionKit Pvp Intel.png)
-   └─ pvp-intel-backup-2.png   (was: pvpintel 3AlbionKit Pvp Intel.png)
-✅ zvz-tracker.png             (was: zvz 1AlbionKit ZvZ Tracker.png)
+✅ gold-price.png              (was: Albion Online Analyzer-Gold-Price.png)
+✅ kill-feed.png               (was: kf 1Albion Online Analyzer Live KillFeed.png)
+   └─ kill-feed-backup-1.png   (was: kf2 1Albion Online Analyzer Live KillFeed.png)
+   └─ kill-feed-backup-2.png   (was: kf3 1Albion Online Analyzer Live KillFeed.png)
+✅ market-flipper.png          (was: mflipper 1Albion Online Analyzer Market Flipper.png)
+   └─ market-flipper-backup-1.png (was: mflipper1 1Albion Online Analyzer Market Flipper.png)
+✅ pvp-intel.png               (was: pvpintel 1Albion Online Analyzer Pvp Intel.png)
+   └─ pvp-intel-backup-1.png   (was: pvpintel 2Albion Online Analyzer Pvp Intel.png)
+   └─ pvp-intel-backup-2.png   (was: pvpintel 3Albion Online Analyzer Pvp Intel.png)
+✅ zvz-tracker.png             (was: zvz 1Albion Online Analyzer ZvZ Tracker.png)
 ```
 
 ### Profits Folder (8 files)
@@ -41,11 +41,11 @@
 
 ### Misc Folder (5 files)
 ```
-✅ homepage.png                (was: AlbionKit.jpg)
-✅ logo.png                    (was: AlbionKitLogo.png)
-✅ logo-alt.png                (was: AlbionKit Logo.png)
-✅ tools-overview.png          (was: AlbionKit Tools.png)
-✅ guild-tools.png             (was: AlbionKit Guild Tools.png)
+✅ homepage.png                (was: Albion Online Analyzer.jpg)
+✅ logo.png                    (was: Albion Online AnalyzerLogo.png)
+✅ logo-alt.png                (was: Albion Online Analyzer Logo.png)
+✅ tools-overview.png          (was: Albion Online Analyzer Tools.png)
+✅ guild-tools.png             (was: Albion Online Analyzer Guild Tools.png)
 ```
 
 ---
@@ -190,7 +190,7 @@ import { createPageMetadata } from '@/lib/screenshot-metadata';
 
 export const metadata = createPageMetadata(
   'market-flipper',
-  'Market Flipper - AlbionKit',
+  'Market Flipper - Albion Online Analyzer',
   'Find profitable market flips in real-time...'
 );
 ```

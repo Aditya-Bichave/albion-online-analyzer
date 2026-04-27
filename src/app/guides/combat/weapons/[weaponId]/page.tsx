@@ -26,12 +26,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: `${weapon.name} - ${t('guide')}`,
     description: `${t('description')} ${weapon.rotation.tips.join(' ')}`,
     alternates: {
-      canonical: `https://albionkit.com/guides/combat/weapons/${weaponId}`,
+      canonical: `https://aditya-bichave.github.io/albion-online-analyzer/guides/combat/weapons/${weaponId}`,
     },
     openGraph: {
       title: `${weapon.name} - ${t('guide')}`,
       description: `${weapon.name} ${t('for')} ${weapon.bestFor.join(', ')}`,
-      url: `https://albionkit.com/guides/combat/weapons/${weapon.id}`,
+      url: `https://aditya-bichave.github.io/albion-online-analyzer/guides/combat/weapons/${weapon.id}`,
     },
   };
 }

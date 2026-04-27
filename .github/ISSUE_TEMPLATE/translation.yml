@@ -3,12 +3,12 @@ description: Add or update translations
 title: "[Translation]: "
 labels: ["translations", "needs review"]
 assignees:
-  - cosmic-fi
+  - Aditya-Bichave
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for contributing translations! Please read our [Translation Guide](https://github.com/cosmic-fi/albionkit/blob/main/docs/TRANSLATION_GUIDE.md) first.
+        Thank you for contributing translations! Please read our [Translation Guide](https://github.com/Aditya-Bichave/albion-online-analyzer/blob/main/docs/TRANSLATION_GUIDE.md) first.
 
   - type: dropdown
     id: type

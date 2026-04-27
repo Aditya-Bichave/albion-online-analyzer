@@ -9,18 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: 'https://albionkit.com/profits/silver-farming',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/profits/silver-farming',
     },
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: 'https://albionkit.com/profits/silver-farming',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/profits/silver-farming',
       type: 'website',
       images: [{
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AlbionKit Preview',
+        alt: 'Albion Online Analyzer Preview',
         type: 'image/jpeg'
       }],
     },

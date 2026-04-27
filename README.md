@@ -1,11 +1,11 @@
-<img width="1582" height="366" alt="albionkit-banner" src="https://github.com/user-attachments/assets/b6f0fe61-a865-461c-93aa-dd41d6ccea3d" />
+<img width="1582" height="366" alt="albion-online-analyzer-banner" src="https://github.com/user-attachments/assets/b6f0fe61-a865-461c-93aa-dd41d6ccea3d" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 
-# AlbionKit - Albion Online Toolkit
+# Albion Online Analyzer - Albion Online Toolkit
 A comprehensive toolkit for Albion Online players featuring market analysis, build databases, PvP intelligence, and profit calculators.
 
 ## 🎯 Features
@@ -51,8 +51,8 @@ A comprehensive toolkit for Albion Online players featuring market analysis, bui
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/albionkit.git
-   cd albionkit
+   git clone https://github.com/Aditya-Bichave/albion-online-analyzer.git
+   cd albion-online-analyzer
    ```
 
 2. **Install dependencies**
@@ -80,7 +80,7 @@ A comprehensive toolkit for Albion Online players featuring market analysis, bui
 ## 📁 Project Structure
 
 ```
-albionkit/
+albion-online-analyzer/
 ├── src/
 │   ├── app/                 # Next.js App Router pages
 │   │   ├── tools/           # Market flipper, PvP intel, ZvZ tracker
@@ -115,7 +115,7 @@ albionkit/
 
 ## 🌍 Internationalization
 
-AlbionKit supports 10 languages:
+Albion Online Analyzer supports 10 languages:
 
 - English (en)
 - German (de)
@@ -168,9 +168,9 @@ Please review our [Security Policy](SECURITY.md) for reporting vulnerabilities.
 Support this project by becoming a sponsor!
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/cosmic_fi)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-ea4aaa?style=for-the-badge&logo=github&logoColor=white)](https://github.com/sponsors/cosmic-fi)
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub_Sponsors-ea4aaa?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Aditya-Bichave/albion-online-analyzer)
 
-Your support helps keep AlbionKit free and ad-free for everyone!
+Your support helps keep Albion Online Analyzer free and ad-free for everyone!
 
 ## 📄 License
 
@@ -185,8 +185,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - **Discord:** (Coming soon!)
-- **Twitter:** [@Albion_Kit](https://twitter.com/Albion_Kit)
-- **Email:** support@albionkit.com
+- **Twitter:** [Albion Online Analyzer](https://github.com/Aditya-Bichave/albion-online-analyzer)
+- **Email:** Aditya-Bichave@users.noreply.github.com
 
 ---
 

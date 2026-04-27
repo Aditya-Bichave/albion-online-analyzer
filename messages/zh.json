@@ -49,7 +49,7 @@
       "streakNotification": {
         "title": "每日登录连胜：{count} 天！",
         "keepGoing": "继续保持，旅行者！",
-        "welcome": "欢迎回到 AlbionKit！"
+        "welcome": "欢迎回到 Albion Online Analyzer！"
       }
     },
     "Emails": {
@@ -62,32 +62,32 @@
         "travelerName": "旅行者"
       },
       "verification": {
-        "subject": "验证你的 AlbionKit 邮箱",
+        "subject": "验证你的 Albion Online Analyzer 邮箱",
         "title": "验证你的邮箱地址",
         "preview": "请验证你的邮箱地址以完成注册。",
-        "welcome": "欢迎来到 <strong>AlbionKit</strong>！我们很高兴你能加入。",
+        "welcome": "欢迎来到 <strong>Albion Online Analyzer</strong>！我们很高兴你能加入。",
         "body": "请确认你的邮箱地址以解锁全部功能，包括创建配置、追踪市场数据等。",
         "button": "验证邮箱地址",
         "altLink": "或复制此链接并在浏览器中打开：",
-        "ignore": "如果你没有在 AlbionKit 创建账户，可以安全地忽略此邮件。"
+        "ignore": "如果你没有在 Albion Online Analyzer 创建账户，可以安全地忽略此邮件。"
       },
       "welcome": {
-        "subject": "欢迎来到 AlbionKit",
+        "subject": "欢迎来到 Albion Online Analyzer",
         "title": "欢迎，{name}！",
-        "preview": "欢迎来到 AlbionKit！立即开始探索我们的工具。",
-        "body1": "感谢加入 <strong>AlbionKit</strong>。你刚刚迈出了掌握 Albion Online 的第一步。",
+        "preview": "欢迎来到 Albion Online Analyzer！立即开始探索我们的工具。",
+        "body1": "感谢加入 <strong>Albion Online Analyzer</strong>。你刚刚迈出了掌握 Albion Online 的第一步。",
         "body2": "以下是你可以立即使用的一些强大工具：",
         "builds": "<strong>配置数据库：</strong>发现并分享主流配置。",
         "market": "<strong>市场搬砖：</strong>在城市间寻找有利可图的交易。",
         "pvp": "<strong>PvP 情报：</strong>实时分析战斗和击杀信息。",
-        "button": "探索 AlbionKit"
+        "button": "探索 Albion Online Analyzer"
       },
       "purchase": {
         "subject": "订阅已激活 🚀",
         "title": "订阅已激活 🚀",
-        "preview": "你的 AlbionKit 高级订阅现已激活！",
+        "preview": "你的 Albion Online Analyzer 高级订阅现已激活！",
         "greeting": "你好 {name}，",
-        "body1": "感谢你的支持！你的 <strong>AlbionKit 高级版</strong> 订阅现已激活。",
+        "body1": "感谢你的支持！你的 <strong>Albion Online Analyzer 高级版</strong> 订阅现已激活。",
         "body2": "你现在拥有无限访问权限：",
         "feature1": "✨ 整个平台<strong>无广告体验</strong>",
         "feature2": "📈 PvP 和市场数据的<strong>高级分析</strong>",
@@ -101,14 +101,14 @@
         "title": "升级了！🎉",
         "preview": "恭喜你达到 {rank} 等级！",
         "congrats": "恭喜！",
-        "body": "你已在 AlbionKit 上达到 <strong>{rank}</strong> 等级。",
+        "body": "你已在 Albion Online Analyzer 上达到 <strong>{rank}</strong> 等级。",
         "footer": "继续创建配置并为社区做贡献，以达到下一个等级！",
         "button": "查看个人资料"
       },
       "reminder": {
-        "subject": "市场机会 - AlbionKit",
+        "subject": "市场机会 - Albion Online Analyzer",
         "title": "提醒",
-        "body": "打开 AlbionKit 查看完整的机会列表。",
+        "body": "打开 Albion Online Analyzer 查看完整的机会列表。",
         "button": "查看市场搬砖"
       },
       "watchlist": {
@@ -119,7 +119,7 @@
         "buySell": "买入：{buyPrice} ({buyCity}) → 卖出：{sellPrice} (黑市)",
         "button": "查看我的观察列表",
         "footer": "你收到此邮件是因为你在设置中启用了市场警报。",
-        "baseTitle": "市场观察列表警报 - AlbionKit",
+        "baseTitle": "市场观察列表警报 - Albion Online Analyzer",
         "preview": "观察列表警报：{itemName} 等物品有利可图！"
       },
       "gold": {
@@ -258,15 +258,15 @@
     "manageAlerts": "管理提醒",
     "faq": {
       "q1": "这个工具是免费的吗？",
-      "a1": "AlbionKit 是 PWA（Progressive Web App）。直接从移动浏览器安装，就像原生应用一样。",
+      "a1": "Albion Online Analyzer 是 PWA（Progressive Web App）。直接从移动浏览器安装，就像原生应用一样。",
       "q2": "安全吗？有封号风险吗？",
-      "a2": "AlbionKit 绝对安全。我们不扫描游戏内存或注入代码，严格遵守 SBI 服务条款。",
+      "a2": "Albion Online Analyzer 绝对安全。我们不扫描游戏内存或注入代码，严格遵守 SBI 服务条款。",
       "q3": "市场数据有多准确？",
       "a3": "价格由真实玩家通过 Albion Data Client 更新。在主城市，数据通常在几分钟内更新。",
       "q4": "什么是 Guild Master 计划？",
       "a4": "为所有公会成员提供 Adept 福利的特殊计划。还包括公会级别的仪表板功能。",
       "q5": "有移动应用吗？",
-      "a5": "AlbionKit 是一个 PWA (渐进式 Web 应用)。你可以通过浏览器直接将其安装在手机上，体验类似于原生 App。"
+      "a5": "Albion Online Analyzer 是一个 PWA (渐进式 Web 应用)。你可以通过浏览器直接将其安装在手机上，体验类似于原生 App。"
     },
     "heroBadge": "The Ultimate Companion",
     "goldPrice": "金币价格",
@@ -277,8 +277,8 @@
     "zvzTrackerDesc": "追踪大规模开放世界战斗"
   },
   "AboutPage": {
-    "title": "关于 AlbionKit - 我们的使命和团队",
-    "description": "了解 AlbionKit、我们为 Albion Online 提供免费工具的使命以及团队。"
+    "title": "关于 Albion Online Analyzer - 我们的使命和团队",
+    "description": "了解 Albion Online Analyzer、我们为 Albion Online 提供免费工具的使命以及团队。"
   },
   "MarketFlipper": {
     "itemsTracked": "{count} 个物品已追踪",
@@ -811,7 +811,7 @@
     "estValue": "估值",
     "about": {
       "title": "关于击杀播报",
-      "description": "AlbionKit 实时流追踪全服 PvP 事件。数据直接来自游戏 API，允许你监控战斗、分析公会表现并追踪高价值击杀。",
+      "description": "Albion Online Analyzer 实时流追踪全服 PvP 事件。数据直接来自游戏 API，允许你监控战斗、分析公会表现并追踪高价值击杀。",
       "note": "注意：",
       "noteDesc": "由于 API 处理时间，游戏内事件与播报流之间通常有几秒到几分钟的延迟。"
     },
@@ -880,7 +880,7 @@
       "death": "DEATH",
       "knockout": "KO"
     },
-    "socialTitle": "AlbionKit 击杀榜 - 实时 PvP 追踪器",
+    "socialTitle": "Albion Online Analyzer 击杀榜 - 实时 PvP 追踪器",
     "socialDescription": "追踪实时击杀，分析战斗日志，监控 PvP 活动",
     "loadingFeed": "加载击杀中...",
     "shareKill": "分享击杀",
@@ -932,19 +932,19 @@
     "cookiePolicy": "Cookie 政策"
   },
   "Metadata": {
-    "title": "AlbionKit — 你的 Albion Online 终极伴侣",
+    "title": "Albion Online Analyzer — 你的 Albion Online 终极伴侣",
     "template": "%s",
-    "description": "使用 AlbionKit 征服 Albion Online。访问配置数据库、市场搬砖工具、PvP 情报、制作计算器和实时击杀播报。你的竞争优势从这里开始。",
+    "description": "使用 Albion Online Analyzer 征服 Albion Online。访问配置数据库、市场搬砖工具、PvP 情报、制作计算器和实时击杀播报。你的竞争优势从这里开始。",
     "keywords": "Albion Online, 阿尔比恩, 配置, 搬砖, PvP, 制作, MMORPG"
   },
   "Pages": {
     "home": {
-      "title": "AlbionKit — 市场工具、PvP 情报与 Meta 配置",
+      "title": "Albion Online Analyzer — 市场工具、PvP 情报与 Meta 配置",
       "description": "通过实时市场数据、PvP 洞察和最佳社区配置提升你的 Albion Online 游戏体验。所有你需要的工具都集中在一个地方。"
     },
     "about": {
-      "title": "关于 AlbionKit",
-      "description": "深入了解 AlbionKit 的使命以及为 Albion Online 社区打造的工具。由玩家打造，为玩家服务。"
+      "title": "关于 Albion Online Analyzer",
+      "description": "深入了解 Albion Online Analyzer 的使命以及为 Albion Online 社区打造的工具。由玩家打造，为玩家服务。"
     },
     "marketFlipper": {
       "title": "市场搬砖",
@@ -1002,7 +1002,7 @@
     },
     "settings": {
       "title": "Settings",
-      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
+      "description": "Configure your Albion Online Analyzer preferences, notification settings, language options, and account management. Customize your experience."
     },
     "guides": {
       "title": "Guides",
@@ -1017,7 +1017,7 @@
       "description": "Learn proper positioning for tanks, DPS, and healers"
     },
     "combatRotations": {
-      "title": "武器循环指南 - 所有武器 | AlbionKit",
+      "title": "武器循环指南 - 所有武器 | Albion Online Analyzer",
       "description": "掌握 Albion Online 中所有武器的最佳循环。爆发伤害、持续 DPS 和机动性连招。"
     },
     "gatheringRoutes": {
@@ -2174,7 +2174,7 @@
   },
   "Subscription": {
     "supportTitle": "支持本项目",
-    "supportDesc": "AlbionKit 由 <solo>独立开发者</solo> 开发和维护。你的支持有助于维持服务器运行！ ❤️",
+    "supportDesc": "Albion Online Analyzer 由 <solo>独立开发者</solo> 开发和维护。你的支持有助于维持服务器运行！ ❤️",
     "loading": "加载中...",
     "monthly": "按月",
     "yearly": "按年",
@@ -2210,7 +2210,7 @@
   },
   "Premium": {
     "title": "成为支持者",
-    "description": "解锁 AlbionKit 的全部力量。选择适合你玩法的层级。",
+    "description": "解锁 Albion Online Analyzer 的全部力量。选择适合你玩法的层级。",
     "active": "已激活",
     "adeptTier": "资深层级",
     "yearlyBillingBonus": "按年计费可获 2 个月免费！",
@@ -2421,7 +2421,7 @@
       "quickActions": "快速操作",
       "stayUpdated": "保持关注！",
       "followTwitter": "关注我们的 Twitter 获取最新情报。",
-      "followBtn": "关注 @Albion_Kit",
+      "followBtn": "关注 Albion Online Analyzer",
       "days": "天",
       "wandererDesc": "刚刚踏上旅程",
       "noviceDesc": "学习基础知识",
@@ -2491,7 +2491,7 @@
     "reposition": "调整位置",
     "savePosition": "保存位置",
     "user": "用户",
-    "userProfileDesc": "{displayName} 在 AlbionKit 的个人资料。查看他们的配置和统计数据。",
+    "userProfileDesc": "{displayName} 在 Albion Online Analyzer 的个人资料。查看他们的配置和统计数据。",
     "editProfile": "编辑资料",
     "joined": "加入时间 {date}",
     "recently": "最近",
@@ -2973,7 +2973,7 @@
   },
   "CookiePolicy": {
     "title": "Cookie 政策",
-    "description": "AlbionKit 使用 Cookie 来提升你的浏览体验并提供个性化服务。",
+    "description": "Albion Online Analyzer 使用 Cookie 来提升你的浏览体验并提供个性化服务。",
     "lastUpdated": "更新日期：{date}",
     "whatAreCookies": {
       "title": "1. 什么是 Cookie？",
@@ -3011,7 +3011,7 @@
     "lastUpdated": "更新日期：{date}",
     "general": {
       "title": "1. 总则",
-      "content": "AlbionKit 提供即时数字服务。由于数字内容的性质，服务被使用后，所有销售均为最终交易。"
+      "content": "Albion Online Analyzer 提供即时数字服务。由于数字内容的性质，服务被使用后，所有销售均为最终交易。"
     },
     "subscriptions": {
       "title": "2. 订阅",
@@ -3051,7 +3051,7 @@
     "views": "浏览量",
     "share": "分享",
     "copied": "已复制！",
-    "checkoutBuild": "在 AlbionKit 上查看 {author} 的 {category} build。",
+    "checkoutBuild": "在 Albion Online Analyzer 上查看 {author} 的 {category} build。",
     "equipment": "装备",
     "recommended": "推荐方案",
     "alternatives": "替换方案",
@@ -3270,7 +3270,7 @@
       "action": "报告 Bug"
     },
     "donateInfo": {
-      "text": "喜欢 AlbionKit？请我们喝一杯咖啡，帮助项目保持免费和无广告！☕",
+      "text": "喜欢 Albion Online Analyzer？请我们喝一杯咖啡，帮助项目保持免费和无广告！☕",
       "action": "立即捐赠"
     },
     "contributeInfo": {
@@ -3281,19 +3281,19 @@
   "Legal": {
     "lastUpdated": "最后更新：{date}",
     "contact": "联系我们",
-    "contactDesc": "如有疑问，请通过 Discord 社区或发送邮件至 support@albionkit.com 联系我们。",
+    "contactDesc": "如有疑问，请通过 Discord 社区或发送邮件至 Aditya-Bichave@users.noreply.github.com 联系我们。",
     "terms": {
       "title": "服务条款",
-      "description": "在使用 AlbionKit 之前，请仔细阅读这些条款。",
+      "description": "在使用 Albion Online Analyzer 之前，请仔细阅读这些条款。",
       "agreement": {
         "title": "1. 同意条款",
-        "content": "访问或使用 AlbionKit 即表示你同意遵守这些服务条款。"
+        "content": "访问或使用 Albion Online Analyzer 即表示你同意遵守这些服务条款。"
       },
       "ip": {
         "title": "2. 知识产权",
-        "content": "本服务及其原始内容归 AlbionKit 所有。",
+        "content": "本服务及其原始内容归 Albion Online Analyzer 所有。",
         "albionIp": "Albion Online 知识产权",
-        "albionIpContent": "Albion Online 及其徽标是 Sandbox Interactive GmbH 的商标。AlbionKit 为社区创建，不属于其附属。"
+        "albionIpContent": "Albion Online 及其徽标是 Sandbox Interactive GmbH 的商标。Albion Online Analyzer 为社区创建，不属于其附属。"
       },
       "accounts": {
         "title": "3. 用户账号",
@@ -3309,7 +3309,7 @@
       },
       "liability": {
         "title": "5. 责任限制",
-        "content": "AlbionKit 对因你访问或使用服务而产生的任何间接或惩罚性损害不承担责任。"
+        "content": "Albion Online Analyzer 对因你访问或使用服务而产生的任何间接或惩罚性损害不承担责任。"
       }
     },
     "privacy": {
@@ -3317,7 +3317,7 @@
       "description": "我们致力于保护你的个人数据并确保你的安全体验。",
       "intro": {
         "title": "1. 简介",
-        "content": "欢迎来到 AlbionKit。我们尊重你的隐私并致力于保护你的个人数据。"
+        "content": "欢迎来到 Albion Online Analyzer。我们尊重你的隐私并致力于保护你的个人数据。"
       },
       "data": {
         "title": "2. 我们收集的数据",
@@ -3349,7 +3349,7 @@
     },
     "cookies": {
       "title": "Cookie 政策",
-      "description": "AlbionKit 使用 Cookie 来改善你的浏览体验。",
+      "description": "Albion Online Analyzer 使用 Cookie 来改善你的浏览体验。",
       "what": {
         "title": "1. 什么是 Cookie？",
         "content": "Cookie 是访问网站时存储在设备上的小型文本文件。"
@@ -3374,7 +3374,7 @@
       "description": "关于高级订阅和数字服务的退款政策。",
       "general": {
         "title": "1. 一般政策",
-        "content": "AlbionKit 提供即时的高级功能。由于数字内容的性质，所有销售通常视为最终交易。"
+        "content": "Albion Online Analyzer 提供即时的高级功能。由于数字内容的性质，所有销售通常视为最终交易。"
       },
       "subscriptions": {
         "title": "2. 订阅",
@@ -3566,7 +3566,7 @@
     "adjustFiltersOrCheckBack": "尝试调整过滤器或稍后查看。"
   },
   "Donate": {
-    "title": "支持 AlbionKit",
+    "title": "支持 Albion Online Analyzer",
     "description": "您的捐款有助于支付服务器成本和开发时间。",
     "buttonText": "请我喝咖啡",
     "githubSponsors": "或在 GitHub 上赞助",
@@ -3574,8 +3574,8 @@
     "impact2": "开发"
   },
   "DonatePage": {
-    "title": "支持 AlbionKit - 捐款保持免费",
-    "description": "通过捐款支持 AlbionKit 开发。帮助我们保持项目免费和无广告。"
+    "title": "支持 Albion Online Analyzer - 捐款保持免费",
+    "description": "通过捐款支持 Albion Online Analyzer 开发。帮助我们保持项目免费和无广告。"
   },
   "Sidebar": {
     "silverFarming": "银币 farming",
@@ -3676,7 +3676,7 @@
   "Guides": {
     "title": "指南",
     "description": "Albion Online 玩家的综合指南",
-    "heroTitle": "AlbionKit 指南",
+    "heroTitle": "Albion Online Analyzer 指南",
     "heroSubtitle": "通过我们的指南掌握 Albion Online",
     "gettingStarted": "开始游戏",
     "silverFarming": "银币 farming",
@@ -4129,16 +4129,16 @@
     "description": "掌握 Albion Online 中所有武器类型的最佳循环。爆发伤害、持续 DPS 和机动性连招。"
   },
   "SettingsPage": {
-    "title": "账户设置 | AlbionKit",
-    "description": "管理你的 AlbionKit 账户设置、通知、语言和个人资料。"
+    "title": "账户设置 | Albion Online Analyzer",
+    "description": "管理你的 Albion Online Analyzer 账户设置、通知、语言和个人资料。"
   },
   "LoginPage": {
-    "title": "登录 AlbionKit",
-    "description": "登录 AlbionKit 以访问高级功能、保存 Build 和自定义体验。"
+    "title": "登录 Albion Online Analyzer",
+    "description": "登录 Albion Online Analyzer 以访问高级功能、保存 Build 和自定义体验。"
   },
   "NotFoundPage": {
-    "title": "页面未找到 - 404 | AlbionKit",
-    "description": "你查找的页面不存在。返回 AlbionKit 首页。"
+    "title": "页面未找到 - 404 | Albion Online Analyzer",
+    "description": "你查找的页面不存在。返回 Albion Online Analyzer 首页。"
   },
   "BuildsPage": {
     "title": "Build 数据库 - Albion Online Meta Build",
@@ -4146,15 +4146,15 @@
   },
   "PrivacyPage": {
     "title": "隐私政策",
-    "description": "AlbionKit 隐私政策 - 我们如何收集、使用和保护你的数据。"
+    "description": "Albion Online Analyzer 隐私政策 - 我们如何收集、使用和保护你的数据。"
   },
   "TermsPage": {
     "title": "服务条款",
-    "description": "AlbionKit 服务条款和使用指南。"
+    "description": "Albion Online Analyzer 服务条款和使用指南。"
   },
   "CookiesPage": {
     "title": "Cookie 政策",
-    "description": "AlbionKit Cookie 政策 - 我们如何使用 Cookie 来改善你的体验。"
+    "description": "Albion Online Analyzer Cookie 政策 - 我们如何使用 Cookie 来改善你的体验。"
   },
   "MarketFlipperPage": {
     "title": "市场翻转器 - 实时利润计算器",

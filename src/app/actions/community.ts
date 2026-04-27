@@ -58,7 +58,7 @@ export async function getThreadByIdAction(id: string) {
 export async function getCommentsAction(threadId: string) {
   try {
     const snapshot = await adminDb.collection('threads').doc(threadId).collection('comments').orderBy('createdAt', 'asc').get();
-    return { success: true, comments: snapshot.docs.map(doc => doc.data() as Comment) };
+    return { success: true, comments: snapshot.docs.map((doc: any) => doc.data() as Comment) };
   } catch (error) {
     console.error('[CommunityAction] Error getting comments:', error);
     return { success: false, error: 'Failed to fetch comments', comments: [] };
@@ -231,7 +231,7 @@ export async function deleteThreadAction(threadId: string, authorId: string) {
     // Delete comments subcollection first
     const commentsSnapshot = await threadRef.collection('comments').get();
     const batch = adminDb.batch();
-    commentsSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+    commentsSnapshot.docs.forEach((doc: any) => batch.delete(doc.ref));
 
     // Delete the thread itself
     batch.delete(threadRef);

@@ -17,31 +17,31 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
             <h3 className="font-extrabold text-xl mb-4 text-foreground flex items-center gap-2">
-              <img src="/logo-dark.svg" alt="AlbionKit" className="h-8 w-auto dark:hidden" />
-              <img src="/logo-light.svg" alt="AlbionKit" className="h-8 w-auto hidden dark:block" />
+              <img src="/logo-dark.svg" alt="Albion Online Analyzer" className="h-8 w-auto dark:hidden" />
+              <img src="/logo-light.svg" alt="Albion Online Analyzer" className="h-8 w-auto hidden dark:block" />
             </h3>
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
               {t('description')}
             </p>
             <div className="flex gap-3">
               <Link
-                href="https://twitter.com/Albion_Kit"
+                href="https://github.com/Aditya-Bichave/albion-online-analyzer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
-                aria-label="Twitter"
+                aria-label="Repository"
               >
                 <Twitter className="h-5 w-5" />
               </Link>
               <Link
-                href="mailto:support@albionkit.com"
+                href="mailto:Aditya-Bichave@users.noreply.github.com"
                 className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
               </Link>
               <Link
-                href="https://github.com/cosmic-fi/albionkit"
+                href="https://github.com/Aditya-Bichave/albion-online-analyzer"
                 className="flex items-center justify-center w-10 h-10 rounded-xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all hover:scale-110"
                 aria-label="GitHub"
               >
@@ -157,7 +157,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t-2 border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground font-medium">
-            © {currentYear} AlbionKit. {t('allRightsReserved')}
+            © {currentYear} Albion Online Analyzer. {t('allRightsReserved')}
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
             <span>{t('madeWith')}</span>

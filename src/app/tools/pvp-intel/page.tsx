@@ -29,7 +29,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
          const { stats } = await getPlayerStats(playerId, region);
          if (stats) {
-            title = `${playerName} - PvP Stats & Analysis | AlbionKit`;
+            title = `${playerName} - PvP Stats & Analysis | Albion Online Analyzer`;
             description = `${playerName} has ${stats.KillFame.toLocaleString()} Kill Fame and ${stats.DeathFame.toLocaleString()} Death Fame. K/D Ratio: ${stats.FameRatio.toFixed(2)}. Analyze full combat history now.`;
          }
       }
@@ -43,12 +43,12 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/tools/pvp-intel',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/pvp-intel',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/tools/pvp-intel',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/pvp-intel',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),
@@ -76,19 +76,19 @@ export default function PvpIntelPage() {
         '@type': 'ListItem',
         position: 1,
         name: 'Home',
-        item: 'https://albionkit.com',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: 'Tools',
-        item: 'https://albionkit.com/tools',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer/tools',
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: 'PvP Intel',
-        item: 'https://albionkit.com/tools/pvp-intel',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/pvp-intel',
       },
     ],
   };

@@ -1,6 +1,6 @@
-# Contributing to AlbionKit
+# Contributing to Albion Online Analyzer
 
-Thank you for your interest in contributing to AlbionKit! This guide will help you get started.
+Thank you for your interest in contributing to Albion Online Analyzer! This guide will help you get started.
 
 ## 📋 Table of Contents
 
@@ -20,8 +20,8 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). Be respectful 
 1. **Fork the repository**
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/your-username/albionkit.git
-   cd albionkit
+   git clone https://github.com/your-username/albion-online-analyzer.git
+   cd albion-online-analyzer
    ```
 3. **Install dependencies**
    ```bash
@@ -213,11 +213,11 @@ Contributors are recognized in:
 
 ## 💖 Support the Project
 
-If you find AlbionKit useful, consider supporting its development:
+If you find Albion Online Analyzer useful, consider supporting its development:
 
 - [Buy Me a Coffee](https://www.buymeacoffee.com/cosmic_fi)
-- [GitHub Sponsors](https://github.com/sponsors/cosmic-fi)
+- [GitHub Sponsors](https://github.com/Aditya-Bichave/albion-online-analyzer)
 
 Your support helps keep the project free and ad-free!
 
-Thank you for contributing to AlbionKit! 🎉
+Thank you for contributing to Albion Online Analyzer! 🎉

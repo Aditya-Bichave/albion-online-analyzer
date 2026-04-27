@@ -30,7 +30,7 @@ export default function DonateClient() {
               </p>
 
               <a
-                href="https://buymeacoffee.com/albionkit"
+                href="https://github.com/Aditya-Bichave/albion-online-analyzer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:shadow-xl hover:-translate-y-0.5"
@@ -60,7 +60,7 @@ export default function DonateClient() {
               </p>
 
               <a
-                href="https://github.com/sponsors/cosmic-fi"
+                href="https://github.com/Aditya-Bichave/albion-online-analyzer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-pink-500/25 hover:shadow-xl hover:-translate-y-0.5"

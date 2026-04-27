@@ -3,7 +3,7 @@ REM Organize and rename all screenshots to standard convention
 REM Run from public\screenshots directory
 
 echo ========================================
-echo AlbionKit Screenshot Organizer
+echo Albion Online Analyzer Screenshot Organizer
 echo ========================================
 echo.
 
@@ -16,53 +16,53 @@ echo.
 cd tools
 
 REM Gold Price
-if exist "AlbionKit-Gold-Price.png" (
-    ren "AlbionKit-Gold-Price.png" "gold-price.png"
-    echo [OK] Renamed: AlbionKit-Gold-Price.png → gold-price.png
+if exist "Albion Online Analyzer-Gold-Price.png" (
+    ren "Albion Online Analyzer-Gold-Price.png" "gold-price.png"
+    echo [OK] Renamed: Albion Online Analyzer-Gold-Price.png → gold-price.png
 )
 
 REM Kill Feed - Keep best version as main, others as backups
-if exist "kf 1AlbionKit Live KillFeed.png" (
-    ren "kf 1AlbionKit Live KillFeed.png" "kill-feed.png"
-    echo [OK] Renamed: kf 1AlbionKit Live KillFeed.png → kill-feed.png
+if exist "kf 1Albion Online Analyzer Live KillFeed.png" (
+    ren "kf 1Albion Online Analyzer Live KillFeed.png" "kill-feed.png"
+    echo [OK] Renamed: kf 1Albion Online Analyzer Live KillFeed.png → kill-feed.png
 )
-if exist "kill-feed.png" if exist "kf2 1AlbionKit Live KillFeed.png" (
-    ren "kf2 1AlbionKit Live KillFeed.png" "kill-feed-backup-1.png"
-    echo [OK] Renamed: kf2 1AlbionKit Live KillFeed.png → kill-feed-backup-1.png
+if exist "kill-feed.png" if exist "kf2 1Albion Online Analyzer Live KillFeed.png" (
+    ren "kf2 1Albion Online Analyzer Live KillFeed.png" "kill-feed-backup-1.png"
+    echo [OK] Renamed: kf2 1Albion Online Analyzer Live KillFeed.png → kill-feed-backup-1.png
 )
-if exist "kill-feed.png" if exist "kf3 1AlbionKit Live KillFeed.png" (
-    ren "kf3 1AlbionKit Live KillFeed.png" "kill-feed-backup-2.png"
-    echo [OK] Renamed: kf3 1AlbionKit Live KillFeed.png → kill-feed-backup-2.png
+if exist "kill-feed.png" if exist "kf3 1Albion Online Analyzer Live KillFeed.png" (
+    ren "kf3 1Albion Online Analyzer Live KillFeed.png" "kill-feed-backup-2.png"
+    echo [OK] Renamed: kf3 1Albion Online Analyzer Live KillFeed.png → kill-feed-backup-2.png
 )
 
 REM Market Flipper - Keep best version as main
-if exist "mflipper 1AlbionKit Market Flipper.png" (
-    ren "mflipper 1AlbionKit Market Flipper.png" "market-flipper.png"
-    echo [OK] Renamed: mflipper 1AlbionKit Market Flipper.png → market-flipper.png
+if exist "mflipper 1Albion Online Analyzer Market Flipper.png" (
+    ren "mflipper 1Albion Online Analyzer Market Flipper.png" "market-flipper.png"
+    echo [OK] Renamed: mflipper 1Albion Online Analyzer Market Flipper.png → market-flipper.png
 )
-if exist "market-flipper.png" if exist "mflipper1 1AlbionKit Market Flipper.png" (
-    ren "mflipper1 1AlbionKit Market Flipper.png" "market-flipper-backup-1.png"
-    echo [OK] Renamed: mflipper1 1AlbionKit Market Flipper.png → market-flipper-backup-1.png
+if exist "market-flipper.png" if exist "mflipper1 1Albion Online Analyzer Market Flipper.png" (
+    ren "mflipper1 1Albion Online Analyzer Market Flipper.png" "market-flipper-backup-1.png"
+    echo [OK] Renamed: mflipper1 1Albion Online Analyzer Market Flipper.png → market-flipper-backup-1.png
 )
 
 REM PvP Intel - Keep best version as main
-if exist "pvpintel 1AlbionKit Pvp Intel.png" (
-    ren "pvpintel 1AlbionKit Pvp Intel.png" "pvp-intel.png"
-    echo [OK] Renamed: pvpintel 1AlbionKit Pvp Intel.png → pvp-intel.png
+if exist "pvpintel 1Albion Online Analyzer Pvp Intel.png" (
+    ren "pvpintel 1Albion Online Analyzer Pvp Intel.png" "pvp-intel.png"
+    echo [OK] Renamed: pvpintel 1Albion Online Analyzer Pvp Intel.png → pvp-intel.png
 )
-if exist "pvp-intel.png" if exist "pvpintel 2AlbionKit Pvp Intel.png" (
-    ren "pvpintel 2AlbionKit Pvp Intel.png" "pvp-intel-backup-1.png"
-    echo [OK] Renamed: pvpintel 2AlbionKit Pvp Intel.png → pvp-intel-backup-1.png
+if exist "pvp-intel.png" if exist "pvpintel 2Albion Online Analyzer Pvp Intel.png" (
+    ren "pvpintel 2Albion Online Analyzer Pvp Intel.png" "pvp-intel-backup-1.png"
+    echo [OK] Renamed: pvpintel 2Albion Online Analyzer Pvp Intel.png → pvp-intel-backup-1.png
 )
-if exist "pvp-intel.png" if exist "pvpintel 3AlbionKit Pvp Intel.png" (
-    ren "pvpintel 3AlbionKit Pvp Intel.png" "pvp-intel-backup-2.png"
-    echo [OK] Renamed: pvpintel 3AlbionKit Pvp Intel.png → pvp-intel-backup-2.png
+if exist "pvp-intel.png" if exist "pvpintel 3Albion Online Analyzer Pvp Intel.png" (
+    ren "pvpintel 3Albion Online Analyzer Pvp Intel.png" "pvp-intel-backup-2.png"
+    echo [OK] Renamed: pvpintel 3Albion Online Analyzer Pvp Intel.png → pvp-intel-backup-2.png
 )
 
 REM ZvZ Tracker
-if exist "zvz 1AlbionKit ZvZ Tracker.png" (
-    ren "zvz 1AlbionKit ZvZ Tracker.png" "zvz-tracker.png"
-    echo [OK] Renamed: zvz 1AlbionKit ZvZ Tracker.png → zvz-tracker.png
+if exist "zvz 1Albion Online Analyzer ZvZ Tracker.png" (
+    ren "zvz 1Albion Online Analyzer ZvZ Tracker.png" "zvz-tracker.png"
+    echo [OK] Renamed: zvz 1Albion Online Analyzer ZvZ Tracker.png → zvz-tracker.png
 )
 
 cd ..
@@ -157,40 +157,40 @@ echo.
 
 cd misc
 
-REM Keep AlbionKit.jpg as homepage.png
-if exist "AlbionKit.jpg" (
-    ren "AlbionKit.jpg" "homepage.png"
-    echo [OK] Renamed: AlbionKit.jpg → homepage.png
+REM Keep Albion Online Analyzer.jpg as homepage.png
+if exist "Albion Online Analyzer.jpg" (
+    ren "Albion Online Analyzer.jpg" "homepage.png"
+    echo [OK] Renamed: Albion Online Analyzer.jpg → homepage.png
 )
 
 REM Logo files - keep as logo.png
-if exist "AlbionKitLogo.png" (
+if exist "Albion Online AnalyzerLogo.png" (
     if not exist "logo.png" (
-        ren "AlbionKitLogo.png" "logo.png"
-        echo [OK] Renamed: AlbionKitLogo.png → logo.png
+        ren "Albion Online AnalyzerLogo.png" "logo.png"
+        echo [OK] Renamed: Albion Online AnalyzerLogo.png → logo.png
     ) else (
-        del "AlbionKitLogo.png"
-        echo [DEL] Deleted duplicate: AlbionKitLogo.png
+        del "Albion Online AnalyzerLogo.png"
+        echo [DEL] Deleted duplicate: Albion Online AnalyzerLogo.png
     )
 )
 
-if exist "AlbionKit Logo.png" (
+if exist "Albion Online Analyzer Logo.png" (
     if not exist "logo-alt.png" (
-        ren "AlbionKit Logo.png" "logo-alt.png"
-        echo [OK] Renamed: AlbionKit Logo.png → logo-alt.png
+        ren "Albion Online Analyzer Logo.png" "logo-alt.png"
+        echo [OK] Renamed: Albion Online Analyzer Logo.png → logo-alt.png
     )
 )
 
 REM Tools overview - keep if useful
-if exist "AlbionKit Tools.png" (
-    ren "AlbionKit Tools.png" "tools-overview.png"
-    echo [OK] Renamed: AlbionKit Tools.png → tools-overview.png
+if exist "Albion Online Analyzer Tools.png" (
+    ren "Albion Online Analyzer Tools.png" "tools-overview.png"
+    echo [OK] Renamed: Albion Online Analyzer Tools.png → tools-overview.png
 )
 
 REM Guild Tools - keep as guild-tools.png
-if exist "AlbionKit Guild Tools.png" (
-    ren "AlbionKit Guild Tools.png" "guild-tools.png"
-    echo [OK] Renamed: AlbionKit Guild Tools.png → guild-tools.png
+if exist "Albion Online Analyzer Guild Tools.png" (
+    ren "Albion Online Analyzer Guild Tools.png" "guild-tools.png"
+    echo [OK] Renamed: Albion Online Analyzer Guild Tools.png → guild-tools.png
 )
 
 cd ..

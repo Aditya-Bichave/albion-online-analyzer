@@ -3,7 +3,7 @@ description: Suggest improvements to documentation
 title: "[Docs]: "
 labels: ["documentation", "needs triage"]
 assignees:
-  - cosmic-fi
+  - Aditya-Bichave
 body:
   - type: markdown
     attributes:

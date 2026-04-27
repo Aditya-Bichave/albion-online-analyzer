@@ -14,13 +14,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!build) {
         return {
-            title: `${t('notFound')} | AlbionKit`,
+            title: `${t('notFound')} | Albion Online Analyzer`,
             description: t('notFoundDesc'),
         };
     }
 
     // Extract YouTube ID for thumbnail if available
-    let images = ['https://albionkit.com/og-image.jpg'];
+    let images = ['https://aditya-bichave.github.io/albion-online-analyzer/og-image.jpg'];
     if (build.youtubeLink) {
         const videoIdMatch = build.youtubeLink.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
         if (videoIdMatch && videoIdMatch[1]) {
@@ -31,16 +31,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const description = build.description || t('checkoutBuild', { author: build.authorName || 'Unknown' });
 
     return {
-        title: `${build.title} | AlbionKit`,
+        title: `${build.title} | Albion Online Analyzer`,
         description: description,
         alternates: {
-            canonical: `https://albionkit.com/builds/${id}`,
+            canonical: `https://aditya-bichave.github.io/albion-online-analyzer/builds/${id}`,
         },
         openGraph: {
             title: build.title,
             description: description,
             type: 'article',
-            url: `https://albionkit.com/builds/${id}`,
+            url: `https://aditya-bichave.github.io/albion-online-analyzer/builds/${id}`,
             images: images.map(url => ({ url })),
             authors: [build.authorName || 'Unknown'],
         },
@@ -67,13 +67,13 @@ export default async function BuildPage({ params }: PageProps) {
         name: build.authorName || 'Unknown'
       },
       datePublished: new Date().toISOString(),
-      image: 'https://albionkit.com/og-image.jpg',
+      image: 'https://aditya-bichave.github.io/albion-online-analyzer/og-image.jpg',
       publisher: {
         '@type': 'Organization',
-        name: 'AlbionKit',
+        name: 'Albion Online Analyzer',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://albionkit.com/logo.png'
+          url: 'https://aditya-bichave.github.io/albion-online-analyzer/logo.png'
         }
       }
     } : null;

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/private/', '/settings/', '/login/', '/admin/'],
     },
-    sitemap: 'https://albionkit.com/sitemap.xml',
+    sitemap: 'https://aditya-bichave.github.io/albion-online-analyzer/sitemap.xml',
   };
 }

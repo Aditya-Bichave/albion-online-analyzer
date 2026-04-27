@@ -9,18 +9,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: 'https://albionkit.com/guides/combat/rotations',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/guides/combat/rotations',
     },
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: 'https://albionkit.com/guides/combat/rotations',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/guides/combat/rotations',
       type: 'website',
       images: [{
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AlbionKit Preview',
+        alt: 'Albion Online Analyzer Preview',
         type: 'image/jpeg'
       }],
     },

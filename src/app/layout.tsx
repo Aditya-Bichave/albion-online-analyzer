@@ -41,31 +41,31 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('Metadata');
 
   return {
-    metadataBase: new URL('https://albionkit.com'),
+    metadataBase: new URL('https://aditya-bichave.github.io/albion-online-analyzer'),
     title: {
       default: t('title'),
       template: t('template'),
     },
     description: t('description'),
     keywords: t('keywords').split(', '),
-    authors: [{ name: "AlbionKit Team" }],
-    creator: "AlbionKit",
-    publisher: "AlbionKit",
+    authors: [{ name: "Albion Online Analyzer Team" }],
+    creator: "Albion Online Analyzer",
+    publisher: "Albion Online Analyzer",
     alternates: {
-      canonical: 'https://albionkit.com',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer',
       languages: {
-        'en': 'https://albionkit.com',
-        'de': 'https://albionkit.com/de',
-        'fr': 'https://albionkit.com/fr',
-        'es': 'https://albionkit.com/es',
-        'ru': 'https://albionkit.com/ru',
-        'pt': 'https://albionkit.com/pt',
+        'en': 'https://aditya-bichave.github.io/albion-online-analyzer',
+        'de': 'https://aditya-bichave.github.io/albion-online-analyzer/de',
+        'fr': 'https://aditya-bichave.github.io/albion-online-analyzer/fr',
+        'es': 'https://aditya-bichave.github.io/albion-online-analyzer/es',
+        'ru': 'https://aditya-bichave.github.io/albion-online-analyzer/ru',
+        'pt': 'https://aditya-bichave.github.io/albion-online-analyzer/pt',
       },
     },
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
-      title: "AlbionKit",
+      title: "Albion Online Analyzer",
     },
     manifest: '/manifest.webmanifest',
     icons: {
@@ -91,8 +91,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       type: 'website',
-      url: 'https://albionkit.com',
-      siteName: 'AlbionKit',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer',
+      siteName: 'Albion Online Analyzer',
       title: t('title'),
       description: t('description'),
       images: [
@@ -100,7 +100,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: '/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: 'AlbionKit Preview',
+          alt: 'Albion Online Analyzer Preview',
         },
       ],
     },
@@ -109,7 +109,6 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t('title'),
       description: t('description'),
       images: ['/og-image.jpg'],
-      creator: '@Albion_Kit',
     },
   };
 }
@@ -117,12 +116,11 @@ export async function generateMetadata(): Promise<Metadata> {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'AlbionKit',
-  url: 'https://albionkit.com',
-  logo: 'https://albionkit.com/logo.png', // Ensure this exists
+  name: 'Albion Online Analyzer',
+  url: 'https://aditya-bichave.github.io/albion-online-analyzer',
+  logo: 'https://aditya-bichave.github.io/albion-online-analyzer/logo.png', // Ensure this exists
   sameAs: [
-    'https://twitter.com/Albion_Kit',
-    'https://github.com/albionkit',
+    'https://github.com/Aditya-Bichave/albion-online-analyzer',
   ],
 };
 

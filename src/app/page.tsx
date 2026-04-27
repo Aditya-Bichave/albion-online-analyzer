@@ -40,9 +40,9 @@ import { createPageMetadata } from '@/lib/screenshot-metadata';
 // Base metadata with screenshot
 const baseMetadata = createPageMetadata(
   'homepage',
-  'AlbionKit - The Ultimate Albion Online Companion',
+  'Albion Online Analyzer - The Ultimate Albion Online Companion',
   'Your all-in-one Albion Online companion. Market flipper, build database, PvP tracker, profit calculators, and more.',
-  { canonicalUrl: 'https://albionkit.com/' }
+  { canonicalUrl: 'https://aditya-bichave.github.io/albion-online-analyzer/' }
 );
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ...baseMetadata.openGraph,
       title: t('title'),
       description: t('description'),
-      url: 'https://albionkit.com/',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/',
       images: baseMetadata.openGraph?.images, // Explicitly include screenshot
     },
     twitter: {
@@ -74,13 +74,13 @@ export default async function Home() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'AlbionKit',
-    url: 'https://albionkit.com',
+    name: 'Albion Online Analyzer',
+    url: 'https://aditya-bichave.github.io/albion-online-analyzer',
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://albionkit.com/search?q={search_term_string}'
+        urlTemplate: 'https://aditya-bichave.github.io/albion-online-analyzer/search?q={search_term_string}'
       },
       'query-input': 'required name=search_term_string'
     }
@@ -352,7 +352,7 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto">
             <Link
-              href="https://twitter.com/Albion_Kit"
+              href="https://github.com/Aditya-Bichave/albion-online-analyzer"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white rounded-xl font-bold transition-all text-center whitespace-nowrap flex items-center gap-3 justify-center"
@@ -374,7 +374,7 @@ export default async function Home() {
         {/* Social Share */}
         <div className="mt-8 flex justify-center">
           <SocialShare 
-            title="AlbionKit - The Ultimate Albion Online Companion"
+            title="Albion Online Analyzer"
             description="Master Albion Online with real-time market data, PvP intel, and powerful tools."
           />
         </div>

@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: 'https://albionkit.com/profits/enchanting',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/profits/enchanting',
     },
   };
 }

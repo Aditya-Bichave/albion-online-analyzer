@@ -43,7 +43,7 @@
       "streakNotification": {
         "title": "Cotygniowa seria logowań: {count} dni!",
         "keepGoing": "Trzymaj się, Podróżniku!",
-        "welcome": "Powrót do AlbionKit!"
+        "welcome": "Powrót do Albion Online Analyzer!"
       }
     },
     "Emails": {
@@ -56,32 +56,32 @@
         "travelerName": "Podróżnik"
       },
       "verification": {
-        "subject": "Zweryfikuj swój email dla AlbionKit",
+        "subject": "Zweryfikuj swój email dla Albion Online Analyzer",
         "title": "Zweryfikuj adres email",
         "preview": "Proszę zweryfikować adres email, aby dokończyć rejestrację.",
-        "welcome": "Witamy w <strong>AlbionKit</strong>! Cieszymy się, że jesteś z nami.",
+        "welcome": "Witamy w <strong>Albion Online Analyzer</strong>! Cieszymy się, że jesteś z nami.",
         "body": "Proszę potwierdzić adres email, aby odblokować pełny dostęp do wszystkich funkcji, w tym tworzenia buildów, śledzenia danych rynkowych i więcej.",
         "button": "Zweryfikuj adres email",
         "altLink": "Lub skopiuj i wklej ten link do przeglądarki:",
-        "ignore": "Jeśli nie utworzyłeś konta w AlbionKit, możesz zignorować tę wiadomość."
+        "ignore": "Jeśli nie utworzyłeś konta w Albion Online Analyzer, możesz zignorować tę wiadomość."
       },
       "welcome": {
-        "subject": "Witamy w AlbionKit",
+        "subject": "Witamy w Albion Online Analyzer",
         "title": "Witaj, {name}!",
-        "preview": "Witamy w AlbionKit! Zacznij korzystać z naszych narzędzi już dziś.",
-        "body1": "Dziękujemy za dołączenie do <strong>AlbionKit</strong>. Właśnie zrobiłeś pierwszy krok w kierunku mistrzostwa w Albion Online.",
+        "preview": "Witamy w Albion Online Analyzer! Zacznij korzystać z naszych narzędzi już dziś.",
+        "body1": "Dziękujemy za dołączenie do <strong>Albion Online Analyzer</strong>. Właśnie zrobiłeś pierwszy krok w kierunku mistrzostwa w Albion Online.",
         "body2": "Oto kilka potężnych narzędzi, z których możesz zacząć korzystać już teraz:",
         "builds": "<strong>Baza Buildów:</strong> Odkrywaj i udostępniaj meta buildy.",
         "market": "<strong>Market Flipper:</strong> Znajdź zyskowne transakcje między miastami.",
         "pvp": "<strong>PvP Intel:</strong> Analizuj bitwy i kill feedy w czasie rzeczywistym.",
-        "button": "Odkryj AlbionKit"
+        "button": "Odkryj Albion Online Analyzer"
       },
       "purchase": {
         "subject": "Subskrypcja aktywna 🚀",
         "title": "Subskrypcja aktywna 🚀",
-        "preview": "Twoja subskrypcja AlbionKit Premium jest teraz aktywna!",
+        "preview": "Twoja subskrypcja Albion Online Analyzer Premium jest teraz aktywna!",
         "greeting": "Cześć {name},",
-        "body1": "Dziękujemy za wsparcie! Twoja subskrypcja <strong>AlbionKit Premium</strong> jest teraz aktywna.",
+        "body1": "Dziękujemy za wsparcie! Twoja subskrypcja <strong>Albion Online Analyzer Premium</strong> jest teraz aktywna.",
         "body2": "Masz teraz nielimitowany dostęp do:",
         "feature1": "✨ <strong>Brak reklam</strong> na całej platformie",
         "feature2": "📈 <strong>Zaawansowana analityka</strong> dla PvP i danych rynkowych",
@@ -95,14 +95,14 @@
         "title": "Poziom w górę! 🎉",
         "preview": "Gratulacje z okazji osiągnięcia rangi {rank}!",
         "congrats": "Gratulacje!",
-        "body": "Osiągnąłeś rangę <strong>{rank}</strong> na AlbionKit.",
+        "body": "Osiągnąłeś rangę <strong>{rank}</strong> na Albion Online Analyzer.",
         "footer": "Twórz dalej buildy i udzielaj się w społeczności, aby osiągnąć kolejną rangę!",
         "button": "Zobacz profil"
       },
       "reminder": {
-        "subject": "Okazja rynkowa - AlbionKit",
+        "subject": "Okazja rynkowa - Albion Online Analyzer",
         "title": "Przypomnienie",
-        "body": "Otwórz AlbionKit, aby zobaczyć pełną listę okazji.",
+        "body": "Otwórz Albion Online Analyzer, aby zobaczyć pełną listę okazji.",
         "button": "Zobacz Market Flipper"
       },
       "watchlist": {
@@ -113,7 +113,7 @@
         "buySell": "Kup: {buyPrice} ({buyCity}) → Sprzedaj: {sellPrice} (BM)",
         "button": "Zobacz moją listę obserwowanych",
         "footer": "Otrzymujesz tę wiadomość, ponieważ włączyłeś Alerty Rynkowe w swoich ustawieniach.",
-        "baseTitle": "Alert z listy obserwowanych - AlbionKit",
+        "baseTitle": "Alert z listy obserwowanych - Albion Online Analyzer",
         "preview": "Alert z listy obserwowanych: {itemName} i inne są opłacalne!"
       },
       "gold": {
@@ -263,15 +263,15 @@
     "manageAlerts": "Zarządzaj Alertami",
     "faq": {
       "q1": "Czy to narzędzie jest darmowe?",
-      "a1": "AlbionKit to PWA (Progressive Web App). Zainstaluj ją bezpośrednio z przeglądarki mobilnej jak natywną aplikację.",
+      "a1": "Albion Online Analyzer to PWA (Progressive Web App). Zainstaluj ją bezpośrednio z przeglądarki mobilnej jak natywną aplikację.",
       "q2": "Czy to bezpieczne? Ryzyko bana?",
-      "a2": "AlbionKit jest absolutnie bezpieczny. Nie skanujemy pamięci gry ani nie injektujemy kodu, ściśle przestrzegając regulaminu SBI.",
+      "a2": "Albion Online Analyzer jest absolutnie bezpieczny. Nie skanujemy pamięci gry ani nie injektujemy kodu, ściśle przestrzegając regulaminu SBI.",
       "q3": "Jak dokładne są dane rynkowe?",
       "a3": "Ceny są aktualizowane przez prawdziwych graczy przez Albion Data Client. W głównych miastach dane są zazwyczaj aktualizowane w ciągu kilku minut.",
       "q4": "Co to jest plan Guild Master?",
       "a4": "Specjalny plan zapewniający korzyści Adept wszystkim członkom gildii. Zawiera też funkcje dashboardu na poziomie gildii.",
       "q5": "Czy jest aplikacja mobilna?",
-      "a5": "AlbionKit to PWA. Możesz go zainstalować bezpośrednio na telefonie przez przeglądarkę."
+      "a5": "Albion Online Analyzer to PWA. Możesz go zainstalować bezpośrednio na telefonie przez przeglądarkę."
     },
     "heroBadge": "The Ultimate Companion",
     "goldPrice": "Cena Złota",
@@ -282,8 +282,8 @@
     "zvzTrackerDesc": "Śledź masowe bitwy w otwartym świecie"
   },
   "AboutPage": {
-    "title": "O AlbionKit - Nasza Misja i Zespół",
-    "description": "Poznaj AlbionKit, naszą misję dostarczania darmowych narzędzi dla Albion Online i zespół."
+    "title": "O Albion Online Analyzer - Nasza Misja i Zespół",
+    "description": "Poznaj Albion Online Analyzer, naszą misję dostarczania darmowych narzędzi dla Albion Online i zespół."
   },
   "MarketFlipper": {
     "itemsTracked": "{count} przedmiotów śledzonych",
@@ -823,7 +823,7 @@
     },
     "about": {
       "title": "O liście zabójstw",
-      "description": "Lista zabójstw AlbionKit śledzi wydarzenia PvP na serwerach w czasie rzeczywistym. Dane pochodzą z API gry.",
+      "description": "Lista zabójstw Albion Online Analyzer śledzi wydarzenia PvP na serwerach w czasie rzeczywistym. Dane pochodzą z API gry.",
       "note": "Ważne:",
       "noteDesc": "Zazwyczaj występuje opóźnienie (od sekund do minut) między walką w grze a jej pojawieniem się na liście."
     },
@@ -877,7 +877,7 @@
       "asia": "Azja",
       "europe": "Europa"
     },
-    "socialTitle": "AlbionKit Killboard - Tracker PvP na Żywo",
+    "socialTitle": "Albion Online Analyzer Killboard - Tracker PvP na Żywo",
     "socialDescription": "Śledź kill'e na żywo, analizuj logi walk i monitoruj aktywność PvP",
     "loadingFeed": "Ładowanie kill'i...",
     "shareKill": "Udostępnij Kill",
@@ -937,19 +937,19 @@
     "cookiePolicy": "Politykę Ciasteczek"
   },
   "Metadata": {
-    "title": "AlbionKit - Najlepszy towarzysz w Albion Online",
+    "title": "Albion Online Analyzer - Najlepszy towarzysz w Albion Online",
     "template": "%s",
-    "description": "Zdominuj Albion Online z AlbionKit. Baza buildów, flipper rynkowy, wywiad PvP, kalkulatory rzemiosła i lista zabójstw na żywo. Twoja przewaga zaczyna się tutaj.",
+    "description": "Zdominuj Albion Online z Albion Online Analyzer. Baza buildów, flipper rynkowy, wywiad PvP, kalkulatory rzemiosła i lista zabójstw na żywo. Twoja przewaga zaczyna się tutaj.",
     "keywords": "Albion Online, Buildy Albion, Rynek Albion, PvP Albion, MMORPG"
   },
   "Pages": {
     "home": {
-      "title": "AlbionKit - Narzędzia rynku, PvP i Buildy Meta",
+      "title": "Albion Online Analyzer - Narzędzia rynku, PvP i Buildy Meta",
       "description": "Podnieś swoje doświadczenie z Albion Online dzięki danym rynkowym na żywo, inteligencji PvP i najlepszym buildom społeczności. Wszystkie narzędzia w jednym miejscu."
     },
     "about": {
-      "title": "O AlbionKit",
-      "description": "Poznaj misję AlbionKit i narzędzia stworzone dla społeczności Albion Online. Stworzone przez graczy, dla graczy."
+      "title": "O Albion Online Analyzer",
+      "description": "Poznaj misję Albion Online Analyzer i narzędzia stworzone dla społeczności Albion Online. Stworzone przez graczy, dla graczy."
     },
     "marketFlipper": {
       "title": "Flipper Rynkowy",
@@ -1007,7 +1007,7 @@
     },
     "settings": {
       "title": "Settings",
-      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
+      "description": "Configure your Albion Online Analyzer preferences, notification settings, language options, and account management. Customize your experience."
     },
     "guides": {
       "title": "Guides",
@@ -1022,7 +1022,7 @@
       "description": "Learn proper positioning for tanks, DPS, and healers"
     },
     "combatRotations": {
-      "title": "Poradnik Rotacji Broni - Wszystkie Bronie | AlbionKit",
+      "title": "Poradnik Rotacji Broni - Wszystkie Bronie | Albion Online Analyzer",
       "description": "Opanuj optymalne rotacje dla wszystkich broni. Obrażenia wybuchowe, podtrzymywany DPS i kombo mobilności."
     },
     "gatheringRoutes": {
@@ -2178,7 +2178,7 @@
   },
   "Subscription": {
     "supportTitle": "Wesprzyj projekt",
-    "supportDesc": "AlbionKit jest tworzony przez <solo>jednego dewelopera</solo>. Twoja pomoc pomaga utrzymać serwery! ❤️",
+    "supportDesc": "Albion Online Analyzer jest tworzony przez <solo>jednego dewelopera</solo>. Twoja pomoc pomaga utrzymać serwery! ❤️",
     "loading": "Ładowanie...",
     "monthly": "Miesięcznie",
     "yearly": "Rocznie",
@@ -2214,7 +2214,7 @@
   },
   "Premium": {
     "title": "Zostań Wspierającym",
-    "description": "Odblokuj pełną moc AlbionKit.",
+    "description": "Odblokuj pełną moc Albion Online Analyzer.",
     "active": "AKTYWNE",
     "adeptTier": "Poziom Adept",
     "yearlyBillingBonus": "Odbierz 2 miesiące GRATIS przy płatności rocznej!",
@@ -2425,7 +2425,7 @@
       "quickActions": "Szybkie Akcje",
       "stayUpdated": "Bądź na bieżąco!",
       "followTwitter": "Obserwuj nas na Twitterze dla nowości.",
-      "followBtn": "Obserwuj @Albion_Kit",
+      "followBtn": "Obserwuj Albion Online Analyzer",
       "days": "Dni",
       "wandererDesc": "Dopiero zaczyna podróż",
       "noviceDesc": "Uczy się podstaw",
@@ -2500,7 +2500,7 @@
     "reposition": "Ustaw",
     "savePosition": "Zapisz",
     "user": "Użytkownik",
-    "userProfileDesc": "Profil {displayName} na AlbionKit. Sprawdź jego buildy i statystyki.",
+    "userProfileDesc": "Profil {displayName} na Albion Online Analyzer. Sprawdź jego buildy i statystyki.",
     "editProfile": "Edytuj",
     "joined": "Dołączył {date}",
     "recently": "Ostatnio",
@@ -2795,7 +2795,7 @@
       "action": "Zgłoś"
     },
     "donateInfo": {
-      "text": "Podoba Ci się AlbionKit? Wesprzyj nas kawą, aby utrzymać projekt darmowym i bez reklam! ☕",
+      "text": "Podoba Ci się Albion Online Analyzer? Wesprzyj nas kawą, aby utrzymać projekt darmowym i bez reklam! ☕",
       "action": "Przekaż darowiznę"
     },
     "contributeInfo": {
@@ -2806,7 +2806,7 @@
   "Legal": {
     "lastUpdated": "Aktualizacja: {date}",
     "contact": "Kontakt",
-    "contactDesc": "Masz pytania? support@albionkit.com.",
+    "contactDesc": "Masz pytania? Aditya-Bichave@users.noreply.github.com.",
     "terms": {
       "title": "Regulamin",
       "description": "Przeczytaj uważnie.",
@@ -2816,7 +2816,7 @@
       },
       "ip": {
         "title": "2. IP",
-        "content": "Własność AlbionKit.",
+        "content": "Własność Albion Online Analyzer.",
         "albionIp": "Albion IP",
         "albionIpContent": "Albion Online jest SBI."
       },
@@ -3194,7 +3194,7 @@
     "lastUpdated": "Ostatnia aktualizacja: {date}",
     "general": {
       "title": "1. Zasady Ogólne",
-      "content": "AlbionKit zapewnia natychmiastowy dostęp do cyfrowych funkcji i narzędzi premium (takich jak poziomy Adept i Mistrz Gildii). Ze względu na naturę treści cyfrowych, gdzie dostęp jest przyznawany natychmiastowo, wszystkie transakcje sprzedaży są zazwyczaj uważane za ostateczne i bezzwrotne po uzyskaniu dostępu lub skorzystaniu z usługi."
+      "content": "Albion Online Analyzer zapewnia natychmiastowy dostęp do cyfrowych funkcji i narzędzi premium (takich jak poziomy Adept i Mistrz Gildii). Ze względu na naturę treści cyfrowych, gdzie dostęp jest przyznawany natychmiastowo, wszystkie transakcje sprzedaży są zazwyczaj uważane za ostateczne i bezzwrotne po uzyskaniu dostępu lub skorzystaniu z usługi."
     },
     "subscriptions": {
       "title": "2. Subskrypcje",
@@ -3349,7 +3349,7 @@
       "medium": "Średnia",
       "high": "Wysoka"
     },
-    "checkoutBuild": "Sprawdź ten build {category} od {author} na AlbionKit.",
+    "checkoutBuild": "Sprawdź ten build {category} od {author} na Albion Online Analyzer.",
     "commentError": "Błąd publikacji komentarza",
     "backToBuilds": "Powrót do Buildów"
   },
@@ -3554,7 +3554,7 @@
     "adjustFiltersOrCheckBack": "Spróbuj dostosować filtry lub sprawdź później."
   },
   "Donate": {
-    "title": "Wesprzyj AlbionKit",
+    "title": "Wesprzyj Albion Online Analyzer",
     "description": "Twoje darowizny pomagają pokryć koszty serwera i czas rozwoju.",
     "buttonText": "Kup mi kawę",
     "githubSponsors": "Lub sponsoruj na GitHub",
@@ -3562,8 +3562,8 @@
     "impact2": "Rozwój"
   },
   "DonatePage": {
-    "title": "Wesprzyj AlbionKit - Przekaż Darowiznę",
-    "description": "Wesprzyj rozwój AlbionKit poprzez darowizny. Pomóż nam utrzymać projekt darmowym i bez reklam."
+    "title": "Wesprzyj Albion Online Analyzer - Przekaż Darowiznę",
+    "description": "Wesprzyj rozwój Albion Online Analyzer poprzez darowizny. Pomóż nam utrzymać projekt darmowym i bez reklam."
   },
   "Sidebar": {
     "silverFarming": "Farmienie Srebra",
@@ -3664,7 +3664,7 @@
   "Guides": {
     "title": "Poradniki",
     "description": "Kompleksowe poradniki dla graczy Albion Online",
-    "heroTitle": "Poradniki AlbionKit",
+    "heroTitle": "Poradniki Albion Online Analyzer",
     "heroSubtitle": "Opanuj Albion Online z naszymi poradnikami i samouczkami",
     "gettingStarted": "Pierwsze Kroki",
     "silverFarming": "Farmienie Srebra",
@@ -4117,16 +4117,16 @@
     "description": "Opanuj optymalne rotacje dla wszystkich broni. Obrażenia wybuchowe, podtrzymywany DPS i kombo mobilności."
   },
   "SettingsPage": {
-    "title": "Ustawienia Konta | AlbionKit",
-    "description": "Zarządzaj ustawieniami konta AlbionKit, powiadomieniami, językiem i profilem."
+    "title": "Ustawienia Konta | Albion Online Analyzer",
+    "description": "Zarządzaj ustawieniami konta Albion Online Analyzer, powiadomieniami, językiem i profilem."
   },
   "LoginPage": {
-    "title": "Zaloguj się do AlbionKit",
-    "description": "Zaloguj się do AlbionKit, aby uzyskać dostęp do funkcji premium, zapisać buildy i dostosować."
+    "title": "Zaloguj się do Albion Online Analyzer",
+    "description": "Zaloguj się do Albion Online Analyzer, aby uzyskać dostęp do funkcji premium, zapisać buildy i dostosować."
   },
   "NotFoundPage": {
-    "title": "Nie znaleziono strony - 404 | AlbionKit",
-    "description": "Szukana strona nie istnieje. Wróć do strony głównej AlbionKit."
+    "title": "Nie znaleziono strony - 404 | Albion Online Analyzer",
+    "description": "Szukana strona nie istnieje. Wróć do strony głównej Albion Online Analyzer."
   },
   "BuildsPage": {
     "title": "Baza Buildów - Meta Buildy",
@@ -4134,15 +4134,15 @@
   },
   "PrivacyPage": {
     "title": "Polityka Prywatności",
-    "description": "Polityka prywatności AlbionKit - jak zbieramy, wykorzystujemy i chronimy Twoje dane."
+    "description": "Polityka prywatności Albion Online Analyzer - jak zbieramy, wykorzystujemy i chronimy Twoje dane."
   },
   "TermsPage": {
     "title": "Regulamin",
-    "description": "Regulamin AlbionKit i wytyczne użytkowania."
+    "description": "Regulamin Albion Online Analyzer i wytyczne użytkowania."
   },
   "CookiesPage": {
     "title": "Polityka Cookies",
-    "description": "Polityka cookies AlbionKit - jak używamy plików cookie do poprawy Twojego doświadczenia."
+    "description": "Polityka cookies Albion Online Analyzer - jak używamy plików cookie do poprawy Twojego doświadczenia."
   },
   "MarketFlipperPage": {
     "title": "Market Flipper - Kalkulator Zysków",

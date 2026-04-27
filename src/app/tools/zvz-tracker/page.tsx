@@ -41,12 +41,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/tools/zvz-tracker',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/zvz-tracker',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/tools/zvz-tracker',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/zvz-tracker',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),

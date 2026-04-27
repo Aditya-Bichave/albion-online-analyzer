@@ -20,7 +20,7 @@ const BASE_STYLES = `
 `;
 
 // Use Albion Online logo or item image - emails need reliable image hosting
-const GLOBAL_BANNER_URL = 'https://albionkit.com/albionkit-banner.png';
+const GLOBAL_BANNER_URL = 'https://aditya-bichave.github.io/albion-online-analyzer/albion-online-analyzer-banner.png';
 
 interface BaseTemplateProps {
   title: string;
@@ -59,8 +59,8 @@ function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_UR
   </div>
   <div class="container" style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <div class="header" style="text-align: center; margin-bottom: 32px;">
-      <a href="https://albionkit.com" style="text-decoration: none;">
-        <img src="${bannerUrl}" alt="AlbionKit" class="banner-img" style="height: auto; border-radius: 8px; display: block; margin: 0 auto;" >
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer" style="text-decoration: none;">
+        <img src="${bannerUrl}" alt="Albion Online Analyzer" class="banner-img" style="height: auto; border-radius: 8px; display: block; margin: 0 auto;" >
       </a>
     </div>
     <div class="card" style="background-color: #1c1917; border-radius: 16px; padding: 40px; border: 1px solid #292524;">
@@ -73,11 +73,11 @@ function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_UR
       </p>
     </div>
     <div class="footer" style="margin-top: 32px; text-align: center; color: #a8a29e; font-size: 12px;">
-      <p style="font-size: 12px; color: #a8a29e; margin-bottom: 8px;">&copy; ${new Date().getFullYear()} AlbionKit. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
+      <p style="font-size: 12px; color: #a8a29e; margin-bottom: 8px;">&copy; ${new Date().getFullYear()} Albion Online Analyzer. ${t ? t('common.rightsReserved') : 'All rights reserved.'}</p>
       <p style="font-size: 12px; color: #a8a29e; margin: 0;">
-        <a href="https://albionkit.com/privacy" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.privacy') : 'Privacy Policy'}</a> &bull;
-        <a href="https://albionkit.com/terms" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.terms') : 'Terms of Service'}</a> &bull;
-        <a href="https://albionkit.com/settings" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
+        <a href="https://aditya-bichave.github.io/albion-online-analyzer/privacy" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.privacy') : 'Privacy Policy'}</a> &bull;
+        <a href="https://aditya-bichave.github.io/albion-online-analyzer/terms" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.terms') : 'Terms of Service'}</a> &bull;
+        <a href="https://aditya-bichave.github.io/albion-online-analyzer/settings" style="color: #d6d3d1; text-decoration: none;">${t ? t('common.unsubscribe') : 'Unsubscribe'}</a>
       </p>
     </div>
   </div>
@@ -89,7 +89,7 @@ function getBaseHtml({ title, content, previewText, bannerUrl = GLOBAL_BANNER_UR
 export function getVerificationEmailHtml(link: string, t?: any) {
   const content = `
     <h1>${t ? t('verification.title') : 'Verify your email address'}</h1>
-    <p>${t ? t('verification.welcome') : `Welcome to <strong>AlbionKit</strong>! We're excited to have you on board.`}</p>
+    <p>${t ? t('verification.welcome') : `Welcome to <strong>Albion Online Analyzer</strong>! We're excited to have you on board.`}</p>
     <p>${t ? t('verification.body') : `Please confirm your email address to unlock full access to all features, including creating builds, tracking market data, and more.`}</p>
     
     <div class="btn-container">
@@ -102,12 +102,12 @@ export function getVerificationEmailHtml(link: string, t?: any) {
     </p>
     
     <p class="small-text" style="text-align: center; margin-top: 24px;">
-      ${t ? t('verification.ignore') : `If you didn't create an account with AlbionKit, you can safely ignore this email.`}
+      ${t ? t('verification.ignore') : `If you didn't create an account with Albion Online Analyzer, you can safely ignore this email.`}
     </p>
   `;
   
   return getBaseHtml({
-    title: t ? t('verification.title') : 'Verify your email - AlbionKit',
+    title: t ? t('verification.title') : 'Verify your email - Albion Online Analyzer',
     previewText: t ? t('verification.preview') : 'Please verify your email address to complete your registration.',
     content,
     t
@@ -119,7 +119,7 @@ export function getWelcomeEmailHtml(name: string, t?: any) {
   const displayName = name && name !== 'Traveler' ? name : (t ? t('common.travelerName') : 'Traveler');
   const content = `
     <h1>${t ? t('welcome.title', { name: displayName }) : `Welcome, ${displayName}!`}</h1>
-    <p>${t ? t('welcome.body1') : `Thanks for joining <strong>AlbionKit</strong>. You've just taken the first step towards mastering Albion Online.`}</p>
+    <p>${t ? t('welcome.body1') : `Thanks for joining <strong>Albion Online Analyzer</strong>. You've just taken the first step towards mastering Albion Online.`}</p>
     <p>${t ? t('welcome.body2') : `Here are a few powerful tools you can start using right now:`}</p>
 
     <ul>
@@ -129,13 +129,13 @@ export function getWelcomeEmailHtml(name: string, t?: any) {
     </ul>
 
     <div class="btn-container">
-      <a href="https://albionkit.com" class="btn">${t ? t('welcome.button') : 'Explore AlbionKit'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer" class="btn">${t ? t('welcome.button') : 'Explore Albion Online Analyzer'}</a>
     </div>
   `;
 
   return getBaseHtml({
-    title: t ? t('welcome.subject') : 'Welcome to AlbionKit',
-    previewText: t ? t('welcome.preview') : 'Welcome to AlbionKit! Start exploring our tools today.',
+    title: t ? t('welcome.subject') : 'Welcome to Albion Online Analyzer',
+    previewText: t ? t('welcome.preview') : 'Welcome to Albion Online Analyzer! Start exploring our tools today.',
     content,
     t
   });
@@ -145,7 +145,7 @@ export function getPurchaseSuccessEmailHtml(name: string, t?: any) {
   const content = `
     <h1>${t ? t('purchase.title') : 'Subscription Active 🚀'}</h1>
     <p>${t ? t('purchase.greeting', { name }) : `Hi ${name},`}</p>
-    <p>${t ? t('purchase.body1') : `Thank you for your support! Your <strong>AlbionKit Premium</strong> subscription is now active.`}</p>
+    <p>${t ? t('purchase.body1') : `Thank you for your support! Your <strong>Albion Online Analyzer Premium</strong> subscription is now active.`}</p>
     <p>${t ? t('purchase.body2') : `You now have unlimited access to:`}</p>
     
     <ul>
@@ -156,15 +156,15 @@ export function getPurchaseSuccessEmailHtml(name: string, t?: any) {
     </ul>
     
     <div class="btn-container">
-      <a href="https://albionkit.com/settings" class="btn">${t ? t('purchase.button') : 'Manage Subscription'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer/settings" class="btn">${t ? t('purchase.button') : 'Manage Subscription'}</a>
     </div>
     
     <p>${t ? t('purchase.footer') : `We appreciate your support in keeping this project alive and growing!`}</p>
   `;
   
   return getBaseHtml({
-    title: t ? t('purchase.subject') : 'Subscription Activated - AlbionKit',
-    previewText: t ? t('purchase.preview') : 'Your AlbionKit Premium subscription is now active!',
+    title: t ? t('purchase.subject') : 'Subscription Activated - Albion Online Analyzer',
+    previewText: t ? t('purchase.preview') : 'Your Albion Online Analyzer Premium subscription is now active!',
     content,
     t
   });
@@ -174,11 +174,11 @@ export function getRankUpEmailHtml(rank: string, t?: any) {
   const content = `
     <h1>${t ? t('rankUp.title') : 'Level Up! 🎉'}</h1>
     <p>${t ? t('rankUp.congrats') : 'Congratulations!'}</p>
-    <p>${t ? t('rankUp.body', { rank }) : `You have reached the <strong>${rank}</strong> rank on AlbionKit.`}</p>
+    <p>${t ? t('rankUp.body', { rank }) : `You have reached the <strong>${rank}</strong> rank on Albion Online Analyzer.`}</p>
     <p>${t ? t('rankUp.footer') : `Keep creating builds and contributing to the community to reach the next rank!`}</p>
     
     <div class="btn-container">
-      <a href="https://albionkit.com/profile" class="btn">${t ? t('rankUp.button') : 'View Profile'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer/profile" class="btn">${t ? t('rankUp.button') : 'View Profile'}</a>
     </div>
   `;
   
@@ -196,12 +196,12 @@ export function getReminderEmailHtml(message: string, t?: any) {
     <p>${message}</p>
 
     <div class="btn-container">
-      <a href="https://albionkit.com/tools/market-flipper" class="btn">${t ? t('reminder.button') : 'View Market Flipper'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer/tools/market-flipper" class="btn">${t ? t('reminder.button') : 'View Market Flipper'}</a>
     </div>
   `;
 
   return getBaseHtml({
-    title: t ? t('reminder.subject') : 'Market Opportunity - AlbionKit',
+    title: t ? t('reminder.subject') : 'Market Opportunity - Albion Online Analyzer',
     previewText: message,
     content,
     t
@@ -243,7 +243,7 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) 
     </ul>
 
     <div class="btn-container">
-      <a href="https://albionkit.com/tools/market-flipper?watchlist=true" class="btn">${t ? t('watchlist.button') : 'View My Watchlist'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer/tools/market-flipper?watchlist=true" class="btn">${t ? t('watchlist.button') : 'View My Watchlist'}</a>
     </div>
 
     <p class="small-text" style="text-align: center;">
@@ -252,7 +252,7 @@ export function getWatchlistAlertEmailHtml(name: string, items: any[], t?: any) 
   `;
 
   return getBaseHtml({
-    title: t ? t('watchlist.baseTitle') : 'Market Watchlist Alert - AlbionKit',
+    title: t ? t('watchlist.baseTitle') : 'Market Watchlist Alert - Albion Online Analyzer',
     previewText: t ? t('watchlist.preview', { itemName: items[0].name }) : `Watchlist Alert: ${items[0].name} and more are profitable!`,
     content,
     t
@@ -283,7 +283,7 @@ export function getGoldAlertEmailHtml(name: string, region: string, currentPrice
     <p>${t ? t('gold.advice') : 'This volatility might be a good time to adjust your silver holdings or trade for Gold.'}</p>
     
     <div class="btn-container">
-      <a href="https://albionkit.com" class="btn">${t ? t('gold.button') : 'View Live Market Ticker'}</a>
+      <a href="https://aditya-bichave.github.io/albion-online-analyzer" class="btn">${t ? t('gold.button') : 'View Live Market Ticker'}</a>
     </div>
     
     <p class="small-text" style="text-align: center;">

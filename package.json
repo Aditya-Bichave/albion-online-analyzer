@@ -1,18 +1,18 @@
 {
-  "name": "albionkit",
+  "name": "albion-online-analyzer",
   "version": "1.0.0",
   "description": "A comprehensive toolkit for Albion Online players featuring market analysis, build databases, PvP intelligence, and profit calculators",
   "private": false,
-  "author": "Cosmic-fi (AlbionKit Team)",
+  "author": "Aditya Bichave",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cosmic-fi/albionkit.git"
+    "url": "https://github.com/Aditya-Bichave/albion-online-analyzer.git"
   },
   "bugs": {
-    "url": "https://github.com/cosmic-fi/albionkit/issues"
+    "url": "https://github.com/Aditya-Bichave/albion-online-analyzer/issues"
   },
-  "homepage": "https://albionkit.com",
+  "homepage": "https://aditya-bichave.github.io/albion-online-analyzer",
   "keywords": [
     "albion-online",
     "mmo",

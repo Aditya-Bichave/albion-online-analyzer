@@ -36,12 +36,12 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/tools/market-flipper',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/market-flipper',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/tools/market-flipper',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/market-flipper',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),
@@ -66,7 +66,7 @@ export default async function MarketFlipperPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Market Flipper - AlbionKit',
+    name: 'Market Flipper - Albion Online Analyzer',
     applicationCategory: 'GameUtility',
     operatingSystem: 'Web Browser',
     description: 'Real-time market flipping tool for Albion Online with profit calculator, price alerts, and watchlist tracking.',

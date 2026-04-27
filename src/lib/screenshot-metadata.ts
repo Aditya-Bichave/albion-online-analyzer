@@ -47,12 +47,12 @@ export function getScreenshotUrl(key: ScreenshotKey): string {
  * 
  * @example
  * const fullUrl = getFullScreenshotUrl('market-flipper');
- * // Returns: 'https://albionkit.com/screenshots/tools/market-flipper.png'
+ * // Returns: 'https://aditya-bichave.github.io/albion-online-analyzer/screenshots/tools/market-flipper.png'
  * 
  * @param key - Screenshot key
- * @param baseUrl - Base URL (default: 'https://albionkit.com')
+ * @param baseUrl - Base URL (default: 'https://aditya-bichave.github.io/albion-online-analyzer')
  */
-export function getFullScreenshotUrl(key: ScreenshotKey, baseUrl = 'https://albionkit.com'): string {
+export function getFullScreenshotUrl(key: ScreenshotKey, baseUrl = 'https://aditya-bichave.github.io/albion-online-analyzer'): string {
   return `${baseUrl}${getScreenshotUrl(key)}`;
 }
 
@@ -105,7 +105,7 @@ export function createTwitterImage(key: ScreenshotKey) {
  * @example
  * export const metadata = createPageMetadata(
  *   'market-flipper',
- *   'Market Flipper - AlbionKit',
+ *   'Market Flipper - Albion Online Analyzer',
  *   'Find profitable market flips in real-time...'
  * );
  *
@@ -136,7 +136,7 @@ export function createPageMetadata(
       images: [createOpenGraphImage(key)],
       type: 'website',
       locale: 'en_US',
-      siteName: 'AlbionKit'
+      siteName: 'Albion Online Analyzer'
     }
   };
 

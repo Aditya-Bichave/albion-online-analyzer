@@ -3,7 +3,7 @@ description: Report a bug to help us improve
 title: "[Bug]: "
 labels: ["bug", "needs triage"]
 assignees:
-  - cosmic-fi
+  - Aditya-Bichave
 body:
   - type: markdown
     attributes:

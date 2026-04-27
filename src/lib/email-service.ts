@@ -21,7 +21,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'AlbionKit <notifications@albionkit.com>',
+        from: 'Albion Online Analyzer <notifications@aditya-bichave.github.io/albion-online-analyzer>',
         to,
         subject,
         html,

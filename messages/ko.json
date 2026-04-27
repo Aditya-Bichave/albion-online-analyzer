@@ -43,7 +43,7 @@
       "streakNotification": {
         "title": "일일 로그인 연속: {count}일!",
         "keepGoing": "계속 화이팅, 여행자!",
-        "welcome": "AlbionKit에 다시 오신 것을 환영합니다!"
+        "welcome": "Albion Online Analyzer에 다시 오신 것을 환영합니다!"
       }
     },
     "Emails": {
@@ -56,32 +56,32 @@
         "travelerName": "여행자"
       },
       "verification": {
-        "subject": "AlbionKit 이메일 인증",
+        "subject": "Albion Online Analyzer 이메일 인증",
         "title": "이메일 주소 인증",
         "preview": "등록을 완료하려면 이메일 주소를 인증해 주세요.",
-        "welcome": "<strong>AlbionKit</strong>에 오신 것을 환영합니다! 함께하게 되어 기쁩니다.",
+        "welcome": "<strong>Albion Online Analyzer</strong>에 오신 것을 환영합니다! 함께하게 되어 기쁩니다.",
         "body": "빌드 생성, 시장 데이터 추적 등 모든 기능에 대한 전체 액세스 권한을 잠금 해제하려면 이메일 주소를 확인해 주세요.",
         "button": "이메일 주소 인증",
         "altLink": "또는 이 링크를 복사하여 브라우저에 붙여넣으세요:",
-        "ignore": "AlbionKit 계정을 생성하지 않은 경우 이 이메일을 무시해도 안전합니다."
+        "ignore": "Albion Online Analyzer 계정을 생성하지 않은 경우 이 이메일을 무시해도 안전합니다."
       },
       "welcome": {
-        "subject": "AlbionKit에 오신 것을 환영합니다",
+        "subject": "Albion Online Analyzer에 오신 것을 환영합니다",
         "title": "환영합니다, {name}님!",
-        "preview": "AlbionKit에 오신 것을 환영합니다! 오늘 바로 도구 탐색을 시작하세요.",
-        "body1": "<strong>AlbionKit</strong>에 가입해 주셔서 감사합니다. 알비온 온라인 마스터를 향한 첫 걸음을 내디뎠습니다.",
+        "preview": "Albion Online Analyzer에 오신 것을 환영합니다! 오늘 바로 도구 탐색을 시작하세요.",
+        "body1": "<strong>Albion Online Analyzer</strong>에 가입해 주셔서 감사합니다. 알비온 온라인 마스터를 향한 첫 걸음을 내디뎠습니다.",
         "body2": "지금 바로 사용할 수 있는 몇 가지 강력한 도구입니다:",
         "builds": "<strong>빌드 데이터베이스:</strong> 메타를 발견하고 공유하세요.",
         "market": "<strong>시장 플리퍼:</strong> 도시 간 수익성 있는 거래를 찾으세요.",
         "pvp": "<strong>PvP 인텔:</strong> 전투와 킬 피드를 실시간으로 분석하세요.",
-        "button": "AlbionKit 탐색"
+        "button": "Albion Online Analyzer 탐색"
       },
       "purchase": {
         "subject": "구독 활성화됨 🚀",
         "title": "구독 활성화됨 🚀",
-        "preview": "AlbionKit 프리미엄 구독이 활성화되었습니다!",
+        "preview": "Albion Online Analyzer 프리미엄 구독이 활성화되었습니다!",
         "greeting": "안녕하세요 {name}님,",
-        "body1": "지원해 주셔서 감사합니다! <strong>AlbionKit 프리미엄</strong> 구독이 이제 활성화되었습니다.",
+        "body1": "지원해 주셔서 감사합니다! <strong>Albion Online Analyzer 프리미엄</strong> 구독이 이제 활성화되었습니다.",
         "body2": "이제 다음 항목에 무제한으로 액세스할 수 있습니다:",
         "feature1": "✨ 전체 플랫폼에서 <strong>광고 없는 경험</strong>",
         "feature2": "📈 PvP 및 시장 데이터를 위한 <strong>고급 분석</strong>",
@@ -95,14 +95,14 @@
         "title": "레벨 업! 🎉",
         "preview": "{rank} 등급 달성을 축하합니다!",
         "congrats": "축하합니다!",
-        "body": "AlbionKit에서 <strong>{rank}</strong> 등급에 도달했습니다.",
+        "body": "Albion Online Analyzer에서 <strong>{rank}</strong> 등급에 도달했습니다.",
         "footer": "다음 등급에 도달하기 위해 빌드를 계속 생성하고 커뮤니티에 기여하세요!",
         "button": "프로필 보기"
       },
       "reminder": {
-        "subject": "시장 기회 - AlbionKit",
+        "subject": "시장 기회 - Albion Online Analyzer",
         "title": "알림",
-        "body": "전체 기회 목록을 보려면 AlbionKit을 여세요.",
+        "body": "전체 기회 목록을 보려면 Albion Online Analyzer을 여세요.",
         "button": "시장 플리퍼 보기"
       },
       "watchlist": {
@@ -113,7 +113,7 @@
         "buySell": "구매: {buyPrice} ({buyCity}) → 판매: {sellPrice} (BM)",
         "button": "내 관심 목록 보기",
         "footer": "설정에서 시장 알림을 활성화했기 때문에 이 메일을 받고 있습니다.",
-        "baseTitle": "시장 관심 목록 알림 - AlbionKit",
+        "baseTitle": "시장 관심 목록 알림 - Albion Online Analyzer",
         "preview": "관심 목록 알림: {itemName} 등이 수익성이 있습니다!"
       },
       "gold": {
@@ -263,15 +263,15 @@
     "manageAlerts": "알림 관리",
     "faq": {
       "q1": "이 도구는 무료인가요?",
-      "a1": "AlbionKit 은 PWA 입니다. 모바일 브라우저에서 네이티브 앱처럼 직접 설치하세요.",
+      "a1": "Albion Online Analyzer 은 PWA 입니다. 모바일 브라우저에서 네이티브 앱처럼 직접 설치하세요.",
       "q2": "안전한가요? 밴 위험은 없나요?",
-      "a2": "AlbionKit 은 절대적으로 안전합니다. 게임 메모리를 스캔하거나 코드를 주입하지 않으며 SBI 이용 약관을 엄격히 준수합니다.",
+      "a2": "Albion Online Analyzer 은 절대적으로 안전합니다. 게임 메모리를 스캔하거나 코드를 주입하지 않으며 SBI 이용 약관을 엄격히 준수합니다.",
       "q3": "시장 데이터는 얼마나 정확한가요?",
       "a3": "가격은 실제 플레이어가 Albion Data Client 를 통해 업데이트합니다. 주요 도시에서는 데이터가 보통 몇 분 단위로 최신화됩니다.",
       "q4": "길드 마스터 플랜이 무엇인가요?",
       "a4": "모든 길드원에게 혜택을 제공하는 특별 플랜입니다. 길드 단위의 대시보드 기능도 포함됩니다.",
       "q5": "모바일 앱이 있나요?",
-      "a5": "AlbionKit은 PWA(Progressive Web App)입니다. 브라우저를 통해 휴대폰에 직접 설치하여 앱처럼 사용할 수 있습니다."
+      "a5": "Albion Online Analyzer은 PWA(Progressive Web App)입니다. 브라우저를 통해 휴대폰에 직접 설치하여 앱처럼 사용할 수 있습니다."
     },
     "heroBadge": "The Ultimate Companion",
     "goldPrice": "골드 가격",
@@ -282,8 +282,8 @@
     "zvzTrackerDesc": "대규모 오픈 월드 전투를 추적하세요"
   },
   "AboutPage": {
-    "title": "AlbionKit 소개 - 미션 및 팀",
-    "description": "AlbionKit, Albion Online 무료 도구 제공 미션 및 팀에 대해 알아보세요."
+    "title": "Albion Online Analyzer 소개 - 미션 및 팀",
+    "description": "Albion Online Analyzer, Albion Online 무료 도구 제공 미션 및 팀에 대해 알아보세요."
   },
   "MarketFlipper": {
     "itemsTracked": "{count}개 아이템 추적 중",
@@ -832,7 +832,7 @@
     },
     "about": {
       "title": "킬 피드 정보",
-      "description": "AlbionKit 실시간 스트림은 알비온 온라인 서버의 PvP 이벤트를 실시간으로 추적합니다. 데이터는 게임의 이벤트 API에서 직접 제공되므로 전투를 모니터링하고 길드 성과를 분석하며 고가치 킬을 추적할 수 있습니다.",
+      "description": "Albion Online Analyzer 실시간 스트림은 알비온 온라인 서버의 PvP 이벤트를 실시간으로 추적합니다. 데이터는 게임의 이벤트 API에서 직접 제공되므로 전투를 모니터링하고 길드 성과를 분석하며 고가치 킬을 추적할 수 있습니다.",
       "note": "참고:",
       "noteDesc": "API 처리 시간으로 인해 실제 게임 내 상황과 피드 표시 사이에 몇 초에서 몇 분 정도의 지연이 있을 수 있습니다."
     },
@@ -885,7 +885,7 @@
       "asia": "아시아",
       "europe": "유럽"
     },
-    "socialTitle": "AlbionKit 킬보드 - 실시간 PvP 트래커",
+    "socialTitle": "Albion Online Analyzer 킬보드 - 실시간 PvP 트래커",
     "socialDescription": "실시간 킬 추적, 전투 로그 분석, PvP 활동 모니터링",
     "loadingFeed": "킬 로딩 중...",
     "shareKill": "킬 공유",
@@ -937,19 +937,19 @@
     "cookiePolicy": "쿠키 정책"
   },
   "Metadata": {
-    "title": "AlbionKit — 알비온 온라인 최고의 동반자",
+    "title": "Albion Online Analyzer — 알비온 온라인 최고의 동반자",
     "template": "%s",
-    "description": "AlbionKit 으로 알비온 온라인을 정복하세요. 빌드 데이터베이스, 시장 분석 도구, PvP 정보, 제작 계산기 및 실시간 킬 피드를 제공합니다. 당신의 경쟁 우위가 여기서 시작됩니다.",
+    "description": "Albion Online Analyzer 으로 알비온 온라인을 정복하세요. 빌드 데이터베이스, 시장 분석 도구, PvP 정보, 제작 계산기 및 실시간 킬 피드를 제공합니다. 당신의 경쟁 우위가 여기서 시작됩니다.",
     "keywords": "알비온 온라인, 알비온 빌드, 알비온 시장, 알비온 PvP, 제작 계산기, MMORPG"
   },
   "Pages": {
     "home": {
-      "title": "AlbionKit — 시장 도구, PvP 정보 및 메타 빌드",
+      "title": "Albion Online Analyzer — 시장 도구, PvP 정보 및 메타 빌드",
       "description": "실시간 시장 데이터, PvP 인사이트 및 최고의 커뮤니티 빌드로 알비온 온라인 경험을 한 단계 업그레이드하세요. 필요한 모든 도구가 한곳에 모여 있습니다."
     },
     "about": {
-      "title": "AlbionKit 소개",
-      "description": "AlbionKit 의 미션과 알비온 온라인 커뮤니티를 위해 제작된 도구에 대해 자세히 알아보세요. 플레이어에 의해, 플레이어를 위해 만들어졌습니다."
+      "title": "Albion Online Analyzer 소개",
+      "description": "Albion Online Analyzer 의 미션과 알비온 온라인 커뮤니티를 위해 제작된 도구에 대해 자세히 알아보세요. 플레이어에 의해, 플레이어를 위해 만들어졌습니다."
     },
     "marketFlipper": {
       "title": "시장 시세 차익",
@@ -1007,7 +1007,7 @@
     },
     "settings": {
       "title": "Settings",
-      "description": "Configure your AlbionKit preferences, notification settings, language options, and account management. Customize your experience."
+      "description": "Configure your Albion Online Analyzer preferences, notification settings, language options, and account management. Customize your experience."
     },
     "guides": {
       "title": "Guides",
@@ -1022,7 +1022,7 @@
       "description": "Learn proper positioning for tanks, DPS, and healers"
     },
     "combatRotations": {
-      "title": "무기 로테이션 가이드 - 모든 무기 | AlbionKit",
+      "title": "무기 로테이션 가이드 - 모든 무기 | Albion Online Analyzer",
       "description": "Albion Online 의 모든 무기 유형에 대한 최적의 로테이션을 마스터하세요. 폭발력, 지속 DPS, 기동성 콤보."
     },
     "gatheringRoutes": {
@@ -2179,7 +2179,7 @@
   },
   "Subscription": {
     "supportTitle": "프로젝트 지원하기",
-    "supportDesc": "AlbionKit은 <solo>1인 개발자</solo>에 의해 운영됩니다. 후원은 서버 유지에 큰 도움이 됩니다! ❤️",
+    "supportDesc": "Albion Online Analyzer은 <solo>1인 개발자</solo>에 의해 운영됩니다. 후원은 서버 유지에 큰 도움이 됩니다! ❤️",
     "loading": "로딩 중...",
     "monthly": "월간",
     "yearly": "연간",
@@ -2215,7 +2215,7 @@
   },
   "Premium": {
     "title": "후원자 되기",
-    "description": "AlbionKit의 모든 기능을 사용해 보세요. 플레이 스타일에 맞는 등급을 선택하세요.",
+    "description": "Albion Online Analyzer의 모든 기능을 사용해 보세요. 플레이 스타일에 맞는 등급을 선택하세요.",
     "active": "활성",
     "adeptTier": "숙련자 등급",
     "yearlyBillingBonus": "연간 결제 시 2개월 무료!",
@@ -2426,7 +2426,7 @@
       "quickActions": "빠른 작업",
       "stayUpdated": "최신 소식 받기!",
       "followTwitter": "최신 업데이트, 기능 및 시장 통찰력을 위해 Twitter를 팔로우하세요.",
-      "followBtn": "@Albion_Kit 팔로우",
+      "followBtn": "Albion Online Analyzer 팔로우",
       "days": "일",
       "wandererDesc": "여정을 시작합니다",
       "noviceDesc": "기초를 배우는 중",
@@ -2501,7 +2501,7 @@
     "reposition": "위치 조정",
     "savePosition": "위치 저장",
     "user": "유저",
-    "userProfileDesc": "{displayName} 님의 AlbionKit 프로필입니다. 빌드와 통계를 확인하세요.",
+    "userProfileDesc": "{displayName} 님의 Albion Online Analyzer 프로필입니다. 빌드와 통계를 확인하세요.",
     "editProfile": "프로필 편집",
     "joined": "{date} 가입",
     "recently": "최근",
@@ -2796,7 +2796,7 @@
       "action": "버그 제보"
     },
     "donateInfo": {
-      "text": "AlbionKit 이 마음에 드시나요? 프로젝트를 무료로 광고 없이 유지할 수 있도록 커피 한 잔을 지원해주세요! ☕",
+      "text": "Albion Online Analyzer 이 마음에 드시나요? 프로젝트를 무료로 광고 없이 유지할 수 있도록 커피 한 잔을 지원해주세요! ☕",
       "action": "지금 기부"
     },
     "contributeInfo": {
@@ -2807,19 +2807,19 @@
   "Legal": {
     "lastUpdated": "최근 업데이트: {date}",
     "contact": "문의하기",
-    "contactDesc": "문의 사항은 Discord 커뮤니티 또는 support@albionkit.com으로 이메일을 보내주세요.",
+    "contactDesc": "문의 사항은 Discord 커뮤니티 또는 Aditya-Bichave@users.noreply.github.com으로 이메일을 보내주세요.",
     "terms": {
       "title": "이용 약관",
-      "description": "AlbionKit을 사용하기 전 약관을 주의 깊게 읽어주세요.",
+      "description": "Albion Online Analyzer을 사용하기 전 약관을 주의 깊게 읽어주세요.",
       "agreement": {
         "title": "1. 약관 동의",
-        "content": "AlbionKit에 액세스하거나 사용함으로써 귀하는 본 약관을 준수할 것에 동의하게 됩니다."
+        "content": "Albion Online Analyzer에 액세스하거나 사용함으로써 귀하는 본 약관을 준수할 것에 동의하게 됩니다."
       },
       "ip": {
         "title": "2. 지식재산권",
-        "content": "본 서비스 및 원본 콘텐츠는 AlbionKit의 소유입니다.",
+        "content": "본 서비스 및 원본 콘텐츠는 Albion Online Analyzer의 소유입니다.",
         "albionIp": "알비온 온라인 지식재산권",
-        "albionIpContent": "Albion Online 및 로고는 Sandbox Interactive GmbH의 상표입니다. AlbionKit은 커뮤니티 도구이며 이와 무관합니다."
+        "albionIpContent": "Albion Online 및 로고는 Sandbox Interactive GmbH의 상표입니다. Albion Online Analyzer은 커뮤니티 도구이며 이와 무관합니다."
       },
       "accounts": {
         "title": "3. 사용자 계정",
@@ -2835,7 +2835,7 @@
       },
       "liability": {
         "title": "5. 책임의 한계",
-        "content": "AlbionKit은 서비스 이용으로 발생하는 간접적 피해에 대해 책임을 지지 않습니다."
+        "content": "Albion Online Analyzer은 서비스 이용으로 발생하는 간접적 피해에 대해 책임을 지지 않습니다."
       }
     },
     "privacy": {
@@ -2843,7 +2843,7 @@
       "description": "당사는 사용자의 개인 데이터를 보호하기 위해 최선을 다합니다.",
       "intro": {
         "title": "1. 개요",
-        "content": "AlbionKit은 귀하의 개인정보를 존중하며 데이터 보호를 중요하게 생각합니다."
+        "content": "Albion Online Analyzer은 귀하의 개인정보를 존중하며 데이터 보호를 중요하게 생각합니다."
       },
       "data": {
         "title": "2. 수집하는 데이터",
@@ -2875,7 +2875,7 @@
     },
     "cookies": {
       "title": "쿠키 정책",
-      "description": "AlbionKit은 서비스 개선을 위해 쿠키를 사용합니다.",
+      "description": "Albion Online Analyzer은 서비스 개선을 위해 쿠키를 사용합니다.",
       "what": {
         "title": "1. 쿠키란 무엇인가요?",
         "content": "쿠키는 사이트 방문 시 기기에 저장되는 작은 텍스트 파일입니다."
@@ -2900,7 +2900,7 @@
       "description": "프리미엄 구독 및 디지털 서비스 환불 관련 정책입니다.",
       "general": {
         "title": "1. 일반 원칙",
-        "content": "AlbionKit은 디지털 서비스를 즉시 제공합니다. 서비스 성격상 모든 판매는 원칙적으로 최종적입니다."
+        "content": "Albion Online Analyzer은 디지털 서비스를 즉시 제공합니다. 서비스 성격상 모든 판매는 원칙적으로 최종적입니다."
       },
       "subscriptions": {
         "title": "2. 구독",
@@ -3195,7 +3195,7 @@
     "lastUpdated": "최종 업데이트: {date}",
     "general": {
       "title": "1. 일반 정책",
-      "content": "AlbionKit은 프리미엄 디지털 기능 및 도구(예: 숙련자 및 길드 마스터 등급)에 대한 즉각적인 액세스를 제공합니다. 액세스가 즉시 부여되는 디지털 콘텐츠의 특성상, 서비스에 액세스하거나 사용한 후에는 모든 판매가 일반적으로 최종적이며 환불되지 않습니다."
+      "content": "Albion Online Analyzer은 프리미엄 디지털 기능 및 도구(예: 숙련자 및 길드 마스터 등급)에 대한 즉각적인 액세스를 제공합니다. 액세스가 즉시 부여되는 디지털 콘텐츠의 특성상, 서비스에 액세스하거나 사용한 후에는 모든 판매가 일반적으로 최종적이며 환불되지 않습니다."
     },
     "subscriptions": {
       "title": "2. 구독",
@@ -3350,7 +3350,7 @@
       "medium": "보통",
       "high": "높음"
     },
-    "checkoutBuild": "AlbionKit 에서 {author}님의 {category} 빌드를 확인하세요.",
+    "checkoutBuild": "Albion Online Analyzer 에서 {author}님의 {category} 빌드를 확인하세요.",
     "commentError": "댓글 게시 실패",
     "backToBuilds": "빌드로 돌아가기"
   },
@@ -3555,7 +3555,7 @@
     "adjustFiltersOrCheckBack": "필터를 조정하거나 나중에 다시 확인하세요."
   },
   "Donate": {
-    "title": "AlbionKit 지원하기",
+    "title": "Albion Online Analyzer 지원하기",
     "description": "여러분의 기부금은 서버 비용과 개발 시간을 지원하는 데 도움이 됩니다.",
     "buttonText": "커피 한 잔 사기",
     "githubSponsors": "또는 GitHub 에서 후원",
@@ -3563,8 +3563,8 @@
     "impact2": "개발"
   },
   "DonatePage": {
-    "title": "AlbionKit 후원 - 무료로 유지하기",
-    "description": "후원을 통해 AlbionKit 개발을 지원하세요. 프로젝트를 무료로 광고 없이 유지하도록 도와주세요."
+    "title": "Albion Online Analyzer 후원 - 무료로 유지하기",
+    "description": "후원을 통해 Albion Online Analyzer 개발을 지원하세요. 프로젝트를 무료로 광고 없이 유지하도록 도와주세요."
   },
   "Sidebar": {
     "silverFarming": "실버 파밍",
@@ -3665,7 +3665,7 @@
   "Guides": {
     "title": "가이드",
     "description": "Albion Online 플레이어를 위한 종합 가이드",
-    "heroTitle": "AlbionKit 가이드",
+    "heroTitle": "Albion Online Analyzer 가이드",
     "heroSubtitle": "종합 가이드와 튜토리얼로 Albion Online 을 마스터하세요",
     "gettingStarted": "시작하기",
     "silverFarming": "실버 파밍",
@@ -4050,7 +4050,7 @@
     }
   },
   "WeaponsList": {
-    "title": "무기 로테이션 가이드 | AlbionKit",
+    "title": "무기 로테이션 가이드 | Albion Online Analyzer",
     "description": "Albion Online 2026 을 위한 완전한 무기 로테이션 가이드",
     "heroTitle": "무기 로테이션 데이터베이스",
     "heroSubtitle": "종합 가이드로 모든 무기를 마스터하세요",
@@ -4118,16 +4118,16 @@
     "description": "Albion Online 의 모든 무기 유형에 대한 최적의 로테이션을 마스터하세요. 폭발력, 지속 DPS 및 기동성 콤보."
   },
   "SettingsPage": {
-    "title": "계정 설정 | AlbionKit",
-    "description": "AlbionKit 계정 설정, 알림, 언어 및 프로필을 관리합니다."
+    "title": "계정 설정 | Albion Online Analyzer",
+    "description": "Albion Online Analyzer 계정 설정, 알림, 언어 및 프로필을 관리합니다."
   },
   "LoginPage": {
-    "title": "AlbionKit 로그인",
-    "description": "AlbionKit 에 로그인하여 프리미엄 기능에 액세스하고 빌드를 저장하며 경험을 맞춤 설정합니다."
+    "title": "Albion Online Analyzer 로그인",
+    "description": "Albion Online Analyzer 에 로그인하여 프리미엄 기능에 액세스하고 빌드를 저장하며 경험을 맞춤 설정합니다."
   },
   "NotFoundPage": {
-    "title": "페이지를 찾을 수 없음 - 404 | AlbionKit",
-    "description": "찾고 있는 페이지가 존재하지 않습니다. AlbionKit 홈페이지로 돌아가세요."
+    "title": "페이지를 찾을 수 없음 - 404 | Albion Online Analyzer",
+    "description": "찾고 있는 페이지가 존재하지 않습니다. Albion Online Analyzer 홈페이지로 돌아가세요."
   },
   "BuildsPage": {
     "title": "빌드 데이터베이스 - Albion Online 메타 빌드",
@@ -4135,15 +4135,15 @@
   },
   "PrivacyPage": {
     "title": "개인정보 처리방침",
-    "description": "AlbionKit 개인정보 처리방침 - 데이터를 어떻게 수집, 사용 및 보호하는지."
+    "description": "Albion Online Analyzer 개인정보 처리방침 - 데이터를 어떻게 수집, 사용 및 보호하는지."
   },
   "TermsPage": {
     "title": "이용약관",
-    "description": "AlbionKit 이용약관 및 사용 지침."
+    "description": "Albion Online Analyzer 이용약관 및 사용 지침."
   },
   "CookiesPage": {
     "title": "쿠키 정책",
-    "description": "AlbionKit 쿠키 정책 - 환경을 개선하기 위해 쿠키를 사용하는 방법."
+    "description": "Albion Online Analyzer 쿠키 정책 - 환경을 개선하기 위해 쿠키를 사용하는 방법."
   },
   "MarketFlipperPage": {
     "title": "마켓 플리퍼 - 실시간 수익 계산기",

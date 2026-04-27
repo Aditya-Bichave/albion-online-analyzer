@@ -24,7 +24,7 @@ const INFO_ITEMS: InfoItem[] = [
     id: 'twitter',
     icon: MessageSquare,
     translationKey: 'twitter',
-    actionLink: "https://twitter.com/Albion_Kit",
+    actionLink: "https://github.com/Aditya-Bichave/albion-online-analyzer",
     color: "text-blue-400",
     isExternal: true
   },
@@ -114,7 +114,7 @@ const INFO_ITEMS: InfoItem[] = [
     id: 'feedback',
     icon: Bug,
     translationKey: 'feedback',
-    actionLink: "https://github.com/albionkit",
+    actionLink: "https://github.com/Aditya-Bichave/albion-online-analyzer",
     color: "text-rose-400",
     isExternal: true
   },
@@ -131,7 +131,7 @@ const INFO_ITEMS: InfoItem[] = [
     id: 'contribute',
     icon: Github,
     translationKey: 'contributeInfo',
-    actionLink: "https://github.com/cosmic-fi/albionkit",
+    actionLink: "https://github.com/Aditya-Bichave/albion-online-analyzer",
     color: "text-foreground",
     isExternal: true
   }
@@ -198,8 +198,8 @@ function RandomInfoCard({ item }: { item: InfoItem }) {
     if (item.actionLink === '#share') {
       if (navigator.share) {
         navigator.share({
-          title: 'AlbionKit',
-          text: 'Check out AlbionKit for the best Albion Online tools!',
+          title: 'Albion Online Analyzer',
+          text: 'Check out Albion Online Analyzer for the best Albion Online tools!',
           url: window.location.origin
         }).catch(() => { });
       } else {

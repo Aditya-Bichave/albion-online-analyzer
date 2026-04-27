@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllBuildsForSitemap } from '@/lib/sitemap-service';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://albionkit.com';
+  const baseUrl = 'https://aditya-bichave.github.io/albion-online-analyzer';
 
   // 1. Core Pages (Highest Priority)
   const corePages = [
@@ -75,7 +75,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 6. Dynamic Routes (Builds) - Top 100 by likes
   const builds = await getAllBuildsForSitemap();
-  const buildRoutes = builds.slice(0, 50).map((build) => ({
+  const buildRoutes = builds.slice(0, 50).map((build: any) => ({
     url: `${baseUrl}/builds/${build.id}`,
     lastModified: build.updatedAt ? new Date(build.updatedAt) : new Date(),
     changeFrequency: 'weekly' as const,

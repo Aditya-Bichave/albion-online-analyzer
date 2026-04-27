@@ -10,18 +10,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: 'https://albionkit.com/terms',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/terms',
     },
     openGraph: {
       title: t('title'),
       description: t('description'),
       type: 'website',
-      url: 'https://albionkit.com/terms',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/terms',
       images: [{
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AlbionKit Preview',
+        alt: 'Albion Online Analyzer Preview',
         type: 'image/jpeg'
       }],
     },

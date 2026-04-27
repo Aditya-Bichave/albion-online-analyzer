@@ -18,7 +18,7 @@ export interface AppNotification {
 // Simple translation maps for notifications (client-safe)
 const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
   en: {
-    welcome: 'Welcome to AlbionKit!',
+    welcome: 'Welcome to Albion Online Analyzer!',
     purchase_success: 'Subscription Active',
     rank_up: 'Rank Up!',
     reminder: 'Reminder',
@@ -26,7 +26,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Gold Price Alert 💰'
   },
   tr: {
-    welcome: 'AlbionKit\'e Hoşgeldiniz!',
+    welcome: 'Albion Online Analyzer\'e Hoşgeldiniz!',
     purchase_success: 'Abonelik Aktif',
     rank_up: 'Rütbe Atladın!',
     reminder: 'Hatırlatıcı',
@@ -34,7 +34,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Altın Fiyat Uyarısı 💰'
   },
   de: {
-    welcome: 'Willkommen bei AlbionKit!',
+    welcome: 'Willkommen bei Albion Online Analyzer!',
     purchase_success: 'Abonnement Aktiv',
     rank_up: 'Rang Aufgestiegen!',
     reminder: 'Erinnerung',
@@ -42,7 +42,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Goldpreis-Alarm 💰'
   },
   es: {
-    welcome: '¡Bienvenido a AlbionKit!',
+    welcome: '¡Bienvenido a Albion Online Analyzer!',
     purchase_success: 'Suscripción Activa',
     rank_up: '¡Rango Ascendido!',
     reminder: 'Recordatorio',
@@ -50,7 +50,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Alerta de Precio del Oro 💰'
   },
   fr: {
-    welcome: 'Bienvenue sur AlbionKit !',
+    welcome: 'Bienvenue sur Albion Online Analyzer !',
     purchase_success: 'Abonnement Actif',
     rank_up: 'Rang Supérieur !',
     reminder: 'Rappel',
@@ -58,7 +58,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Alerte Prix Or 💰'
   },
   ko: {
-    welcome: 'AlbionKit 에 오신 것을 환영합니다!',
+    welcome: 'Albion Online Analyzer 에 오신 것을 환영합니다!',
     purchase_success: '구독 활성화됨',
     rank_up: '랭크 업!',
     reminder: '알림',
@@ -66,7 +66,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: '골드 가격 알림 💰'
   },
   pl: {
-    welcome: 'Witaj w AlbionKit!',
+    welcome: 'Witaj w Albion Online Analyzer!',
     purchase_success: 'Subskrypcja Aktywna',
     rank_up: 'Awans Rangi!',
     reminder: 'Przypomnienie',
@@ -74,7 +74,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Alert Ceny Złota 💰'
   },
   pt: {
-    welcome: 'Bem-vindo ao AlbionKit!',
+    welcome: 'Bem-vindo ao Albion Online Analyzer!',
     purchase_success: 'Assinatura Ativa',
     rank_up: 'Rank Elevado!',
     reminder: 'Lembrete',
@@ -82,7 +82,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Alerta de Preço do Ouro 💰'
   },
   ru: {
-    welcome: 'Добро пожаловать в AlbionKit!',
+    welcome: 'Добро пожаловать в Albion Online Analyzer!',
     purchase_success: 'Подписка Активна',
     rank_up: 'Повышение Ранга!',
     reminder: 'Напоминание',
@@ -90,7 +90,7 @@ const NOTIFICATION_TITLES: Record<string, Record<NotificationType, string>> = {
     gold_alert: 'Оповещение о Цене Золота 💰'
   },
   zh: {
-    welcome: '欢迎使用 AlbionKit！',
+    welcome: '欢迎使用 Albion Online Analyzer！',
     purchase_success: '订阅已激活',
     rank_up: '等级提升！',
     reminder: '提醒',

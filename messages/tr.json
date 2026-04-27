@@ -43,7 +43,7 @@
       "streakNotification": {
         "title": "Günlük Giriş Serisi: {count} gün!",
         "keepGoing": "Devam et, Gezgin!",
-        "welcome": "AlbionKit'e tekrar hoş geldiniz!"
+        "welcome": "Albion Online Analyzer'e tekrar hoş geldiniz!"
       }
     },
     "Emails": {
@@ -56,32 +56,32 @@
         "travelerName": "Gezgin"
       },
       "verification": {
-        "subject": "AlbionKit için e-postanızı doğrulayın",
+        "subject": "Albion Online Analyzer için e-postanızı doğrulayın",
         "title": "E-posta adresinizi doğrulayın",
         "preview": "Kaydınızı tamamlamak için lütfen e-posta adresinizi doğrulayın.",
-        "welcome": "<strong>AlbionKit</strong>'e Hoşgeldiniz! Aramıza katıldığınız için heyecanlıyız.",
+        "welcome": "<strong>Albion Online Analyzer</strong>'e Hoşgeldiniz! Aramıza katıldığınız için heyecanlıyız.",
         "body": "Build oluşturma, piyasa verilerini takip etme ve daha fazlası dahil olmak üzere tüm özelliklere tam erişim sağlamak için lütfen e-posta adresinizi onaylayın.",
         "button": "E-posta Adresini Doğrula",
         "altLink": "Veya bu bağlantıyı kopyalayıp tarayıcınıza yapıştırın:",
-        "ignore": "Eğer AlbionKit hesabı oluşturmadıysanız, bu e-postayı güvenle görmezden gelebilirsiniz."
+        "ignore": "Eğer Albion Online Analyzer hesabı oluşturmadıysanız, bu e-postayı güvenle görmezden gelebilirsiniz."
       },
       "welcome": {
-        "subject": "AlbionKit'e Hoşgeldiniz",
+        "subject": "Albion Online Analyzer'e Hoşgeldiniz",
         "title": "Hoşgeldin, {name}!",
-        "preview": "AlbionKit'e Hoşgeldiniz! Araçlarımızı bugün keşfetmeye başlayın.",
-        "body1": "<strong>AlbionKit</strong>'e katıldığınız için teşekkürler. Albion Online'da ustalaşma yolunda ilk adımı attınız.",
+        "preview": "Albion Online Analyzer'e Hoşgeldiniz! Araçlarımızı bugün keşfetmeye başlayın.",
+        "body1": "<strong>Albion Online Analyzer</strong>'e katıldığınız için teşekkürler. Albion Online'da ustalaşma yolunda ilk adımı attınız.",
         "body2": "Hemen kullanmaya başlayabileceğiniz birkaç güçlü araç:",
         "builds": "<strong>Build Veritabanı:</strong> Metayı keşfedin ve paylaşın.",
         "market": "<strong>Market Flipper:</strong> Şehirler arası karlı takaslar bulun.",
         "pvp": "<strong>PvP Intel:</strong> Savaşları ve kill feed'lerini gerçek zamanlı analiz edin.",
-        "button": "AlbionKit'i Keşfet"
+        "button": "Albion Online Analyzer'i Keşfet"
       },
       "purchase": {
         "subject": "Abonelik Aktif 🚀",
         "title": "Abonelik Aktif 🚀",
-        "preview": "AlbionKit Premium aboneliğiniz artık aktif!",
+        "preview": "Albion Online Analyzer Premium aboneliğiniz artık aktif!",
         "greeting": "Merhaba {name},",
-        "body1": "Desteğiniz için teşekkürler! <strong>AlbionKit Premium</strong> aboneliğiniz artık aktif.",
+        "body1": "Desteğiniz için teşekkürler! <strong>Albion Online Analyzer Premium</strong> aboneliğiniz artık aktif.",
         "body2": "Artık şunlara sınırsız erişiminiz var:",
         "feature1": "✨ Tüm platformda <strong>Reklamsız deneyim</strong>",
         "feature2": "📈 PvP ve Piyasa verileri için <strong>Gelişmiş Analitik</strong>",
@@ -95,14 +95,14 @@
         "title": "Seviye Atladın! 🎉",
         "preview": "{rank} rütbesine ulaştığınız için tebrikler!",
         "congrats": "Tebrikler!",
-        "body": "AlbionKit'te <strong>{rank}</strong> rütbesine ulaştınız.",
+        "body": "Albion Online Analyzer'te <strong>{rank}</strong> rütbesine ulaştınız.",
         "footer": "Bir sonraki rütbeye ulaşmak için build oluşturmaya ve topluluğa katkıda bulunmaya devam edin!",
         "button": "Profili Görüntüle"
       },
       "reminder": {
-        "subject": "Piyasa Fırsatı - AlbionKit",
+        "subject": "Piyasa Fırsatı - Albion Online Analyzer",
         "title": "Hatırlatıcı",
-        "body": "Fırsatların tam listesini görmek için AlbionKit'i açın.",
+        "body": "Fırsatların tam listesini görmek için Albion Online Analyzer'i açın.",
         "button": "Market Flipper'ı Görüntüle"
       },
       "watchlist": {
@@ -113,7 +113,7 @@
         "buySell": "Al: {buyPrice} ({buyCity}) → Sat: {sellPrice} (BM)",
         "button": "İzleme Listemi Görüntüle",
         "footer": "Bunu, ayarlarınızda Piyasa Uyarılarını etkinleştirdiğiniz için alıyorsunuz.",
-        "baseTitle": "Piyasa İzleme Listesi Uyarısı - AlbionKit",
+        "baseTitle": "Piyasa İzleme Listesi Uyarısı - Albion Online Analyzer",
         "preview": "İzleme Listesi Uyarısı: {itemName} ve daha fazlası karlı!"
       },
       "gold": {
@@ -263,15 +263,15 @@
     "manageAlerts": "Uyarıları Yönet",
     "faq": {
       "q1": "Bu araç ücretsiz mi?",
-      "a1": "AlbionKit bir PWA (Progressive Web App). Mobil tarayıcınızdan yerel uygulama gibi doğrudan yükleyin.",
+      "a1": "Albion Online Analyzer bir PWA (Progressive Web App). Mobil tarayıcınızdan yerel uygulama gibi doğrudan yükleyin.",
       "q2": "Güvenli mi? Ban riski var mı?",
-      "a2": "AlbionKit kesinlikle güvenlidir. Oyun belleğini taramaz veya kod enjekte etmez, SBI kullanım koşullarına sıkı sıkıya uyar.",
+      "a2": "Albion Online Analyzer kesinlikle güvenlidir. Oyun belleğini taramaz veya kod enjekte etmez, SBI kullanım koşullarına sıkı sıkıya uyar.",
       "q3": "Market verileri ne kadar doğru?",
       "a3": "Fiyatlar gerçek oyuncular tarafından Albion Data Client üzerinden güncellenir. Ana şehirlerde veriler genellikle birkaç dakika içinde güncellenir.",
       "q4": "Guild Master planı nedir?",
       "a4": "Tüm lonca üyelerine Adept avantajları sağlayan özel plan. Lonca seviyesinde dashboard işlevleri de içerir.",
       "q5": "Mobil uygulama var mı?",
-      "a5": "AlbionKit bir PWA'dır (Progresif Web Uygulaması). Tarayıcınız üzerinden telefonunuza ana ekran uygulaması olarak kurabilirsiniz."
+      "a5": "Albion Online Analyzer bir PWA'dır (Progresif Web Uygulaması). Tarayıcınız üzerinden telefonunuza ana ekran uygulaması olarak kurabilirsiniz."
     },
     "heroBadge": "The Ultimate Companion",
     "goldPrice": "Altın Fiyatı",
@@ -282,8 +282,8 @@
     "zvzTrackerDesc": "Büyük açık dünya savaşlarını takip edin"
   },
   "AboutPage": {
-    "title": "AlbionKit Hakkında - Misyonumuz ve Ekibimiz",
-    "description": "AlbionKit, Albion Online için ücretsiz araçlar sağlama misyonumuz ve ekibimiz hakkında bilgi edinin."
+    "title": "Albion Online Analyzer Hakkında - Misyonumuz ve Ekibimiz",
+    "description": "Albion Online Analyzer, Albion Online için ücretsiz araçlar sağlama misyonumuz ve ekibimiz hakkında bilgi edinin."
   },
   "MarketFlipper": {
     "itemsTracked": "{count} öğe izleniyor",
@@ -824,7 +824,7 @@
     },
     "about": {
       "title": "Kill Feed Hakkında",
-      "description": "AlbionKit canlı akışı sunuculardaki PvP olaylarını anlık takip eder. Veriler doğrudan oyunun API'sinden gelir ve savaşları izlemenize, lonca performansını analiz etmenize olanak tanır.",
+      "description": "Albion Online Analyzer canlı akışı sunuculardaki PvP olaylarını anlık takip eder. Veriler doğrudan oyunun API'sinden gelir ve savaşları izlemenize, lonca performansını analiz etmenize olanak tanır.",
       "note": "Önemli:",
       "noteDesc": "Oyun içi olay ile burada görünmesi arasında API işleme süresi nedeniyle kısa bir gecikme olabilir."
     },
@@ -877,7 +877,7 @@
       "asia": "Asya",
       "europe": "Avrupa"
     },
-    "socialTitle": "AlbionKit Killboard - Gerçek Zamanlı PvP Takipçisi",
+    "socialTitle": "Albion Online Analyzer Killboard - Gerçek Zamanlı PvP Takipçisi",
     "socialDescription": "Canlı kill'leri takip et, savaş kayıtlarını analiz et ve PvP aktivitesini izle",
     "loadingFeed": "Kill'ler yükleniyor...",
     "shareKill": "Kill'i Paylaş",
@@ -937,19 +937,19 @@
     "cookiePolicy": "Çerez Politikamızı okuyun"
   },
   "Metadata": {
-    "title": "AlbionKit — En İyi Albion Online Yardımcısı",
+    "title": "Albion Online Analyzer — En İyi Albion Online Yardımcısı",
     "template": "%s",
-    "description": "AlbionKit ile Albion Online'da hüküm sür. Build veritabanı, piyasa al-sat araçları, PvP istihbaratı, zanaat hesaplayıcıları ve canlı kill feed. Rekabet avantajın burada başlar.",
+    "description": "Albion Online Analyzer ile Albion Online'da hüküm sür. Build veritabanı, piyasa al-sat araçları, PvP istihbaratı, zanaat hesaplayıcıları ve canlı kill feed. Rekabet avantajın burada başlar.",
     "keywords": "Albion Online, Albion Buildleri, Albion Market, Albion PvP, MMORPG"
   },
   "Pages": {
     "home": {
-      "title": "AlbionKit — Piyasa Araçları, PvP ve Meta Buildler",
+      "title": "Albion Online Analyzer — Piyasa Araçları, PvP ve Meta Buildler",
       "description": "Gerçek zamanlı piyasa verileri, PvP istihbaratı ve en iyi topluluk buildleri ile Albion Online deneyimini zirveye taşı. İhtiyacın olan tüm araçlar tek bir yerde."
     },
     "about": {
-      "title": "AlbionKit Hakkında",
-      "description": "AlbionKit'in misyonunu ve Albion Online topluluğu için oluşturulan araçları keşfet. Oyuncular tarafından, oyuncular için geliştirildi."
+      "title": "Albion Online Analyzer Hakkında",
+      "description": "Albion Online Analyzer'in misyonunu ve Albion Online topluluğu için oluşturulan araçları keşfet. Oyuncular tarafından, oyuncular için geliştirildi."
     },
     "marketFlipper": {
       "title": "Piyasa Al-Sat",
@@ -1007,7 +1007,7 @@
     },
     "settings": {
       "title": "Ayarlar",
-      "description": "AlbionKit tercihlerinizi, bildirim ayarlarınızı, dil seçeneklerinizi ve hesap yönetiminizi yapılandırın. Deneyiminizi özelleştirin."
+      "description": "Albion Online Analyzer tercihlerinizi, bildirim ayarlarınızı, dil seçeneklerinizi ve hesap yönetiminizi yapılandırın. Deneyiminizi özelleştirin."
     },
     "guides": {
       "title": "Guides",
@@ -1022,7 +1022,7 @@
       "description": "Learn proper positioning for tanks, DPS, and healers"
     },
     "combatRotations": {
-      "title": "Silah Rotasyonları Rehberi - Tüm Silahlar | AlbionKit",
+      "title": "Silah Rotasyonları Rehberi - Tüm Silahlar | Albion Online Analyzer",
       "description": "Tüm silahlar için optimal rotasyonları ustalaşın. Patlayıcı hasar, sürdürülen DPS ve mobilite kombo."
     },
     "gatheringRoutes": {
@@ -2179,7 +2179,7 @@
   },
   "Subscription": {
     "supportTitle": "Projeyi Destekle",
-    "supportDesc": "AlbionKit <solo>tek bir geliştirici</solo> tarafından hazırlanıp yönetiliyor. Desteğin sunucuların açık kalmasına yardımcı olur! ❤️",
+    "supportDesc": "Albion Online Analyzer <solo>tek bir geliştirici</solo> tarafından hazırlanıp yönetiliyor. Desteğin sunucuların açık kalmasına yardımcı olur! ❤️",
     "loading": "Detaylar yükleniyor...",
     "monthly": "Aylık",
     "yearly": "Yıllık",
@@ -2215,7 +2215,7 @@
   },
   "Premium": {
     "title": "Destekçi Ol",
-    "description": "AlbionKit'in tüm gücünü açın. Oyun tarzınıza uygun seviyeyi seçin.",
+    "description": "Albion Online Analyzer'in tüm gücünü açın. Oyun tarzınıza uygun seviyeyi seçin.",
     "active": "AKTİF",
     "adeptTier": "Adept Seviyesi",
     "yearlyBillingBonus": "Yıllık ödemede 2 ay ÜCRETSİZ kazanın!",
@@ -2426,7 +2426,7 @@
       "quickActions": "Hızlı İşlemler",
       "stayUpdated": "Güncel kal!",
       "followTwitter": "En son analizler için Twitter'da bizi takip et.",
-      "followBtn": "@Albion_Kit Takip Et",
+      "followBtn": "Albion Online Analyzer Takip Et",
       "days": "Gün",
       "wandererDesc": "Yolculuğa yeni başladı",
       "noviceDesc": "Temelleri öğreniyor",
@@ -2501,7 +2501,7 @@
     "reposition": "Konumlandır",
     "savePosition": "Konumu Kaydet",
     "user": "Kullanıcı",
-    "userProfileDesc": "{displayName} kullanıcısının AlbionKit profili. Buildlerini ve istatistiklerini incele.",
+    "userProfileDesc": "{displayName} kullanıcısının Albion Online Analyzer profili. Buildlerini ve istatistiklerini incele.",
     "editProfile": "Profili Düzenle",
     "joined": "{date} tarihinde katıldı",
     "recently": "Yakın zamanda",
@@ -2796,7 +2796,7 @@
       "action": "Hata Bildir"
     },
     "donateInfo": {
-      "text": "AlbionKit'i sevdiniz mi? Projeyi ücretsiz ve reklamsız tutmak için bize bir kahve ısmarlayın! ☕",
+      "text": "Albion Online Analyzer'i sevdiniz mi? Projeyi ücretsiz ve reklamsız tutmak için bize bir kahve ısmarlayın! ☕",
       "action": "Bağış yap"
     },
     "contributeInfo": {
@@ -2807,19 +2807,19 @@
   "Legal": {
     "lastUpdated": "Son Güncelleme: {date}",
     "contact": "İletişim",
-    "contactDesc": "Bu politika veya uygulamalarımız hakkında herhangi bir sorunuz varsa, lütfen Discord topluluğumuz üzerinden veya support@albionkit.com adresinden bizimle iletişime geçin.",
+    "contactDesc": "Bu politika veya uygulamalarımız hakkında herhangi bir sorunuz varsa, lütfen Discord topluluğumuz üzerinden veya Aditya-Bichave@users.noreply.github.com adresinden bizimle iletişime geçin.",
     "terms": {
       "title": "Kullanım Koşulları",
-      "description": "Lütfen AlbionKit'i kullanmadan önce bu koşulları dikkatlice okuyun. Haklarınızı, sorumluluklarınızı ve yasal yükümlülüklerimizi açıklarlar.",
+      "description": "Lütfen Albion Online Analyzer'i kullanmadan önce bu koşulları dikkatlice okuyun. Haklarınızı, sorumluluklarınızı ve yasal yükümlülüklerimizi açıklarlar.",
       "agreement": {
         "title": "1. Koşulların Kabulü",
-        "content": "AlbionKit'e erişerek veya kullanarak, bu Kullanım Koşullarına ve Gizlilik Politikamıza bağlı kalmayı kabul etmiş olursunuz. Koşulların herhangi bir kısmına katılmazsanız hizmete erişemezsiniz."
+        "content": "Albion Online Analyzer'e erişerek veya kullanarak, bu Kullanım Koşullarına ve Gizlilik Politikamıza bağlı kalmayı kabul etmiş olursunuz. Koşulların herhangi bir kısmına katılmazsanız hizmete erişemezsiniz."
       },
       "ip": {
         "title": "2. Fikri Mülkiyet",
-        "content": "Hizmet ve orijinal içeriği (kullanıcı tarafından sağlanan içerik hariç), özellikleri ve işlevselliği AlbionKit'in ve lisans verenlerinin münhasır mülkiyetindedir.",
+        "content": "Hizmet ve orijinal içeriği (kullanıcı tarafından sağlanan içerik hariç), özellikleri ve işlevselliği Albion Online Analyzer'in ve lisans verenlerinin münhasır mülkiyetindedir.",
         "albionIp": "Albion Online Fikri Mülkiyeti",
-        "albionIpContent": "Albion Online ve logosu Sandbox Interactive GmbH'nin ticari markalarıdır. AlbionKit bir topluluk aracıdır ve Sandbox Interactive GmbH ile bağlı değildir. Tüm oyun varlıkları ilgili sahiplerinin mülkiyetindedir."
+        "albionIpContent": "Albion Online ve logosu Sandbox Interactive GmbH'nin ticari markalarıdır. Albion Online Analyzer bir topluluk aracıdır ve Sandbox Interactive GmbH ile bağlı değildir. Tüm oyun varlıkları ilgili sahiplerinin mülkiyetindedir."
       },
       "accounts": {
         "title": "3. Kullanıcı Hesapları",
@@ -2835,15 +2835,15 @@
       },
       "liability": {
         "title": "5. Sorumluluğun Sınırlandırılması",
-        "content": "AlbionKit veya yöneticileri, çalışanları veya ortakları, hizmete erişiminizden veya kullanımınızdan kaynaklanan dolaylı, arızi, özel veya sonuç olarak ortaya çıkan zararlardan hiçbir durumda sorumlu tutulamaz."
+        "content": "Albion Online Analyzer veya yöneticileri, çalışanları veya ortakları, hizmete erişiminizden veya kullanımınızdan kaynaklanan dolaylı, arızi, özel veya sonuç olarak ortaya çıkan zararlardan hiçbir durumda sorumlu tutulamaz."
       }
     },
     "privacy": {
       "title": "Gizlilik Politikası",
-      "description": "Kişisel verilerinizi korumayı ve AlbionKit ile güvenli bir deneyim yaşamanızı sağlamayı taahhüt ediyoruz.",
+      "description": "Kişisel verilerinizi korumayı ve Albion Online Analyzer ile güvenli bir deneyim yaşamanızı sağlamayı taahhüt ediyoruz.",
       "intro": {
         "title": "1. Giriş",
-        "content": "AlbionKit'e (\"biz\", \"bize\" veya \"bizim\") hoş geldiniz. Gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyoruz. Bu gizlilik politikası, web sitemizi ziyaret ettiğinizde verilerinize nasıl baktığımız hakkında sizi bilgilendirecektir."
+        "content": "Albion Online Analyzer'e (\"biz\", \"bize\" veya \"bizim\") hoş geldiniz. Gizliliğinize saygı duyuyor ve kişisel verilerinizi korumayı taahhüt ediyoruz. Bu gizlilik politikası, web sitemizi ziyaret ettiğinizde verilerinize nasıl baktığımız hakkında sizi bilgilendirecektir."
       },
       "data": {
         "title": "2. Topladığımız Veriler",
@@ -2875,7 +2875,7 @@
     },
     "cookies": {
       "title": "Çerez Politikası",
-      "description": "AlbionKit, tarama deneyiminizi geliştirmek ve kişiselleştirilmiş hizmetler sunmak için çerezleri kullanır.",
+      "description": "Albion Online Analyzer, tarama deneyiminizi geliştirmek ve kişiselleştirilmiş hizmetler sunmak için çerezleri kullanır.",
       "what": {
         "title": "1. Çerez Nedir?",
         "content": "Çerezler, bir web sitesini ziyaret ettiğinizde cihazınıza kaydedilen küçük metin dosyalarıdır. Web sitelerinin daha verimli çalışmasını sağlamak için yaygın olarak kullanılırlar."
@@ -2900,7 +2900,7 @@
       "description": "Premium abonelikler ve dijital hizmetler için iade yönergelerimiz.",
       "general": {
         "title": "1. Genel Politika",
-        "content": "AlbionKit dijital premium özelliklere anında erişim sağlar. Dijital içeriğin doğası gereği, hizmete erişildikten sonra tüm satışlar genellikle kesin kabul edilir ve iade yapılamaz."
+        "content": "Albion Online Analyzer dijital premium özelliklere anında erişim sağlar. Dijital içeriğin doğası gereği, hizmete erişildikten sonra tüm satışlar genellikle kesin kabul edilir ve iade yapılamaz."
       },
       "subscriptions": {
         "title": "2. Abonelikler",
@@ -3195,7 +3195,7 @@
     "lastUpdated": "Son Güncelleme: {date}",
     "general": {
       "title": "1. Genel Politika",
-      "content": "AlbionKit, premium dijital özelliklere ve araçlara (Uzman ve Lonca Ustası katmanları gibi) anında erişim sağlar. Erişimin anında verildiği dijital içeriğin doğası gereği, hizmete erişildikten veya kullanıldıktan sonra tüm satışlar genellikle kesin kabul edilir ve iade yapılamaz."
+      "content": "Albion Online Analyzer, premium dijital özelliklere ve araçlara (Uzman ve Lonca Ustası katmanları gibi) anında erişim sağlar. Erişimin anında verildiği dijital içeriğin doğası gereği, hizmete erişildikten veya kullanıldıktan sonra tüm satışlar genellikle kesin kabul edilir ve iade yapılamaz."
     },
     "subscriptions": {
       "title": "2. Abonelikler",
@@ -3351,7 +3351,7 @@
       "medium": "Orta",
       "high": "Yüksek"
     },
-    "checkoutBuild": "AlbionKit'te {author} tarafından yapılan {category} buildi inceleyin.",
+    "checkoutBuild": "Albion Online Analyzer'te {author} tarafından yapılan {category} buildi inceleyin.",
     "backToBuilds": "Buildlere Dön"
   },
   "NotFound": {
@@ -3555,7 +3555,7 @@
     "adjustFiltersOrCheckBack": "Filtreleri ayarlamayı dene veya sonra tekrar kontrol et."
   },
   "Donate": {
-    "title": "AlbionKit'i Destekle",
+    "title": "Albion Online Analyzer'i Destekle",
     "description": "Bağışlarınız sunucu maliyetlerini ve geliştirme süresini karşılamaya yardımcı olur.",
     "buttonText": "Bana bir kahve ısmarla",
     "githubSponsors": "Veya GitHub'da sponsor olun",
@@ -3563,8 +3563,8 @@
     "impact2": "Geliştirme"
   },
   "DonatePage": {
-    "title": "AlbionKit'i Destekle - Bağış Yap",
-    "description": "Bağışlar yoluyla AlbionKit geliştirmesini destekle. Projeyi ücretsiz ve reklamsız tutmamıza yardım et."
+    "title": "Albion Online Analyzer'i Destekle - Bağış Yap",
+    "description": "Bağışlar yoluyla Albion Online Analyzer geliştirmesini destekle. Projeyi ücretsiz ve reklamsız tutmamıza yardım et."
   },
   "Sidebar": {
     "silverFarming": "Gümüş Farmı",
@@ -3665,7 +3665,7 @@
   "Guides": {
     "title": "Rehberler",
     "description": "Albion Online oyuncuları için kapsamlı rehberler",
-    "heroTitle": "AlbionKit Rehberleri",
+    "heroTitle": "Albion Online Analyzer Rehberleri",
     "heroSubtitle": "Kapsamlı rehberlerle Albion Online'da ustalaşın",
     "gettingStarted": "Başlangıç",
     "silverFarming": "Gümüş Farmı",
@@ -4121,16 +4121,16 @@
     "description": "Tüm silahlar için optimal rotasyonları ustalaş. Patlayıcı hasar, sürdürülen DPS ve mobilite kombo."
   },
   "SettingsPage": {
-    "title": "Hesap Ayarları | AlbionKit",
-    "description": "AlbionKit hesap ayarlarını, bildirimleri, dili ve profili yönet."
+    "title": "Hesap Ayarları | Albion Online Analyzer",
+    "description": "Albion Online Analyzer hesap ayarlarını, bildirimleri, dili ve profili yönet."
   },
   "LoginPage": {
-    "title": "AlbionKit'e Giriş Yap",
-    "description": "Premium özelliklere erişmek, buildleri kaydetmek ve özelleştirmek için AlbionKit'e giriş yap."
+    "title": "Albion Online Analyzer'e Giriş Yap",
+    "description": "Premium özelliklere erişmek, buildleri kaydetmek ve özelleştirmek için Albion Online Analyzer'e giriş yap."
   },
   "NotFoundPage": {
-    "title": "Sayfa Bulunamadı - 404 | AlbionKit",
-    "description": "Aradığınız sayfa mevcut değil. AlbionKit ana sayfasına geri dönün."
+    "title": "Sayfa Bulunamadı - 404 | Albion Online Analyzer",
+    "description": "Aradığınız sayfa mevcut değil. Albion Online Analyzer ana sayfasına geri dönün."
   },
   "BuildsPage": {
     "title": "Build Veritabanı - Meta Buildler",
@@ -4138,15 +4138,15 @@
   },
   "PrivacyPage": {
     "title": "Gizlilik Politikası",
-    "description": "AlbionKit gizlilik politikası - verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz."
+    "description": "Albion Online Analyzer gizlilik politikası - verilerinizi nasıl topladığımız, kullandığımız ve koruduğumuz."
   },
   "TermsPage": {
     "title": "Kullanım Şartları",
-    "description": "AlbionKit kullanım şartları ve yönergeleri."
+    "description": "Albion Online Analyzer kullanım şartları ve yönergeleri."
   },
   "CookiesPage": {
     "title": "Çerez Politikası",
-    "description": "AlbionKit çerez politikası - deneyiminizi iyileştirmek için çerezleri nasıl kullandığımız."
+    "description": "Albion Online Analyzer çerez politikası - deneyiminizi iyileştirmek için çerezleri nasıl kullandığımız."
   },
   "MarketFlipperPage": {
     "title": "Market Flipper - Kar Hesaplayıcı",

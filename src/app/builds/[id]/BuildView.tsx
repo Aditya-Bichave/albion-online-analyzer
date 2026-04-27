@@ -19,7 +19,6 @@ import { BuildCard } from '@/components/BuildCard';
 import { Tooltip } from '@/components/ui/Tooltip';
 import { formatDistanceToNow } from 'date-fns';
 import { incrementBuildViewAction } from '@/app/actions/builds';
-import { useLoginModal } from '@/context/LoginModalContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -62,7 +61,6 @@ export function BuildView({ id }: BuildViewProps) {
     const [isHiding, setIsHiding] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showHideDialog, setShowHideDialog] = useState(false);
-    const { openLoginModal } = useLoginModal();
 
     // Check if current user is author or admin
     const isAuthor = user && build && user.uid === build.authorId;

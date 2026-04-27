@@ -1,7 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { LoginModal } from '@/components/auth/LoginModal';
+import { createContext, useContext, ReactNode } from 'react';
 
 interface LoginModalContextType {
   openLoginModal: (message?: string) => void;
@@ -12,23 +11,19 @@ interface LoginModalContextType {
 const LoginModalContext = createContext<LoginModalContextType | undefined>(undefined);
 
 export function LoginModalProvider({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState<string | undefined>(undefined);
-
-  const openLoginModal = (msg?: string) => {
-    setMessage(msg);
-    setIsOpen(true);
+  const openLoginModal = (message?: string) => {
+    if (message) {
+      console.info(`[Albion Online Analyzer] Login disabled: ${message}`);
+    } else {
+      console.info('[Albion Online Analyzer] Login disabled in guest mode.');
+    }
   };
 
-  const closeLoginModal = () => {
-    setIsOpen(false);
-    setMessage(undefined);
-  };
+  const closeLoginModal = () => {};
 
   return (
-    <LoginModalContext.Provider value={{ openLoginModal, closeLoginModal, isLoginModalOpen: isOpen }}>
+    <LoginModalContext.Provider value={{ openLoginModal, closeLoginModal, isLoginModalOpen: false }}>
       {children}
-      <LoginModal isOpen={isOpen} onClose={closeLoginModal} message={message} />
     </LoginModalContext.Provider>
   );
 }

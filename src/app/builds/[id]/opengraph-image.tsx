@@ -107,7 +107,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
           backgroundSize: '32px 32px'
         }} />
 
-        {/* AlbionKit Brand */}
+        {/* Albion Online Analyzer Brand */}
         <div style={{
           position: 'absolute',
           top: 40,
@@ -122,7 +122,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
             color: '#f59e0b',
             letterSpacing: '-0.02em',
           }}>
-            AlbionKit
+            Albion Online Analyzer
           </div>
         </div>
 
@@ -489,7 +489,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
           letterSpacing: '0.05em',
           fontWeight: 500,
         }}>
-          albionkit.com/builds/{id.substring(0, 8)}
+          aditya-bichave.github.io/albion-online-analyzer/builds/{id.substring(0, 8)}
         </div>
       </div>
     ),

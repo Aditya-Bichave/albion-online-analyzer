@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document provides a high-level overview of the AlbionKit architecture.
+This document provides a high-level overview of the Albion Online Analyzer architecture.
 
 ## 🏗️ System Architecture
 
@@ -36,7 +36,7 @@ This document provides a high-level overview of the AlbionKit architecture.
 ## 📁 Directory Structure
 
 ```
-albionkit/
+albion-online-analyzer/
 ├── src/
 │   ├── app/                      # Next.js App Router
 │   │   ├── (routes)/             # Route groups

@@ -9,13 +9,13 @@
 
 ## Reporting a Vulnerability
 
-We take the security of AlbionKit seriously. If you believe you have found a security vulnerability, please report it to us as described below.
+We take the security of Albion Online Analyzer seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
 ### How to Report
 
 **Please do NOT report security vulnerabilities through public GitHub issues.**
 
-Instead, please report them via email to: **support@albionkit.com**
+Instead, please report them via email to: **Aditya-Bichave@users.noreply.github.com**
 
 Include as much information as possible:
 - Description of the vulnerability
@@ -111,7 +111,7 @@ Security updates are released as soon as patches are available. Critical updates
 
 Stay informed about security updates:
 - Watch the repository for releases
-- Follow [@Albion_Kit](https://twitter.com/Albion_Kit)
+- Follow [Albion Online Analyzer](https://github.com/Aditya-Bichave/albion-online-analyzer)
 - Join our Discord community (Coming soon)!
 
 ## Bug Bounty Program
@@ -125,14 +125,14 @@ Currently, we do not offer a bug bounty program. However, we do provide:
 ## Contact
 
 For any security-related questions:
-- Email: support@albionkit.com
+- Email: Aditya-Bichave@users.noreply.github.com
 - Discord: Security channel
 
 ## 💖 Support the Project
 
 If you value security in open source, consider supporting us:
 
-- [GitHub Sponsors](https://github.com/sponsors/cosmic-fi)
+- [GitHub Sponsors](https://github.com/Aditya-Bichave/albion-online-analyzer)
 - [Buy Me a Coffee](https://www.buymeacoffee.com/cosmic_fi)
 
 ---

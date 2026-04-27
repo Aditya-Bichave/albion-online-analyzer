@@ -4,8 +4,8 @@
  * Automatically syncs with Firestore in background
  */
 
-const BUILD_CACHE_KEY = 'albionkit_user_builds';
-const CACHE_TIMESTAMP_KEY = 'albionkit_builds_timestamp';
+const BUILD_CACHE_KEY = 'albion-online-analyzer_user_builds';
+const CACHE_TIMESTAMP_KEY = 'albion-online-analyzer_builds_timestamp';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export interface CachedBuild {

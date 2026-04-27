@@ -1,7 +1,7 @@
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 const INDEXNOW_KEY = '2e457296cedb4fc0a21153ca79e28266';
-const INDEXNOW_HOST = 'albionkit.com';
-const INDEXNOW_KEY_LOCATION = `https://albionkit.com/${INDEXNOW_KEY}.txt`;
+const INDEXNOW_HOST = 'aditya-bichave.github.io/albion-online-analyzer';
+const INDEXNOW_KEY_LOCATION = `https://aditya-bichave.github.io/albion-online-analyzer/${INDEXNOW_KEY}.txt`;
 
 export async function submitToIndexNow(urls: string[]) {
   // Skip IndexNow submission in development mode

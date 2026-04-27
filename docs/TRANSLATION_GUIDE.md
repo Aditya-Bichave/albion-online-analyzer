@@ -1,6 +1,6 @@
 # Translation Guide
 
-Help us make AlbionKit accessible to everyone by contributing translations!
+Help us make Albion Online Analyzer accessible to everyone by contributing translations!
 
 ## 🌍 Supported Languages
 
@@ -239,4 +239,4 @@ Translators are credited in:
 - Release notes
 - Discord translator role
 
-Thank you for helping make AlbionKit accessible worldwide! 🌍
+Thank you for helping make Albion Online Analyzer accessible worldwide! 🌍

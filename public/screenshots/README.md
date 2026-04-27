@@ -1,7 +1,7 @@
 # 📸 Screenshot Quick Reference
 
 **Created:** March 24, 2026  
-**For:** AlbionKit SEO Screenshots
+**For:** Albion Online Analyzer SEO Screenshots
 
 ---
 

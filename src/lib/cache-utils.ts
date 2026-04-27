@@ -6,10 +6,10 @@
 const CACHE_PREFIX = 'ao-pocket-cache-';
 
 /**
- * Clear all AlbionKit cache from localStorage
+ * Clear all Albion Online Analyzer cache from localStorage
  * Call this if you encounter "QuotaExceededError"
  */
-export function clearAlbionKitCache(): void {
+export function clearAlbionOnlineAnalyzerCache(): void {
   if (typeof window === 'undefined') return;
 
   try {
@@ -74,14 +74,14 @@ export function getCacheInfo(): {
  */
 export function logCacheStats(): void {
   const info = getCacheInfo();
-  console.log('📦 AlbionKit Cache Statistics:');
+  console.log('📦 Albion Online Analyzer Cache Statistics:');
   console.log(`   - Entries: ${info.entries}`);
   console.log(`   - Size: ${info.sizeKB} KB`);
   console.log(`   - Quota Used: ${info.quotaUsedPercent}%`);
   
   if (info.quotaUsedPercent > 80) {
     console.warn('⚠️ Cache is nearly full! Consider clearing it.');
-    console.warn('🗑️ Run clearAlbionKitCache() to free up space.');
+    console.warn('🗑️ Run clearAlbionOnlineAnalyzerCache() to free up space.');
   }
 }
 

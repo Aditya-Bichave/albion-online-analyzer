@@ -55,7 +55,7 @@ export async function getUserInvoices(userId: string) {
      const snapshot = await invoicesRef.orderBy('date', 'desc').get();
      
      if (!snapshot.empty) {
-         const invoices = snapshot.docs.map(doc => doc.data());
+  const invoices = snapshot.docs.map((doc: any) => doc.data());
          return { invoices };
      }
 
@@ -515,7 +515,7 @@ export async function searchAlbionGuild(query: string) {
         }
 
         // Transaction to ensure atomicity
-        await adminDb.runTransaction(async (t) => {
+        await adminDb.runTransaction(async (t: any) => {
             const newRef = adminDb.collection('guild_licenses').doc(newGuildId);
             const newDoc = await t.get(newRef);
             
@@ -744,7 +744,7 @@ export async function updateUserProfileAndBuildsAction(uid: string, data: any) {
                 const batch = adminDb.batch();
                 let count = 0;
 
-                buildsSnap.docs.forEach((doc) => {
+        buildsSnap.docs.forEach((doc: any) => {
                     if (count < 500) { // Stay under batch limit
                         batch.update(doc.ref, { authorName: newDisplayName });
                         count++;

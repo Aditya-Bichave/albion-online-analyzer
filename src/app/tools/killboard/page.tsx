@@ -16,12 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: getScreenshot(screenshotKey).keywords.join(', '),
     alternates: {
-      canonical: 'https://albionkit.com/tools/killboard',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/killboard',
     },
     openGraph: {
       title,
       description,
-      url: 'https://albionkit.com/tools/killboard',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/killboard',
       type: 'website',
       images: [{
         url: getFullScreenshotUrl(screenshotKey),
@@ -51,19 +51,19 @@ export default async function KillboardPage() {
         '@type': 'ListItem',
         position: 1,
         name: tNav('home'),
-        item: 'https://albionkit.com',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer',
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: tNav('tools'),
-        item: 'https://albionkit.com/tools',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer/tools',
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: tPage('title'),
-        item: 'https://albionkit.com/tools/killboard',
+        item: 'https://aditya-bichave.github.io/albion-online-analyzer/tools/killboard',
       },
     ],
   };

@@ -11,18 +11,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: t('title'),
     description: t('description'),
     alternates: {
-      canonical: 'https://albionkit.com/donate',
+      canonical: 'https://aditya-bichave.github.io/albion-online-analyzer/donate',
     },
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: 'https://albionkit.com/donate',
+      url: 'https://aditya-bichave.github.io/albion-online-analyzer/donate',
       type: 'website',
       images: [{
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'AlbionKit Preview',
+        alt: 'Albion Online Analyzer Preview',
         type: 'image/jpeg'
       }],
     },
@@ -113,7 +113,7 @@ export default async function DonatePage() {
               </p>
 
               <a
-                href="https://github.com/sponsors/cosmic-fi"
+                href="https://github.com/Aditya-Bichave/albion-online-analyzer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-pink-500/25 hover:shadow-xl hover:-translate-y-0.5"

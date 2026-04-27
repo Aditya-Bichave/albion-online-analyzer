@@ -15,12 +15,12 @@ const firebaseConfig = {
 const isConfigValid = Object.values(firebaseConfig).every(val => !!val);
 
 if (!isConfigValid) {
-  console.warn('Firebase configuration is missing or incomplete. Check .env.local');
+  console.warn('Firebase configuration is missing or incomplete. Running in guest mode without auth-backed features.');
 }
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app = isConfigValid ? (!getApps().length ? initializeApp(firebaseConfig) : getApp()) : null;
+const auth = (app ? getAuth(app) : null) as any;
+const db = (app ? getFirestore(app) : null) as any;
 
+export const isFirebaseEnabled = isConfigValid;
 export { app, auth, db };

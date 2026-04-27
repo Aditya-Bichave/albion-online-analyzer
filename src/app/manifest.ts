@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'AlbionKit - The Ultimate Albion Online Companion',
-    short_name: 'AlbionKit',
-    description: 'Master Albion Online with AlbionKit. Features include a powerful Build Database, Market Flipper, PvP Intel, Crafting Calculator, and real-time Killboard.',
+    name: 'Albion Online Analyzer - The Ultimate Albion Online Companion',
+    short_name: 'Albion Online Analyzer',
+    description: 'Master Albion Online with Albion Online Analyzer. Features include a powerful Build Database, Market Flipper, PvP Intel, Crafting Calculator, and real-time Killboard.',
     start_url: '/',
     display: 'standalone',
     background_color: '#0c0a09', // stone-950 (background)

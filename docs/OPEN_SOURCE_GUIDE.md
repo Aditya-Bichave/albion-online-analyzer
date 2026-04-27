@@ -1,10 +1,10 @@
 # Open Source Guide
 
-This document provides guidance for maintaining and contributing to AlbionKit as an open source project.
+This document provides guidance for maintaining and contributing to Albion Online Analyzer as an open source project.
 
 ## 🎯 Project Vision
 
-AlbionKit is a community-driven toolkit for Albion Online players, built with transparency, accessibility, and quality in mind.
+Albion Online Analyzer is a community-driven toolkit for Albion Online players, built with transparency, accessibility, and quality in mind.
 
 ## 📜 License
 

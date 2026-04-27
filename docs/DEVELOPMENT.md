@@ -1,6 +1,6 @@
 # Development Setup Guide
 
-This guide will help you set up your development environment for AlbionKit.
+This guide will help you set up your development environment for Albion Online Analyzer.
 
 ## 📋 Prerequisites
 
@@ -32,8 +32,8 @@ This guide will help you set up your development environment for AlbionKit.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/albionkit.git
-cd albionkit
+git clone https://github.com/yourusername/albion-online-analyzer.git
+cd albion-online-analyzer
 ```
 
 ### 2. Install Dependencies
@@ -88,7 +88,7 @@ npx tsc --noEmit
 ## 🗂️ Project Structure
 
 ```
-albionkit/
+albion-online-analyzer/
 ├── src/
 │   ├── app/                 # Pages (Next.js App Router)
 │   ├── components/          # React components
@@ -374,17 +374,17 @@ export function ThemeToggle() {
 
 ## 💖 Support the Project
 
-Find AlbionKit useful? Support its development:
+Find Albion Online Analyzer useful? Support its development:
 
 - [Buy Me a Coffee](https://www.buymeacoffee.com/cosmic_fi)
-- [GitHub Sponsors](https://github.com/sponsors/cosmic-fi)
+- [GitHub Sponsors](https://github.com/Aditya-Bichave/albion-online-analyzer)
 
 ## ✅ Next Steps
 
 After setup:
 
 1. Read [CONTRIBUTING.md](../CONTRIBUTING.md)
-2. Find a [good first issue](https://github.com/yourusername/albionkit/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+2. Find a [good first issue](https://github.com/yourusername/albion-online-analyzer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 3. Start contributing!
 
 Happy coding! 🚀
