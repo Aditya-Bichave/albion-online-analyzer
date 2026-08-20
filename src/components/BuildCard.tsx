@@ -17,11 +17,8 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
   const t = useTranslations('Builds');
   const router = useRouter();
 
-  // Guard clause for undefined build
-  if (!build) return null;
-
-  const categoryKey = build.category ? build.category.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) : 'solo';
-  const buildLink = `/builds/${build.id}`;
+  const categoryKey = build?.category ? build.category.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) : 'solo';
+  const buildLink = `/builds/${build?.id}`;
 
   const handleCardClick = React.useCallback((e: React.MouseEvent) => {
     // Prevent navigation if clicking on a link or button
@@ -30,6 +27,9 @@ export const BuildCard = React.memo(({ build, compactMode = false }: BuildCardPr
     }
     router.push(buildLink);
   }, [buildLink, router]);
+
+  // Guard clause for undefined build
+  if (!build) return null;
 
   return (
     <div
