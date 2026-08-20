@@ -1,0 +1,109 @@
+name: CI Pipeline - Strict Verification
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    name: 🛡️ Code Quality, Types & i18n
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: 🔍 TypeScript Type Check
+        run: npm run type-check
+
+      - name: 🧹 ESLint Code Quality Check
+        run: npm run lint
+
+      - name: 🌐 i18n Translation Validation
+        run: npm run i18n:check
+
+  build-verification:
+    name: 🏗️ Production Build Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: 🚀 Build Next.js Application
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+        run: npm run build
+
+  security-audit:
+    name: 🔒 Security & Dependency Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 🛡️ Audit Dependencies for High/Critical Vulnerabilities
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: 🔑 Secret & Credential Scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  pr-hygiene:
+    name: 📋 PR Title & Git Hygiene
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📝 Validate PR Title Format (Conventional Commits)
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+        continue-on-error: true
